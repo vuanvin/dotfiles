@@ -1,0 +1,200 @@
+set nocompatible
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+
+let mapleader = " "
+
+autocmd InsertEnter * set timeoutlen=0
+autocmd InsertLeave * set timeoutlen=50
+
+"- display -------------------------------------------------
+colorscheme desert
+set ruler " display the line and column info.
+set number " displaye the number of line.
+set tabstop=8 " the width of tab key.
+set shiftwidth=8 " the width of new line.
+
+set autoindent
+set smartindent
+set cindent
+
+autocmd FileType python,shell,bash set tabstop=4
+autocmd FileType python,shell,bash set shiftwidth=4
+autocmd FileType python,shell,bash set softtabstop=4
+
+set list
+set listchars=tab:>-,trail:-
+syntax enable
+syntax on
+set cursorline
+highlight CursorLine term=bold cterm=bold ctermbg=237
+
+"- motion & operator ------------------------------------------------
+set linebreak
+set whichwrap=b,s,<,>,[,] " cursor auto come to the next line.
+
+set foldmethod=syntax
+set nofoldenable
+
+" record the position of the cursor.
+set viewoptions=cursor
+autocmd BufWinLeave ?* mkview
+autocmd VimEnter ?* silent loadview
+
+set mouse=a
+set selection=exclusive
+set selectmode=mouse,key
+set paste
+set wildmenu
+
+"- search & match ------------------------------------------
+set hlsearch
+set incsearch
+set showmatch
+set ignorecase
+set smartcase
+
+set splitbelow
+set splitright
+
+nnoremap <leader>l :bnext<cr>
+nnoremap <leader>h :bprevious<cr>
+
+
+call plug#begin('~/.vim/plugged')
+Plug 'easymotion/vim-easymotion'
+Plug 'tpope/vim-surround'
+
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+
+let g:asyncomplete_auto_popup = 0
+let g:asyncomplete_auto_completeopt = 0
+set completeopt=menuone,noinsert,noselect,preview
+
+Plug 'https://github.com/junegunn/vim-github-dashboard.git' " Any valid git URL is allowed
+Plug 'tpope/vim-fugitive' " A Git wrapper
+Plug 'zivyangll/git-blame.vim' " light plugin for echo git commit info.
+
+" Plug 'vim-scripts/grep.vim'  " grep tools
+Plug 'fidian/hexmode' " hex mode for binary file
+
+Plug 'edkolev/tmuxline.vim' " tmux linestatus
+Plug 'bling/vim-bufferline' " buffer info status and cmd line
+Plug 'vim-airline/vim-airline' " status-line format
+" Plug 'vim-airline/vim-airline-themes' " color scheme
+
+" A simple plugin show the last file user has open
+Plug 'mhinz/vim-startify'
+Plug 'junegunn/vim-easy-align'
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+
+Plug 'junegunn/fzf', {'do': './install --all' } " general-purpose command-line fuzzy finder.
+"nmap <C-P> :FZF<CR>
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+let g:Lf_ShortcutF = '<C-P>'
+
+" Plug 'ludovicchabant/vim-gutentags' " automatically generate tags
+Plug 'vim-scripts/cscope.vim' " cscope
+
+call plug#end()
+
+"- easymotion ---------------------------------------------
+nmap <leader> <Plug>(easymotion-prefix)
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+let g:EasyMotion_smartcase = 1 " Turn on case-insensitive feature
+let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
+nmap s <Plug>(easymotion-overwin-f2)
+nmap , <Plug>(easymotion-bd-w)
+map <Leader>l <Plug>(easymotion-lineforward)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+map <Leader>h <Plug>(easymotion-linebackward)
+
+"- vim-airline ---------------------------------------------
+let g:airline_theme='bubblegum'
+let g:airline_powerline_fonts=1
+let g:airline#extensions#branch#enabled=1
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#buffer_nr_show=1
+let g:airline#extensions#tmuxline#enabled = 1
+
+"- ctags ---------------------------------------------------
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+
+"- gutentags -----------------------------------------------
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
+let g:gutentags_ctags_tagfile = '.tags'
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+
+" detect whether ~/.cache/tags exits.
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+
+"- cscope.vim ----------------------------------------------
+nnoremap <leader>fa :call cscope#findInteractive(expand('<cword>'))<CR>
+" nnoremap <leader>l :call ToggleLocationList()<CR>
+
+" s: Find this C symbol
+nnoremap  <leader>fs :call cscope#find('s', expand('<cword>'))<CR>
+" g: Find this definition
+nnoremap  <leader>fg :call cscope#find('g', expand('<cword>'))<CR>
+" d: Find functions called by this function
+nnoremap  <leader>fd :call cscope#find('d', expand('<cword>'))<CR>
+" c: Find functions calling this function
+nnoremap  <leader>fc :call cscope#find('c', expand('<cword>'))<CR>
+" t: Find this text string
+nnoremap  <leader>ft :call cscope#find('t', expand('<cword>'))<CR>
+" e: Find this egrep pattern
+nnoremap  <leader>fe :call cscope#find('e', expand('<cword>'))<CR>
+" f: Find this file
+nnoremap  <leader>ff :call cscope#find('f', expand('<cword>'))<CR>
+" i: Find files #including this file
+nnoremap  <leader>fi :call cscope#find('i', expand('<cword>'))<CR>
+
+set cscopequickfix=s-,c-,d-,i-,t-,e-,a- " set quickfix
+" use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
+set cscopetag
+" check cscope for definition of a symbol before checking ctags: set to 1
+" if you want the reverse search order.
+set csto=0
+
+" add any cscope database in current directory
+if filereadable("cscope.out")
+	cs add cscope.out
+" else add the database pointed to by environment variable
+elseif $CSCOPE_DB != ""
+	cs add $CSCOPE_DB
+endif
+
+" show msg when any other cscope db added
+set cscopeverbose
+
+nnoremap <leader>vs :vert scs find s <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>vg :vert scs find g <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>vc :vert scs find c <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>vt :vert scs find t <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>ve :vert scs find e <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>vi :vert scs find i <C-R>=expand("<cfile>")<CR><CR>
+nnoremap <leader>vd :vert scs find d <C-R>=expand("<cword>")<CR><CR>
+
+"- hexmode -------------------------------------------------
+let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
+
+"- git-blame.vim -------------------------------------------
+" nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
+
+highlight Normal guibg=NONE ctermbg=NONE
+" highlight NonText guibg=NONE ctermbg=NONE
+highlight EndOfBuffer guibg=NONE ctermbg=NONE
+
