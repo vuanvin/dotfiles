@@ -9,16 +9,8 @@
           "tools": ["latexmk"]
       },
       {
-          "name": "latexmk (latexmkrc)",
-          "tools": [
-              "latexmk_rconly"
-          ]
-      },
-      {
           "name": "latexmk (lualatex)",
-          "tools": [
-              "lualatexmk"
-          ]
+          "tools": ["lualatexmk"]
       },
       {
           "name": "xelatex ➞ bibtex ➞ xelatex × 2",
@@ -26,92 +18,69 @@
       },
       {
           "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-          "tools": [
-              "pdflatex",
-              "bibtex",
-              "pdflatex",
-              "pdflatex"
-          ]
+          "tools": ["pdflatex","bibtex","pdflatex","pdflatex"]
       }
   ],
-  // "latex-workshop.latex.tools": [
-  //     {
-  //         "name": "xelatex",
-  //         "command": "xelatex",
-  //         "args": [
-  //             "-synctex=1",
-  //             "-interaction=nonstopmode",
-  //             "-file-line-error",
-  //             "-pdf",
-  //             "%DOCFILE%"
-  //         ]
-  //     },
-  //     {
-  //         "name": "latexmk",
-  //         "command": "latexmk",
-  //         "args": [
-  //             "-synctex=1",
-  //             "-interaction=nonstopmode",
-  //             "-file-line-error",
-  //             "-pdf",
-  //             "-outdir=%OUTDIR%",
-  //             "%DOCFILE%"
-  //         ],
-  //         "env": {}
-  //     },
-  //     {
-  //         "name": "lualatexmk",
-  //         "command": "latexmk",
-  //         "args": [
-  //             "-synctex=1",
-  //             "-interaction=nonstopmode",
-  //             "-file-line-error",
-  //             "-lualatex",
-  //             "-outdir=%OUTDIR%",
-  //             "%DOCFILE%"
-  //         ],
-  //         "env": {}
-  //     },
-  //     {
-  //         "name": "latexmk_rconly",
-  //         "command": "latexmk",
-  //         "args": [
-  //             "%DOCFILE%"
-  //         ],
-  //         "env": {}
-  //     },
-  //     {
-  //         "name": "pdflatex",
-  //         "command": "pdflatex",
-  //         "args": [
-  //             "-synctex=1",
-  //             "-interaction=nonstopmode",
-  //             "-file-line-error",
-  //             "%DOCFILE%"
-  //         ],
-  //         "env": {}
-  //     },
-  //     {
-  //         "name": "bibtex",
-  //         "command": "bibtex",
-  //         "args": [
-  //             "%DOCFILE%"
-  //         ],
-  //         "env": {}
-  //     }
-  // ],
+  "latex-workshop.latex.tools": [
+      {
+          "name": "xelatex",
+          "command": "xelatex",
+          "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-pdf",
+              "%DOCFILE%"
+          ]
+      },
+      {
+          "name": "latexmk",
+          "command": "latexmk",
+          "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-pdf",
+              "-outdir=%OUTDIR%",
+              "%DOCFILE%"
+          ],
+          "env": {}
+      },
+      {
+          "name": "lualatexmk",
+          "command": "latexmk",
+          "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-lualatex",
+              "-outdir=%OUTDIR%",
+              "%DOCFILE%"
+          ],
+          "env": {}
+      },
+      {
+          "name": "pdflatex",
+          "command": "pdflatex",
+          "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "%DOCFILE%"
+          ],
+          "env": {}
+      },
+      {
+          "name": "bibtex",
+          "command": "bibtex",
+          "args": ["%DOCFILE%"],
+          "env": {}
+      }
+  ],
   "latex-workshop.view.pdf.viewer": "external",
   "latex-workshop.view.pdf.external.viewer.args": ["%PDF%"],
-  // "latex-workshop.view.pdf.external.synctex.args": [
-  //     "-forward-search",
-  //     "%TEX%",
-  //     "%LINE%",
-  //     "-reuse-instance",
-  //     "-inverse-search",
-  //     "code \"C:\\Users\\yuanyin\\AppData\\Local\\Programs\\Microsoft VS Code\\resources\\app\\out\\cli.js\" -r -g \"%f:%l\"", // 注意修改路径
-  //     "%PDF%",
-  // ],
-  // "latex-workshop.latex.recipe.default": "lastUsed",
+  "latex-workshop.latex.recipe.default": "lastUsed",
+
   "editor.fontFamily": "FiraCode Nerd Font,Hack Nerd Font",
   "editor.wordWrap": "on",
   "editor.lineNumbers": "on",
@@ -125,6 +94,7 @@
   "editor.scrollbar.horizontal": "hidden",
   "editor.scrollbar.horizontalScrollbarSize": 0,
   "editor.minimap.showSlider": "always",
+
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
   "java.semanticHighlighting.enabled": true,
   "files.watcherExclude": {
@@ -141,14 +111,35 @@
     "cloud": "linux",
     "nsccgz": "linux"
   },
+
   "extensions.autoUpdate": false,
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1,
+    "vscode.git-base": 2,
+    "vscode.github": 2,
+    "vscode.merge-conflict": 2,
+    "GitHub.vscode-pull-request-github": 2,
+    "eamodio.gitlens": 2,
+    "donjayamanne.githistory": 2,
+    "felipecaputo.git-project-manager": 2,
+    "pflannery.vscode-versionlens": 2,
+    "vscode.emmet": 3,
+    "kbysiec.vscode-search-everywhere": 3,
+    "ms-python.python": 4,
+    "ZainChen.json": 5,
+    "ryu1kn.partial-diff": 5
+  },
+
   "workbench.colorTheme": "Monokai Pro (Filter Machine)",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook"
   },
+  "workbench.activityBar.visible": false,
+
   "terminal.integrated.inheritEnv": false,
   "terminal.integrated.defaultProfile.windows": "PowerShell",
+
   "cmake.configureOnOpen": true,
   "python.linting.enabled": true,
   "python.terminal.activateEnvironment": false,
@@ -241,10 +232,12 @@
   "hexeditor.showDecodedText": true,
   "hexeditor.defaultEndianness": "little",
   "hexeditor.inspectorType": "aside",
+
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer",
     "editor.formatOnSave": true
   },
+
   "clangd.arguments": [
     "-log=verbose",
     "-pretty",
@@ -256,7 +249,10 @@
   "clangd.fallbackFlags": [
     "-std=c++17"
   ],
+
   "vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\yuanyin\\AppData\\Local\\nvim.bak\\init.vim",
+  "vscode-neovim.useWSL": true,
+
   "vim.autoSwitchInputMethod.defaultIM": "\"1033\"",
   "vim.autoSwitchInputMethod.obtainIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe",
   "vim.autoSwitchInputMethod.switchIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe {im}",
@@ -349,6 +345,7 @@
   "vim.neovimPath": "nvim",
   "vim.camelCaseMotion.enable": true,
   "vim.autoSwitchInputMethod.enable": true,
+
   "leetcode.endpoint": "leetcode-cn",
   "leetcode.defaultLanguage": "cpp",
   "leetcode.useWsl": true,
@@ -369,22 +366,4 @@
     "**/build": true,
     "**/target": true
   },
-  "extensions.experimental.affinity": {
-    "asvetliakov.vscode-neovim": 1,
-    "vscode.git-base": 2,
-    "vscode.github": 2,
-    "vscode.merge-conflict": 2,
-    "GitHub.vscode-pull-request-github": 2,
-    "eamodio.gitlens": 2,
-    "donjayamanne.githistory": 2,
-    "felipecaputo.git-project-manager": 2,
-    "pflannery.vscode-versionlens": 2,
-    "vscode.emmet": 3,
-    "kbysiec.vscode-search-everywhere": 3,
-    "ms-python.python": 4,
-    "ZainChen.json": 5,
-    "ryu1kn.partial-diff": 5
-  },
-  "vscode-neovim.useWSL": true,
-  "workbench.activityBar.visible": false,
 }
