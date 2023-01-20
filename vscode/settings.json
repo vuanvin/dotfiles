@@ -1,58 +1,41 @@
 {
-  // "latex-workshop.latex.recipes": [
-  //     {
-  //         "name": "xelatex 🔃",
-  //         "tools": [
-  //             "xelatex"
-  //         ]
-  //     },
-  //     {
-  //         "name": "latexmk 🔃",
-  //         "tools": [
-  //             "latexmk"
-  //         ]
-  //     },
-  //     {
-  //         "name": "latexmk (latexmkrc)",
-  //         "tools": [
-  //             "latexmk_rconly"
-  //         ]
-  //     },
-  //     {
-  //         "name": "latexmk (lualatex)",
-  //         "tools": [
-  //             "lualatexmk"
-  //         ]
-  //     },
-  //     {
-  //         "name": "xelatex ➞ bibtex ➞ xelatex × 2",
-  //         "tools": [
-  //             "xelatex",
-  //             "bibtex",
-  //             "xelatex",
-  //             "xelatex"
-  //         ]
-  //     },
-  //     {
-  //         "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-  //         "tools": [
-  //             "pdflatex",
-  //             "bibtex",
-  //             "pdflatex",
-  //             "pdflatex"
-  //         ]
-  //     },
-  //     {
-  //         "name": "Compile Rnw files",
-  //         "tools": [
-  //             "rnw2tex",
-  //             "latexmk"
-  //         ]
-  //     }
-  // ],
+  "latex-workshop.latex.recipes": [
+      {
+          "name": "xelatex 🔃",
+          "tools": ["xelatex"]
+      },
+      {
+          "name": "latexmk 🔃",
+          "tools": ["latexmk"]
+      },
+      {
+          "name": "latexmk (latexmkrc)",
+          "tools": [
+              "latexmk_rconly"
+          ]
+      },
+      {
+          "name": "latexmk (lualatex)",
+          "tools": [
+              "lualatexmk"
+          ]
+      },
+      {
+          "name": "xelatex ➞ bibtex ➞ xelatex × 2",
+          "tools": ["xelatex","bibtex","xelatex","xelatex"]
+      },
+      {
+          "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+          "tools": [
+              "pdflatex",
+              "bibtex",
+              "pdflatex",
+              "pdflatex"
+          ]
+      }
+  ],
   // "latex-workshop.latex.tools": [
   //     {
-  //         // 编译工具和命令
   //         "name": "xelatex",
   //         "command": "xelatex",
   //         "args": [
@@ -115,21 +98,10 @@
   //             "%DOCFILE%"
   //         ],
   //         "env": {}
-  //     },
-  //     {
-  //         "name": "rnw2tex",
-  //         "command": "Rscript",
-  //         "args": [
-  //             "-e",
-  //             "knitr::opts_knit$set(concordance = TRUE); knitr::knit('%DOCFILE_EXT%')"
-  //         ],
-  //         "env": {}
   //     }
   // ],
-  // "latex-workshop.view.pdf.viewer": "external",
-  // "latex-workshop.view.pdf.external.viewer.args": [
-  //     "%PDF%"
-  // ],
+  "latex-workshop.view.pdf.viewer": "external",
+  "latex-workshop.view.pdf.external.viewer.args": ["%PDF%"],
   // "latex-workshop.view.pdf.external.synctex.args": [
   //     "-forward-search",
   //     "%TEX%",
@@ -147,14 +119,12 @@
   "editor.renderWhitespace": "all",
   "editor.suggestSelection": "first",
   "editor.inlineSuggest.enabled": true,
-  "editor.fontSize": 12,
   "editor.accessibilitySupport": "off",
   "editor.scrollbar.vertical": "hidden",
   "editor.scrollbar.verticalScrollbarSize": 0,
   "editor.scrollbar.horizontal": "hidden",
   "editor.scrollbar.horizontalScrollbarSize": 0,
   "editor.minimap.showSlider": "always",
-  "editor.minimap.enabled": false,
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
   "java.semanticHighlighting.enabled": true,
   "files.watcherExclude": {
@@ -163,15 +133,9 @@
     "**/.ammonite": true
   },
   "remote.SSH.remotePlatform": {
-    "121.46.19.2": "linux",
-    "10.12.117.6": "linux",
     "cloud-kvm": "linux",
-    "10.182.191.16": "linux",
-    "kickseed": "linux",
-    "kickseed(frp)": "linux",
     "Machine5": "linux",
     "云主机": "linux",
-    "NVM5": "linux",
     "CloudHost": "linux",
     "zyynote": "linux",
     "cloud": "linux",
@@ -277,62 +241,6 @@
   "hexeditor.showDecodedText": true,
   "hexeditor.defaultEndianness": "little",
   "hexeditor.inspectorType": "aside",
-  "better-comments.tags": [
-    {
-      "tag": "!",
-      "color": "#FF2D00",
-      "strikethrough": false,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    },
-    {
-      "tag": "?",
-      "color": "#3498DB",
-      "strikethrough": false,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    },
-    {
-      "tag": "//",
-      "color": "#474747",
-      "strikethrough": true,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    },
-    {
-      "tag": "hack",
-      "color": "##DC143C",
-      "strikethrough": false,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    },
-    {
-      "tag": "todo",
-      "color": "#FF8C00",
-      "strikethrough": false,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    },
-    {
-      "tag": "*",
-      "color": "#98C379",
-      "strikethrough": false,
-      "underline": false,
-      "backgroundColor": "transparent",
-      "bold": false,
-      "italic": false
-    }
-  ],
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer",
     "editor.formatOnSave": true
@@ -359,29 +267,12 @@
   "vim.easymotion": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": [
-        ","
-      ],
-      "after": [
-        "<leader>",
-        "<leader>",
-        "<leader>",
-        "b",
-        "d",
-        "w"
-      ]
+      "before": [","],
+      "after": ["<leader>", "<leader>", "<leader>", "b", "d", "w"]
     },
     {
-      "before": [
-        "<leader>",
-        "f"
-      ],
-      "after": [
-        "<leader>",
-        "<leader>",
-        "2",
-        "s"
-      ]
+      "before": ["<leader>","f"],
+      "after": ["<leader>","<leader>","2","s"]
     },
     {
       "before": [
@@ -417,65 +308,41 @@
       ]
     }
   ],
+  "vim.visualModeKeyBindingsNonRecursive": [],
   "vim.normalModeKeyBindings": [
     {
-      "before": [
-        "<leader>",
-        "t"
-      ],
-      "commands": [
-        "workbench.action.toggleSidebarVisibility"
-      ],
+      "before": ["<leader>","t"],
+      "commands": ["workbench.action.toggleSidebarVisibility"],
       "silent": true
     },
     {
-      "before": [
-        "<leader>",
-        "s",
-        "p"
-      ],
-      "commands": [
-        "workbench.action.replaceInFiles"
-      ],
+      "before": ["<leader>","s","r"],
+      "commands": ["workbench.action.replaceInFiles"],
       "silent": true
     },
     {
-      "before": [
-        "<leader>",
-        "p",
-        "p"
-      ],
-      "commands": [
-        "projectManager.listProjects"
-      ]
+      "before": ["<leader>","p","p"],
+      "commands": ["projectManager.listProjects"]
     },
     {
-      "before": [
-        "<leader>",
-        "p",
-        "e"
-      ],
-      "commands": [
-        "projectManager.editProjects"
-      ]
+      "before": ["<leader>","p","e"],
+      "commands": ["projectManager.editProjects"]
     },
     {
-      "before": [
-        "<C-w>",
-        "<C-l>"
-      ],
-      "commands": [
-        "workbench.action.moveEditorToRightGroup"
-      ]
+      "before": ["<leader>", "d", "b"],
+      "commands": ["editor.debug.action.toggleBreakpoint"]
     },
     {
-      "before": [
-        "<C-w>",
-        "<C-h>"
-      ],
-      "commands": [
-        "workbench.action.moveEditorToLeftGroup"
-      ]
+      "before": ["<leader>", "s", "p"],
+      "commands": ["find-it-faster.findWithinFiles"]
+    },
+    {
+      "before": ["<C-w>", "<C-l>"],
+      "commands": ["workbench.action.moveEditorToRightGroup"]
+    },
+    {
+      "before": ["<C-w>","<C-h>"],
+      "commands": ["workbench.action.moveEditorToLeftGroup"]
     }
   ],
   "vim.enableNeovim": true,
@@ -491,6 +358,33 @@
   "leetcode.hint.commandShortcut": false,
   "clipboard-manager.preview": false,
   "clipboard-manager.snippet.enabled": false,
-  "workbench.editor.revealIfOpen": true
-  // "C_Cpp.intelliSenseEngine": "disabled"
+  "workbench.editor.revealIfOpen": true,
+  "cmake.copyCompileCommands": "build/",
+  "C_Cpp.errorSquiggles": "enabled",
+  "editor.minimap.enabled": false,
+  "editor.fontSize": 12,
+  "search.quickOpen.includeSymbols": true,
+  "search.exclude": {
+    "**/.git": true,
+    "**/build": true,
+    "**/target": true
+  },
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1,
+    "vscode.git-base": 2,
+    "vscode.github": 2,
+    "vscode.merge-conflict": 2,
+    "GitHub.vscode-pull-request-github": 2,
+    "eamodio.gitlens": 2,
+    "donjayamanne.githistory": 2,
+    "felipecaputo.git-project-manager": 2,
+    "pflannery.vscode-versionlens": 2,
+    "vscode.emmet": 3,
+    "kbysiec.vscode-search-everywhere": 3,
+    "ms-python.python": 4,
+    "ZainChen.json": 5,
+    "ryu1kn.partial-diff": 5
+  },
+  "vscode-neovim.useWSL": true,
+  "workbench.activityBar.visible": false,
 }
