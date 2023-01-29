@@ -1,42 +1,20 @@
 {
-  "latex-workshop.latex.recipes": [
-    {
-      "name": "xelatex 🔃",
-      "tools": [
-        "xelatex"
-      ]
-    },
-    {
-      "name": "latexmk 🔃",
-      "tools": [
-        "latexmk"
-      ]
-    },
-    {
-      "name": "latexmk (lualatex)",
-      "tools": [
-        "lualatexmk"
-      ]
-    },
-    {
-      "name": "xelatex ➞ bibtex ➞ xelatex × 2",
-      "tools": [
-        "xelatex",
-        "bibtex",
-        "xelatex",
-        "xelatex"
-      ]
-    },
-    {
-      "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-      "tools": [
-        "pdflatex",
-        "bibtex",
-        "pdflatex",
-        "pdflatex"
-      ]
-    }
+  "latex-workshop.latex.recipe.default": "lastUsed",
+  "latex-workshop.view.pdf.viewer": "external",
+  "latex-workshop.view.pdf.external.viewer.command": "zathura",
+  "latex-workshop.view.pdf.external.viewer.args": [
+      "--synctex-editor-command",
+      "code --no-sandbox -r -g \"%{input}:%{line}\"",
+      "%PDF%"
   ],
+  "latex-workshop.view.pdf.external.synctex.command": "zathura",
+  "latex-workshop.view.pdf.external.synctex.args": [
+      "--synctex-forward=%LINE%:0:%TEX%",
+      "%PDF%"
+  ],
+  "latex-workshop.showContextMenu": true,
+  "latex-workshop.intellisense.package.enabled": true,
+  // "latex-workshop.latex.autoBuild.run": "never",
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",
@@ -95,11 +73,44 @@
       "env": {}
     }
   ],
-  "latex-workshop.view.pdf.viewer": "external",
-  "latex-workshop.view.pdf.external.viewer.args": [
-    "%PDF%"
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "xelatex",
+      "tools": [
+        "xelatex"
+      ]
+    },
+    {
+      "name": "latexmk",
+      "tools": [
+        "latexmk"
+      ]
+    },
+    {
+      "name": "latexmk (lualatex)",
+      "tools": [
+        "lualatexmk"
+      ]
+    },
+    {
+      "name": "xelatex➞bibtex➞xelatex × 2",
+      "tools": [
+        "xelatex",
+        "bibtex",
+        "xelatex",
+        "xelatex"
+      ]
+    },
+    {
+      "name": "pdflatex➞bibtex➞pdflatex × 2",
+      "tools": [
+        "pdflatex",
+        "bibtex",
+        "pdflatex",
+        "pdflatex"
+      ]
+    }
   ],
-  "latex-workshop.latex.recipe.default": "lastUsed",
   "editor.minimap.enabled": false,
   "editor.fontFamily": "FiraCode Nerd Font,Hack Nerd Font",
   "editor.wordWrap": "on",
@@ -148,12 +159,13 @@
     "ryu1kn.partial-diff": 5
   },
   "workbench.colorTheme": "Monokai Pro (Filter Machine)",
-  "workbench.iconTheme": "material-icon-theme",
+  "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
   "workbench.editorAssociations": {
-    "*.ipynb": "jupyter-notebook"
+    "*.ipynb": "jupyter-notebook",
+    "*.pdf": "latex-workshop-pdf-hook"
   },
   "terminal.integrated.inheritEnv": false,
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.defaultProfile.windows": "Nushell",
   "cmake.configureOnOpen": true,
   "python.linting.enabled": true,
   "python.terminal.activateEnvironment": false,
@@ -307,6 +319,33 @@
     {
       "before": [
         "<leader>",
+        ",",
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "<leader>",
+        "b",
+        "d",
+        "w"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "m",
+        "s"
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "s"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "m",
         "f"
       ],
       "after": [
@@ -316,17 +355,6 @@
         "s"
       ]
     },
-    // {
-    //   "before": [
-    //     "<leader>",
-    //     "s"
-    //   ],
-    //   "after": [
-    //     "<leader>",
-    //     "<leader>",
-    //     "s"
-    //   ]
-    // },
     {
       "before": [
         "<leader>",
@@ -366,6 +394,36 @@
       "before": [
         "<leader>",
         "t",
+        "h"
+      ],
+      "commands": [
+        "workbench.action.toggleSidebarVisibility"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "l"
+      ],
+      "commands": [
+        "workbench.action.toggleAuxiliaryBar"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "j"
+      ],
+      "commands": [
+        "workbench.action.togglePanel"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
         "t"
       ],
       "commands": [
@@ -396,18 +454,8 @@
     {
       "before": [
         "<leader>",
-        "s",
+        "f",
         "s"
-      ],
-      "commands": [
-        "find-it-faster.findWithinFiles"
-      ]
-    },
-    {
-      "before": [
-        "<leader>",
-        "s",
-        "S"
       ],
       "commands": [
         "workbench.action.gotoSymbol"
@@ -416,7 +464,17 @@
     {
       "before": [
         "<leader>",
-        "s",
+        "f",
+        "S"
+      ],
+      "commands": [
+        "workbench.action.showAllSymbols"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "f",
         "f"
       ],
       "commands": [
@@ -426,14 +484,33 @@
     {
       "before": [
         "<leader>",
-        "s",
+        "f",
         "F"
       ],
       "commands": [
         "find-it-faster.findFiles"
       ]
     },
-
+    {
+      "before": [
+        "<leader>",
+        "f",
+        "p"
+      ],
+      "commands": [
+        "find-it-faster.findWithinFiles"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "f",
+        "P"
+      ],
+      "commands": [
+        "find-it-faster.findWithinFiles"
+      ]
+    },
     {
       "before": [
         "<leader>",
@@ -675,8 +752,7 @@
     "**/build": true,
     "**/target": true
   },
-  "workbench.activityBar.visible": false,
-  "window.menuBarVisibility": "compact",
   "workbench.layoutControl.enabled": false,
-  "editor.fontSize": 12
+  "editor.fontSize": 12,
+  "breadcrumbs.enabled": false,
 }
