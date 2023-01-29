@@ -22,16 +22,15 @@ proxyoff() {
 
 proxyon
 
-alias emx='emacs -nw'
-alias e='emacs -nw'
 alias v='nvim'
-alias vi='vim --clean'
+alias e='emacs -nw'
+alias emx='emacs -nw'
 alias spacemacs='emacs --init-directory="~/.config/spacemacs"'
 alias centaur-emacs='emacs --init-directory="~/.config/centaur-emacs"'
 
 alias mygrep="grep --binary-files=without-match -rn"
 
-# xrdb -merge /home/yuanyin/.Xresource
+xrdb -merge /home/yuanyin/.Xresource
 
 # >>> PATH Configure >>>
 export PATH=$HOME/.local/bin:${PATH}
@@ -75,4 +74,4 @@ ulimit -c unlimited
 # export XMODIFIERS=@im=fcitx
 # export DefaultIMModule=fcitx
 # fcitx-autostart &>/dev/null
-#
+
