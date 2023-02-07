@@ -1,0 +1,15 @@
+set visualbell
+set noerrorbells
+
+Plug 'easymotion/vim-easymotion'
+
+let mapleader=" "
+set easymotion
+
+sethandler <C-F> i:ide
+sethandler <C-B> i:ide
+sethandler <C-A> i:ide
+sethandler <C-E> i:ide
+sethandler <C-D> i:ide
+sethandler <C-W> i:ide
+sethandler <C-H> i:ide
