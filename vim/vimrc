@@ -8,31 +8,21 @@ let mapleader = " "
 autocmd InsertEnter * set timeoutlen=0
 autocmd InsertLeave * set timeoutlen=50
 
-"- display -------------------------------------------------
-colorscheme desert
-set ruler " display the line and column info.
-set number " displaye the number of line.
-set tabstop=8 " the width of tab key.
-set shiftwidth=8 " the width of new line.
-
+set ruler                         " display the line and column info.
+set number                        " displaye the number of line.
 set autoindent
 set smartindent
 set cindent
 
-autocmd FileType python,shell,bash set tabstop=4
-autocmd FileType python,shell,bash set shiftwidth=4
-autocmd FileType python,shell,bash set softtabstop=4
-
 set list
 set listchars=tab:>-,trail:-
-syntax enable
-syntax on
-set cursorline
-highlight CursorLine term=bold cterm=bold ctermbg=237
+" syntax enable on
+" set cursorline
+" set cursorcolumn
 
-"- motion & operator ------------------------------------------------
+"- motion & operator ---------------------------------------------------------
 set linebreak
-set whichwrap=b,s,<,>,[,] " cursor auto come to the next line.
+set whichwrap=b,s,<,>,[,]       " cursor auto come to the next line.
 
 set foldmethod=syntax
 set nofoldenable
@@ -45,10 +35,10 @@ autocmd VimEnter ?* silent loadview
 set mouse=a
 set selection=exclusive
 set selectmode=mouse,key
-" set paste
+" set paste                     " conflict with coc.nvim
 set wildmenu
 
-"- search & match ------------------------------------------
+"- search & match ------------------------------------------------------------
 set hlsearch
 set incsearch
 set showmatch
@@ -58,53 +48,79 @@ set smartcase
 set splitbelow
 set splitright
 
-nnoremap <leader>l :bnext<cr>
-nnoremap <leader>h :bprevious<cr>
-
+"- insert mode emacs key bingdings -------------------------------------------
+function! s:home()
+  let start_col = col('.')
+  normal! ^
+  if col('.') == start_col
+    normal! 0
+  endif
+  return ''
+endfunction
 
 call plug#begin('~/.vim/plugged')
+Plug 'francoiscabrol/ranger.vim'
+
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
 
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete.vim'
-
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
-
-let g:asyncomplete_auto_popup = 0
-let g:asyncomplete_auto_completeopt = 0
-set completeopt=menuone,noinsert,noselect,preview
-
-Plug 'https://github.com/junegunn/vim-github-dashboard.git' " Any valid git URL is allowed
 Plug 'tpope/vim-fugitive' " A Git wrapper
 Plug 'zivyangll/git-blame.vim' " light plugin for echo git commit info.
 
-" Plug 'vim-scripts/grep.vim'  " grep tools
 Plug 'fidian/hexmode' " hex mode for binary file
 
 Plug 'edkolev/tmuxline.vim' " tmux linestatus
 Plug 'bling/vim-bufferline' " buffer info status and cmd line
 Plug 'vim-airline/vim-airline' " status-line format
-" Plug 'vim-airline/vim-airline-themes' " color scheme
+Plug 'vim-airline/vim-airline-themes' " status-line color scheme
+Plug 'phanviet/vim-monokai-pro'
 
-" A simple plugin show the last file user has open
-Plug 'mhinz/vim-startify'
+Plug 'mhinz/vim-startify'                      " A simple plugin show the last file user has open
 Plug 'junegunn/vim-easy-align'
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-
-Plug 'junegunn/fzf', {'do': './install --all' } " general-purpose command-line fuzzy finder.
-"nmap <C-P> :FZF<CR>
-
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " To use snippets
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-let g:Lf_ShortcutF = '<C-P>'
 
 " Plug 'ludovicchabant/vim-gutentags' " automatically generate tags
 
+
 call plug#end()
+
+" - LeaderF ------------------------------------------
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+let g:Lf_ShortcutB = "<C-L>"
+let g:Lf_ShortcutF = "<leader>ff"
+
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+" noremap <leader>f :LeaderfSelf<cr>
+noremap <leader>fm :LeaderfMru<cr>
+noremap <leader>fF :LeaderfFunction<cr>
+noremap <leader>fb :LeaderfBufTagAll<cr>
+noremap <leader>ft :LeaderfBufTag<cr>
+noremap <leader>fl :LeaderfLine<cr>
+noremap <leader>fw :LeaderfWindow<cr>
+
+
+" - colorscheme ------------------------------------------
+" let g:gruvbox_italic=1
+colorscheme desert
+colorscheme monokai_pro
 
 "- coc-nvim -----------------------------------------------
 set nobackup
@@ -118,11 +134,14 @@ inoremap <silent><expr> <TAB>
       \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
 "- easymotion ---------------------------------------------
 nmap <leader> <Plug>(easymotion-prefix)
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
-let g:EasyMotion_smartcase = 1 " Turn on case-insensitive feature
-let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
+let g:EasyMotion_do_mapping = 0                 " Disable default mappings
+let g:EasyMotion_smartcase = 1                  " Turn on case-insensitive feature
+let g:EasyMotion_startofline = 0                " keep cursor column when JK motion
 nmap s <Plug>(easymotion-overwin-f2)
 nmap , <Plug>(easymotion-bd-w)
 map <Leader>l <Plug>(easymotion-lineforward)
@@ -153,6 +172,5 @@ let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
 
 
 highlight Normal guibg=NONE ctermbg=NONE
-" highlight NonText guibg=NONE ctermbg=NONE
 highlight EndOfBuffer guibg=NONE ctermbg=NONE
 
