@@ -22,7 +22,7 @@ set list listchars=tab:>-,trail:-
 set linebreak whichwrap=b,s,<,>,[,]       " cursor auto come to the next line.
 
 set cursorline
-syntax enable on
+" syntax enable on
 set foldmethod=syntax
 set nofoldenable
 
@@ -44,8 +44,9 @@ Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
 Plug 'vim-airline/vim-airline'          " status-line format
 Plug 'vim-airline/vim-airline-themes'   " status-line color scheme
-Plug 'morhetz/gruvbox'
-Plug 'phanviet/vim-monokai-pro'
+" Plug 'morhetz/gruvbox'
+" Plug 'phanviet/vim-monokai-pro'
+Plug 'sainnhe/sonokai'
 
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
@@ -56,7 +57,7 @@ Plug 'tpope/vim-surround'
 
 Plug 'ludovicchabant/vim-gutentags' " auto-generate tags, require universal ctags and global
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'sheerun/vim-polyglot'
+Plug 'puremourning/vimspector'
 Plug 'fidian/hexmode'                   " hex mode for binary file
 
 Plug 'mhinz/vim-startify'               " A simple plugin show the last file user has open
@@ -64,6 +65,8 @@ Plug 'junegunn/vim-easy-align'          " align
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 call plug#end()
+
+let g:vimspector_enable_mappings = 'VSCode'
 
 " - LeaderF ------------------------------------------
 let g:Lf_HideHelp = 1
@@ -98,10 +101,9 @@ if has("termguicolors")
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     set termguicolors  " enable true colors
 endif
-colorscheme desert
-let g:gruvbox_italic=1
-colorscheme gruvbox
-colorscheme monokai_pro
+colorscheme sonokai
+let g:sonokai_style = 'shusia'
+let g:sonokai_better_performance = 1
 
 "- coc-nvim -----------------------------------------------
 set nobackup
