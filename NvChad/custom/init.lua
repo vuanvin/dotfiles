@@ -1,20 +1,25 @@
-vim.opt.foldmethod = 'expr'
-vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-vim.opt.foldenable = true
+local autocmd = vim.api.nvim_create_autocmd
 
-vim.g.luasnippets_path = "~/.config/snippets"
-
-vim.api.nvim_create_autocmd({"BufWinEnter"},
-  {pattern = {"?*"}, command = "silent! loadview"})
-vim.api.nvim_create_autocmd({"BufWinLeave"},
-  {pattern = {"?*"}, command = "silent! mkview"})
-
+-- Auto resize panes when resizing nvim window
+-- autocmd("VimResized", {
+--   pattern = "*",
+--   command = "tabdo wincmd =",
+-- })
 
 vim.defer_fn(function()
   -- vim.cmd([[colorscheme monokai-pro]])
   -- vim.cmd "highlight Normal guibg=NONE ctermbg=NONE"
   -- vim.cmd "highlight EndOfBuffer guibg=NONE ctermbg=NONE"
 end, 0)
+
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldenable = true
+
+vim.g.luasnippets_path = "~/.config/snippets"
+
+autocmd({"BufWinEnter"}, {pattern = {"?*"}, command = "silent! loadview"})
+autocmd({"BufWinLeave"}, {pattern = {"?*"}, command = "silent! mkview"})
 
 -- custom.plugins.lspconfig
 local on_attach = require("plugins.configs.lspconfig").on_attach
