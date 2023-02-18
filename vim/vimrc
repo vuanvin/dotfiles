@@ -4,18 +4,18 @@ set termencoding=utf-8
 set encoding=utf-8
 let mapleader = " "
 
+autocmd InsertEnter * set timeoutlen=0
+autocmd InsertLeave * set timeoutlen=0
+autocmd BufWinLeave ?* silent! mkview
+autocmd BufWinEnter ?* silent! loadview
+
 let &t_SI = "\e[5 q"
 let &t_SR = "\e[3 q"
 let &t_EI = "\e[1 q"
 let &t_ti ..= "\e[1 q"
 let &t_te ..= "\e[0 q"
 
-autocmd InsertEnter * set timeoutlen=0
-autocmd InsertLeave * set timeoutlen=0
-autocmd BufWinLeave ?* mkview
-autocmd BufWinEnter ?* silent loadview
-
-set number ruler                          " displaye the number of line.
+set number ruler
 set autoindent smartindent cindent
 set tabstop=4
 set list listchars=tab:>-,trail:-
@@ -35,6 +35,14 @@ set hlsearch incsearch
 set showmatch ignorecase smartcase
 set splitbelow splitright
 
+" press <C-h> <A-h>
+nnoremap h <C-W>h
+nnoremap l <C-W>l
+nnoremap j <C-W>j
+nnoremap k <C-W>k
+nnoremap <leader>bp :bp<CR>
+nnoremap <leader>bn :bn<CR>
+
 if empty(expand(glob("~/.vim/autoload/plug.vim")))
   call system("curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
@@ -44,20 +52,20 @@ Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
 Plug 'vim-airline/vim-airline'          " status-line format
 Plug 'vim-airline/vim-airline-themes'   " status-line color scheme
-" Plug 'morhetz/gruvbox'
-" Plug 'phanviet/vim-monokai-pro'
 Plug 'sainnhe/sonokai'
 
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
-Plug 'francoiscabrol/ranger.vim'
+Plug 'francoiscabrol/ranger.vim'      " shortcut <leader>f
 
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
 
 Plug 'ludovicchabant/vim-gutentags' " auto-generate tags, require universal ctags and global
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
 Plug 'puremourning/vimspector'
+Plug 'jiangmiao/auto-pairs'
 Plug 'fidian/hexmode'                   " hex mode for binary file
 
 Plug 'mhinz/vim-startify'               " A simple plugin show the last file user has open
@@ -101,9 +109,26 @@ if has("termguicolors")
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     set termguicolors  " enable true colors
 endif
-colorscheme sonokai
-let g:sonokai_style = 'shusia'
+
+function ToggleTransparent()
+  if g:sonokai_transparent_background == 0
+    let g:sonokai_transparent_background = 1
+  else
+    let g:sonokai_transparent_background = 0
+  endif
+
+  colorscheme sonokai
+endfunction
+
+command! -nargs=0 ToggleTransparent        :call ToggleTransparent()
+command! -nargs=0 TransparentToggle        :call ToggleTransparent()
+
+nnoremap <leader>tt :call ToggleTransparent()<CR>
+
+let g:sonokai_transparent_background = 1
 let g:sonokai_better_performance = 1
+let g:sonokai_style = 'shusia'
+colorscheme sonokai
 
 "- coc-nvim -----------------------------------------------
 set nobackup
@@ -120,17 +145,42 @@ inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Formatting selected code
+xmap <leader>F  <Plug>(coc-format-selected)
+nmap <leader>F <Plug>(coc-format-selected)
+
 "- easymotion ---------------------------------------------
 nmap <leader> <Plug>(easymotion-prefix)
 let g:EasyMotion_do_mapping = 0                 " Disable default mappings
 let g:EasyMotion_smartcase = 1                  " Turn on case-insensitive feature
 let g:EasyMotion_startofline = 0                " keep cursor column when JK motion
-nmap s <Plug>(easymotion-overwin-f2)
 nmap , <Plug>(easymotion-bd-w)
-map <Leader>l <Plug>(easymotion-lineforward)
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-map <Leader>h <Plug>(easymotion-linebackward)
+nmap <leader>s <Plug>(easymotion-overwin-f2)
+nmap <Leader>l <Plug>(easymotion-lineforward)
+nmap <Leader>j <Plug>(easymotion-j)
+nmap <Leader>k <Plug>(easymotion-k)
+nmap <Leader>h <Plug>(easymotion-linebackward)
 
 "- vim-airline ---------------------------------------------
 let g:airline_theme='bubblegum'
@@ -153,11 +203,10 @@ let g:gutentags_ctags_extra_args = ['--extras=+q', '--output-format=e-ctags']
 let g:gutentags_auto_add_gtags_cscope = 0
 let g:gutentags_plus_switch = 1
 let g:gutentags_define_advanced_commands = 1
-" let g:gutentags_trace = 1
 
 "- hexmode -------------------------------------------------
 let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
 
-highlight Normal guibg=NONE ctermbg=NONE
-highlight EndOfBuffer guibg=NONE ctermbg=NONE
+" highlight Normal guibg=NONE ctermbg=NONE
+" highlight EndOfBuffer guibg=NONE ctermbg=NONE
 
