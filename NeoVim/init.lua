@@ -51,8 +51,8 @@ end)
 if vim.g.vscode then
 	vim.cmd [[packadd vsc-easymotion]]
 	-- Fix bug in vscode-neovim
-	vim.api.nvim_set_keymap("c", "bn", "tabn", {noremap=true})
-	vim.api.nvim_set_keymap("c", "bp", "tabp", {noremap=true})
+	vim.keymap.set("c", "bn", "tabn", {noremap=true})
+	vim.keymap.set("c", "bp", "tabp", {noremap=true})
 
 else
 	vim.cmd [[packadd vim-easymotion]]
@@ -85,11 +85,19 @@ opt.number = true
 
 vim.g.mapleader = " "
 
+vim.keymap.set("n", "<M-h>", "<C-W>h", {noremap=true})
+vim.keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
+vim.keymap.set("n", "<M-j>", "<C-W>j", {noremap=true})
+vim.keymap.set("n", "<M-k>", "<C-W>k", {noremap=true})
+vim.keymap.set("c", "<C-A>", "<Home>", {noremap=true})
+vim.keymap.set("c", "<C-F>", "<Right>", {noremap=true})
+vim.keymap.set("c", "<C-B>", "<Left>", {noremap=true})
+
 vim.cmd [[map <Leader> <Plug>(easymotion-prefix)]]
-vim.api.nvim_set_keymap("n", ",", "<Plug>(easymotion-bd-w)", {noremap=true})
-vim.api.nvim_set_keymap("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
-vim.api.nvim_set_keymap("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
-vim.api.nvim_set_keymap("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
+vim.keymap.set("n", ",", "<Plug>(easymotion-bd-w)", {noremap=true})
+vim.keymap.set("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
+vim.keymap.set("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
+vim.keymap.set("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
 
 
 local on_attach = function(client, bufnr)
