@@ -84,7 +84,7 @@ local plugins = function(use)
     use {
       "nvim-neo-tree/neo-tree.nvim",
         branch = "v2.x",
-        requires = { 
+        requires = {
           "nvim-lua/plenary.nvim",
           "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
           "MunifTanjim/nui.nvim",
@@ -300,14 +300,6 @@ cmp.setup.cmdline(':', {
   })
 })
 
--- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-require('lspconfig').clangd.setup{
-  capabilities = capabilities,
-  on_attach = on_attach,
-}
-
-
 require("neo-tree").setup({
   close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
   popup_border_style = "rounded",
@@ -375,8 +367,8 @@ require("neo-tree").setup({
       nowait = true,
     },
     mappings = {
-      ["<space>"] = { 
-          "toggle_node", 
+      ["<space>"] = {
+          "toggle_node",
           nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use 
       },
       ["<2-LeftMouse>"] = "open",
@@ -396,7 +388,7 @@ require("neo-tree").setup({
       ["C"] = "close_node",
       ["z"] = "close_all_nodes",
       --["Z"] = "expand_all_nodes",
-      ["a"] = { 
+      ["a"] = {
         "add",
         -- this command supports BASH style brace expansion ("x{a,b,c}" -> xa,xb,xc). see `:h neo-tree-file-actions` for details
         -- some commands may take optional config options, see `:h neo-tree-mappings` for details
@@ -504,3 +496,24 @@ require("neo-tree").setup({
 })
 
 keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
+
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  print "Hello Lazy"
+
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  "folke/which-key.nvim",
+  { "folke/neoconf.nvim", cmd = "Neoconf" },
+  "folke/neodev.nvim",
+})
