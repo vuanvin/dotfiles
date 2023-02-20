@@ -7,6 +7,8 @@ local opt = vim.opt
 local keymap = vim.keymap
 local autocmd = vim.api.nvim_create_autocmd
 
+vim.g.mapleader = " "
+
 opt.cursorline = true
 opt.ignorecase = true
 opt.smartcase = true
@@ -28,12 +30,15 @@ opt.ruler = false
 local plugins = function(use)
   use {
     'wbthomason/packer.nvim',
-    config = function() 
-      local present, packer = pcall(require, "packer")
+    config = function()
+      -- TODO: start up here
     end
   }
 
+  use 'windwp/nvim-autopairs'
   use 'lewis6991/impatient.nvim'
+  use {'asvetliakov/vim-easymotion', opt = true, as = 'vsc-easymotion'}
+  use 'tpope/vim-surround'
 
   if not vim.g.vscode then
     use {
@@ -59,12 +64,24 @@ local plugins = function(use)
     }
 
     use "williamboman/mason.nvim"
+    use 'williamboman/mason-lspconfig.nvim'
+    use 'neovim/nvim-lspconfig'
+
+    use 'hrsh7th/cmp-nvim-lsp'
+    use 'hrsh7th/cmp-path'
+    use 'hrsh7th/cmp-cmdline'
+    use 'hrsh7th/cmp-buffer'
+    use 'hrsh7th/nvim-cmp'
+
+    use 'hrsh7th/cmp-vsnip'
+    use 'hrsh7th/vim-vsnip'
 
     use {
       'nvim-telescope/telescope.nvim', tag = '0.1.1',
       requires = { {'nvim-lua/plenary.nvim'} }
     }
 
+<<<<<<< HEAD
     use {
       "nvim-neo-tree/neo-tree.nvim",
         branch = "v2.x",
@@ -74,25 +91,11 @@ local plugins = function(use)
           "MunifTanjim/nui.nvim",
         }
     }
+=======
+    use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+>>>>>>> d25c54d9f412a5a69aeb2311bd47454e82514f7c
   end
-
-  use {'asvetliakov/vim-easymotion', opt = true, as = 'vsc-easymotion'}
-  use 'tpope/vim-surround'
-
-  use 'neovim/nvim-lspconfig'
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'hrsh7th/cmp-path'
-  use 'hrsh7th/cmp-cmdline'
-  use 'hrsh7th/cmp-buffer'
-  use 'hrsh7th/nvim-cmp'
-
-  use 'hrsh7th/cmp-vsnip'
-  use 'hrsh7th/vim-vsnip'
-
-  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 end
-
-require("bufferline").setup{}
 
 local install_path = fn.stdpath "data" .. "/site/pack/packer/opt/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
@@ -108,9 +111,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
   end
 
   vim.cmd "PackerSync"
-
 else
-
   vim.cmd "packadd packer.nvim"
 
   local present, packer = pcall(require, "packer")
@@ -120,18 +121,19 @@ else
 end
 
 
+require("nvim-autopairs").setup {}
 if vim.g.vscode then
-  vim.cmd [[packadd vsc-easymotion]]
+  vim.cmd "packadd vsc-easymotion"
   keymap.set("c", "bn", "tabn", {noremap=true})
   keymap.set("c", "bp", "tabp", {noremap=true})
-
 else
-  vim.cmd [[packadd vim-easymotion]]
-  vim.cmd [[colorscheme monokai-pro]]
-
-  require('lualine').setup()
+  vim.cmd "packadd vim-easymotion"
+  vim.cmd "colorscheme monokai-pro"
+  require("bufferline").setup {}
+  require('lualine').setup {}
 
   require("mason").setup()
+  require("mason-lspconfig").setup()
 
   local builtin = require('telescope.builtin')
   keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -142,10 +144,9 @@ end
 
 autocmd({"BufWinEnter"}, { pattern = {"*?"}, command = "silent! loadview",})
 autocmd({"BufWinLeave"}, { pattern = {"*?"}, command = "silent! mkview",})
+
 opt.foldmethod = "expr"
 opt.foldexpr = "nvim_treesitter#foldexpr()"
-
-vim.g.mapleader = " "
 
 keymap.set("n", "<M-h>", "<C-W>h", {noremap=true})
 keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
@@ -160,7 +161,7 @@ keymap.set("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
 keymap.set("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
 keymap.set("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
 
-
+-- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
   vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
 
@@ -198,8 +199,50 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
--- See https://github.com/hrsh7th/nvim-cmp
-local cmp = require'cmp'
+-- Set up lspconfig.
+local lspconfig = require('lspconfig')
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'gopls' }
+local ensure_servers =  { 'clangd', 'rust_analyzer', 'pyright', 'gopls', 'lua_ls' }
+
+require("mason-lspconfig").setup {
+    ensure_installed = ensure_servers,
+}
+
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+  }
+end
+
+lspconfig.lua_ls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
+
+-- Set up completion.
+local cmp = require "cmp"
 
 cmp.setup({
   snippet = {
@@ -260,6 +303,7 @@ cmp.setup.cmdline(':', {
   })
 })
 
+<<<<<<< HEAD
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 require('lspconfig').clangd.setup{
