@@ -81,7 +81,6 @@ local plugins = function(use)
       requires = { {'nvim-lua/plenary.nvim'} }
     }
 
-<<<<<<< HEAD
     use {
       "nvim-neo-tree/neo-tree.nvim",
         branch = "v2.x",
@@ -91,9 +90,7 @@ local plugins = function(use)
           "MunifTanjim/nui.nvim",
         }
     }
-=======
     use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
->>>>>>> d25c54d9f412a5a69aeb2311bd47454e82514f7c
   end
 end
 
@@ -303,7 +300,6 @@ cmp.setup.cmdline(':', {
   })
 })
 
-<<<<<<< HEAD
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 require('lspconfig').clangd.setup{
