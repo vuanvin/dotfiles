@@ -499,8 +499,6 @@ keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  print "Hello Lazy"
-
   vim.fn.system({
     "git",
     "clone",
