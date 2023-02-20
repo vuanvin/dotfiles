@@ -27,7 +27,7 @@ opt.number = true
 opt.numberwidth = 2
 opt.ruler = false
 
-local plugins = function(use)
+local packer_plugins = function(use)
   use {
     'wbthomason/packer.nvim',
     config = function()
@@ -91,17 +91,17 @@ local plugins = function(use)
   end
 end
 
-local install_path = fn.stdpath "data" .. "/site/pack/packer/opt/packer.nvim"
-if fn.empty(fn.glob(install_path)) > 0 then
+local packer_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
+if fn.empty(fn.glob(packer_path)) > 0 then
   vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
   print "Cloning packer .."
-  fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path }
+  fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", packer_path }
 
   vim.cmd "packadd packer.nvim"
 
   local present, packer = pcall(require, "packer")
   if present then
-    packer.startup { plugins }
+    packer.startup { packer_plugins }
   end
 
   vim.cmd "PackerSync"
@@ -110,10 +110,9 @@ else
 
   local present, packer = pcall(require, "packer")
   if present then
-    packer.startup(plugins)
+    packer.startup(packer_plugins)
   end
 end
-
 
 require("nvim-autopairs").setup {}
 if vim.g.vscode then
@@ -494,18 +493,18 @@ require("neo-tree").setup({
 
 keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+vim.opt.rtp:prepend(lazy_path)
+if not vim.loop.fs_stat(lazy_path) then
   vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
-    lazypath,
+    lazy_path,
   })
 end
-vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   "folke/which-key.nvim",
@@ -513,5 +512,5 @@ require("lazy").setup({
   "folke/neodev.nvim",
 })
 
-
 require('alpha').setup(require('alpha.themes.startify').config)
+
