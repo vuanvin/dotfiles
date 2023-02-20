@@ -74,8 +74,6 @@ local plugins = function(use)
   use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 end
 
-require("bufferline").setup{}
-
 local install_path = fn.stdpath "data" .. "/site/pack/packer/opt/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
   vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
@@ -248,3 +246,6 @@ require('lspconfig').clangd.setup{
   capabilities = capabilities,
   on_attach = on_attach,
 }
+
+require("bufferline").setup{}
+
