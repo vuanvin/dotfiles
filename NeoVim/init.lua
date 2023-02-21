@@ -2,30 +2,30 @@ vim.defer_fn(function()
   pcall(require, "impatient")
 end, 0)
 
+
+local global = {}
+function global:load_variables()
+  local os_name = vim.loop.os_uname().sysname
+	self.is_mac = os_name == "Darwin"
+	self.is_linux = os_name == "Linux"
+	self.is_windows = os_name == "Windows_NT"
+	self.is_wsl = vim.fn.has("wsl") == 1
+	self.vim_path = vim.fn.stdpath("config")
+	local path_sep = self.is_windows and "\\" or "/"
+	local home = self.is_windows and os.getenv("USERPROFILE") or os.getenv("HOME")
+	self.cache_dir = home .. path_sep .. ".cache" .. path_sep .. "nvim" .. path_sep
+	self.modules_dir = self.vim_path .. path_sep .. "modules"
+	self.home = home
+	self.data_dir = string.format("%s/site/", vim.fn.stdpath("data"))
+end
+global:load_variables()
+
 local fn = vim.fn
 local opt = vim.opt
 local keymap = vim.keymap
 local autocmd = vim.api.nvim_create_autocmd
 
 vim.g.mapleader = " "
-
-opt.cursorline = true
-opt.ignorecase = true
-opt.smartcase = true
-opt.mouse = "a"
-opt.clipboard = "unnamedplus"
-
--- Indenting
-opt.expandtab = true
-opt.shiftwidth = 2
-opt.smartindent = true
-opt.tabstop = 2
-opt.softtabstop = 2
-
--- Numbers
-opt.number = true
-opt.numberwidth = 2
-opt.ruler = false
 
 local packer_plugins = function(use)
   use {
@@ -34,6 +34,7 @@ local packer_plugins = function(use)
       -- TODO: start up here
     end
   }
+  use 'voldikss/vim-floaterm'
 
   use 'windwp/nvim-autopairs'
   use 'lewis6991/impatient.nvim'
@@ -50,6 +51,7 @@ local packer_plugins = function(use)
     use 'nvim-treesitter/nvim-treesitter'
     use {
       "loctvl842/monokai-pro.nvim",
+      tag = "v1.1.2",
       config = function()
         require("monokai-pro").setup()
       end
@@ -91,37 +93,42 @@ local packer_plugins = function(use)
   end
 end
 
-local packer_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
-if fn.empty(fn.glob(packer_path)) > 0 then
-  vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
-  print "Cloning packer .."
-  fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", packer_path }
+local init_packer = function()
+  local packer_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
+  if fn.empty(fn.glob(packer_path)) > 0 then
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
+    print "Cloning packer .."
+    fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", packer_path }
 
-  vim.cmd "packadd packer.nvim"
+    vim.cmd "packadd packer.nvim"
 
-  local present, packer = pcall(require, "packer")
-  if present then
-    packer.startup { packer_plugins }
-  end
+    local present, packer = pcall(require, "packer")
+    if present then
+      packer.startup { packer_plugins }
+    end
 
-  vim.cmd "PackerSync"
-else
-  vim.cmd "packadd packer.nvim"
+    vim.cmd "PackerSync"
+  else
+    vim.cmd "packadd packer.nvim"
 
-  local present, packer = pcall(require, "packer")
-  if present then
-    packer.startup(packer_plugins)
+    local present, packer = pcall(require, "packer")
+    if present then
+      packer.startup(packer_plugins)
+    end
   end
 end
 
+init_packer()
+
 require("nvim-autopairs").setup {}
+
 if vim.g.vscode then
   vim.cmd "packadd vsc-easymotion"
   keymap.set("c", "bn", "tabn", {noremap=true})
   keymap.set("c", "bp", "tabp", {noremap=true})
 else
   vim.cmd "packadd vim-easymotion"
-  vim.cmd "colorscheme monokai-pro"
+  vim.cmd [[colorscheme monokai-pro]]
   require("bufferline").setup {}
   require('lualine').setup {}
 
@@ -138,21 +145,50 @@ end
 autocmd({"BufWinEnter"}, { pattern = {"*?"}, command = "silent! loadview",})
 autocmd({"BufWinLeave"}, { pattern = {"*?"}, command = "silent! mkview",})
 
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+local load_options = function()
+  opt.cursorline = true
+  opt.ignorecase = true
+  opt.smartcase = true
+  opt.mouse = "a"
+  opt.clipboard = "unnamedplus"
 
-keymap.set("n", "<M-h>", "<C-W>h", {noremap=true})
-keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
-keymap.set("n", "<M-j>", "<C-W>j", {noremap=true})
-keymap.set("n", "<M-k>", "<C-W>k", {noremap=true})
-keymap.set("c", "<C-A>", "<Home>", {noremap=true})
-keymap.set("c", "<C-F>", "<Right>", {noremap=true})
-keymap.set("c", "<C-B>", "<Left>", {noremap=true})
+  -- Indenting
+  opt.expandtab = true
+  opt.shiftwidth = 2
+  opt.smartindent = true
+  opt.tabstop = 2
+  opt.softtabstop = 2
 
-keymap.set("n", ",", "<Plug>(easymotion-bd-w)", {noremap=true})
-keymap.set("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
-keymap.set("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
-keymap.set("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
+  -- Numbers
+  opt.number = true
+  opt.numberwidth = 2
+  opt.ruler = false
+
+  -- Treesitter
+  opt.foldmethod = "expr"
+  opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+  -- Floaterm
+  vim.g.floaterm_keymap_new    = '<F7>'
+  vim.g.floaterm_keymap_prev   = '<F8>'
+  vim.g.floaterm_keymap_next   = '<F9>'
+  vim.g.floaterm_keymap_toggle = '<F12>'
+end
+
+local load_keymaps = function ()
+  keymap.set("n", "<M-h>", "<C-W>h", {noremap=true})
+  keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
+  keymap.set("n", "<M-j>", "<C-W>j", {noremap=true})
+  keymap.set("n", "<M-k>", "<C-W>k", {noremap=true})
+  keymap.set("c", "<C-A>", "<Home>", {noremap=true})
+  keymap.set("c", "<C-F>", "<Right>", {noremap=true})
+  keymap.set("c", "<C-B>", "<Left>", {noremap=true})
+
+  keymap.set("n", ",", "<Plug>(easymotion-bd-w)", {noremap=true})
+  keymap.set("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
+  keymap.set("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
+  keymap.set("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
+end
 
 -- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
@@ -493,24 +529,29 @@ require("neo-tree").setup({
 
 keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
 
-local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-vim.opt.rtp:prepend(lazy_path)
-if not vim.loop.fs_stat(lazy_path) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazy_path,
+local load_lazy = function()
+  local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  vim.opt.rtp:prepend(lazy_path)
+  if not vim.loop.fs_stat(lazy_path) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable", -- latest stable release
+      lazy_path,
+    })
+  end
+
+  require("lazy").setup({
+    "folke/which-key.nvim",
+    { "folke/neoconf.nvim", cmd = "Neoconf" },
+    "folke/neodev.nvim",
   })
 end
 
-require("lazy").setup({
-  "folke/which-key.nvim",
-  { "folke/neoconf.nvim", cmd = "Neoconf" },
-  "folke/neodev.nvim",
-})
-
 require('alpha').setup(require('alpha.themes.startify').config)
+
+load_options()
+load_keymaps()
 
