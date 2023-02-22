@@ -100,6 +100,13 @@ require("lazy").setup({
     },
 
     'voldikss/vim-floaterm',
+    {
+      'phaazon/hop.nvim',
+      branch = 'v2',
+      config = function()
+        require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+      end
+    },
 
     {
       'windwp/nvim-autopairs',
@@ -254,10 +261,10 @@ local load_keymaps = function ()
   keymap.set("c", "<C-F>", "<Right>", {noremap=true})
   keymap.set("c", "<C-B>", "<Left>", {noremap=true})
 
-  keymap.set("n", ",", "<Plug>(easymotion-bd-w)", {noremap=true})
-  keymap.set("n", "<leader>j", "<Plug>(easymotion-j)", {noremap=true})
-  keymap.set("n", "<leader>k", "<Plug>(easymotion-k)", {noremap=true})
-  keymap.set("n", "<leader>s", "<Plug>(easymotion-overwin-f2)", {noremap=true})
+  keymap.set("n", ",", ":HopWord<CR>", {noremap=true})
+  keymap.set("n", "<leader>j", ":HopLineAC<CR>", {noremap=true})
+  keymap.set("n", "<leader>k", ":HopLineBC<CR>", {noremap=true})
+  keymap.set("n", "<leader>s", ":HopChar2<CR>", {noremap=true})
 
   -- Telescope
   local builtin = require('telescope.builtin')
