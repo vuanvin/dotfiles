@@ -1,21 +1,17 @@
-vim.defer_fn(function()
-  pcall(require, "impatient")
-end, 0)
-
 local global = {}
 function global:load_variables()
   local os_name = vim.loop.os_uname().sysname
-	self.is_mac = os_name == "Darwin"
-	self.is_linux = os_name == "Linux"
-	self.is_windows = os_name == "Windows_NT"
-	self.is_wsl = vim.fn.has("wsl") == 1
-	self.vim_path = vim.fn.stdpath("config")
-	local path_sep = self.is_windows and "\\" or "/"
-	local home = self.is_windows and os.getenv("USERPROFILE") or os.getenv("HOME")
-	self.cache_dir = home .. path_sep .. ".cache" .. path_sep .. "nvim" .. path_sep
-	self.modules_dir = self.vim_path .. path_sep .. "modules"
-	self.home = home
-	self.data_dir = string.format("%s/site/", vim.fn.stdpath("data"))
+  self.is_mac = os_name == "Darwin"
+  self.is_linux = os_name == "Linux"
+  self.is_windows = os_name == "Windows_NT"
+  self.is_wsl = vim.fn.has("wsl") == 1
+  self.vim_path = vim.fn.stdpath("config")
+  local path_sep = self.is_windows and "\\" or "/"
+  local home = self.is_windows and os.getenv("USERPROFILE") or os.getenv("HOME")
+  self.cache_dir = home .. path_sep .. ".cache" .. path_sep .. "nvim" .. path_sep
+  self.modules_dir = self.vim_path .. path_sep .. "modules"
+  self.home = home
+  self.data_dir = string.format("%s/site/", vim.fn.stdpath("data"))
 end
 global:load_variables()
 
@@ -26,113 +22,195 @@ local autocmd = vim.api.nvim_create_autocmd
 
 vim.g.mapleader = " "
 
-local packer_plugins = function(use)
-  use {
-    'wbthomason/packer.nvim',
-    config = function()
-      -- TODO: start up here
-    end
-  }
-  use 'voldikss/vim-floaterm'
+local init_lazy = function()
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+      })
+  end
+  vim.opt.rtp:prepend(lazypath)
+end
 
-  use 'windwp/nvim-autopairs'
-  use 'lewis6991/impatient.nvim'
-  use {'asvetliakov/vim-easymotion', opt = true, as = 'vsc-easymotion'}
-  use 'tpope/vim-surround'
+init_lazy()
 
-  if not vim.g.vscode then
-    use {
-        'goolord/alpha-nvim',
-        requires = { 'nvim-tree/nvim-web-devicons' },
-    }
+require("lazy").setup({
+    "folke/which-key.nvim",
+    {
+      "folke/neoconf.nvim",
+      cmd = "Neoconf"
+    },
+    "folke/neodev.nvim",
+    {
+      "loctvl842/monokai-pro.nvim",
+      lazy = false,
+      tag = "v1.1.2",
+      config = function()
+        require("monokai-pro").setup()
+        vim.cmd [[colorscheme monokai-pro]]
+      end,
+    },
 
-    use({
+    {
       "folke/noice.nvim",
-      requires = {
+      dependencies = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
         "MunifTanjim/nui.nvim",
         -- OPTIONAL:
         --   `nvim-notify` is only needed, if you want to use the notification view.
         --   If not available, we use `mini` as the fallback
         "rcarriga/nvim-notify",
-        }
-    })
-
-    use 'mfussenegger/nvim-dap'
-    use {'easymotion/vim-easymotion', opt = true}
-    use 'nvim-treesitter/nvim-treesitter'
-    use {
-      "loctvl842/monokai-pro.nvim",
-      tag = "v1.1.2",
+      },
       config = function()
-        require("monokai-pro").setup()
+        require("noice").setup({
+            lsp = {
+              -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+              override = {
+                ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                ["vim.lsp.util.stylize_markdown"] = true,
+                ["cmp.entry.get_documentation"] = true,
+              },
+            },
+            -- you can enable a preset for easier configuration
+            presets = {
+              bottom_search = true, -- use a classic bottom cmdline for search
+              command_palette = true, -- position the cmdline and popupmenu together
+              long_message_to_split = true, -- long messages will be sent to a split
+              inc_rename = false, -- enables an input dialog for inc-rename.nvim
+              lsp_doc_border = false, -- add a border to hover docs and signature help
+            },
+          })
       end
-    }
-
-    use {
-      'nvim-lualine/lualine.nvim',
-      requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-    }
-
-    use "williamboman/mason.nvim"
-    use 'williamboman/mason-lspconfig.nvim'
-    use 'neovim/nvim-lspconfig'
-
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-cmdline'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/nvim-cmp'
-
-    use 'hrsh7th/cmp-vsnip'
-    use 'hrsh7th/vim-vsnip'
-
-    use {
+    },
+    {
+      'goolord/alpha-nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      config = function()
+        require('alpha').setup(require('alpha.themes.startify').config)
+      end
+    },
+    {
       'nvim-telescope/telescope.nvim', tag = '0.1.1',
-      requires = { {'nvim-lua/plenary.nvim'} }
-    }
+      dependencies = { 'nvim-lua/plenary.nvim' }
+    },
 
-    use {
-      "nvim-neo-tree/neo-tree.nvim",
-        branch = "v2.x",
-        requires = {
-          "nvim-lua/plenary.nvim",
-          "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-          "MunifTanjim/nui.nvim",
+    'voldikss/vim-floaterm',
+
+    {
+      'windwp/nvim-autopairs',
+      config = function()
+        require("nvim-autopairs").setup {}
+      end,
+    },
+
+    'tpope/vim-surround',
+
+    {
+      'nvim-treesitter/nvim-treesitter',
+      config = function ()
+        require'nvim-treesitter.configs'.setup {
+          -- A list of parser names, or "all" (the four listed parsers should always be installed)
+          ensure_installed = { "c", "lua", "vim", "help" },
+
+          -- Install parsers synchronously (only applied to `ensure_installed`)
+          sync_install = false,
+
+          -- Automatically install missing parsers when entering buffer
+          -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+          auto_install = true,
+
+          -- List of parsers to ignore installing (for "all")
+          ignore_install = { "javascript" },
+
+          ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+          -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+          highlight = {
+            enable = true,
+
+            -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+            -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+            -- the name of the parser)
+            -- list of language that will be disabled
+            disable = { "c", "rust" },
+            -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+            disable = function(lang, buf)
+              local max_filesize = 100 * 1024 -- 100 KB
+              local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+              if ok and stats and stats.size > max_filesize then
+                return true
+              end
+            end,
+
+            -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+            -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+            -- Using this option may slow down your editor, and you may see some duplicate highlights.
+            -- Instead of true it can also be a list of languages
+            additional_vim_regex_highlighting = false,
+          },
+        } 
+      end
+    },
+
+    {
+      'nvim-lualine/lualine.nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons'}
+    },
+
+    {
+      "williamboman/mason.nvim",
+      config = function()
+        require("mason").setup()
+      end,
+    },
+    {
+      'williamboman/mason-lspconfig.nvim',
+      config = function()
+        -- TODO
+        require("mason-lspconfig").setup {
+          -- ensure_installed = { 'clangd', 'rust_analyzer', 'pyright', 'gopls', 'lua_ls' },
         }
-    }
-    use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
-  end
-end
+      end,
+    },
 
-local init_packer = function()
-  local packer_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
-  if fn.empty(fn.glob(packer_path)) > 0 then
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
-    print "Cloning packer .."
-    fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", packer_path }
-    vim.cmd "packadd packer.nvim"
-    local present, packer = pcall(require, "packer")
-    if present then
-      packer.startup { packer_plugins }
-    end
+    'neovim/nvim-lspconfig',
 
-    vim.cmd "PackerSync"
-  else
-    require('packer').startup(packer_plugins)
-  end
-end
+    'hrsh7th/cmp-nvim-lsp',
+    'hrsh7th/cmp-path',
+    'hrsh7th/cmp-cmdline',
+    'hrsh7th/cmp-buffer',
+    'hrsh7th/nvim-cmp',
+
+    'hrsh7th/cmp-vsnip',
+    'hrsh7th/vim-vsnip',
+
+    {
+      'nvim-telescope/telescope.nvim', tag = '0.1.1',
+      dependencies = { 'nvim-lua/plenary.nvim' }
+    },
+
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+      branch = "v2.x",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+        "MunifTanjim/nui.nvim",
+      },
+    },
+    {
+      'akinsho/bufferline.nvim',
+      dependencies = 'nvim-tree/nvim-web-devicons'
+    },
+
+  })
 
 local setup_editor = function ()
-  if vim.g.vscode then
-    vim.cmd "packadd vsc-easymotion"
-    keymap.set("c", "bn", "tabn", {noremap=true})
-    keymap.set("c", "bp", "tabp", {noremap=true})
-  else
-    vim.cmd "packadd vim-easymotion"
-  end
-
-  require("nvim-autopairs").setup {}
   autocmd({"BufWinEnter"}, { pattern = {"*?"}, command = "silent! loadview",})
   autocmd({"BufWinLeave"}, { pattern = {"*?"}, command = "silent! mkview",})
 end
@@ -192,9 +270,6 @@ local load_keymaps = function ()
 end
 
 local setup_lsp = function ()
-  require("mason").setup()
-  require("mason-lspconfig").setup()
-
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
@@ -236,12 +311,6 @@ local setup_lsp = function ()
   local lspconfig = require('lspconfig')
   local capabilities = require('cmp_nvim_lsp').default_capabilities()
   local servers = { 'clangd', 'rust_analyzer', 'pyright', 'gopls' }
-  local ensure_servers =  { 'clangd', 'rust_analyzer', 'pyright', 'gopls', 'lua_ls' }
-
-  require("mason-lspconfig").setup {
-      ensure_installed = ensure_servers,
-  }
-
   for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
       on_attach = on_attach,
@@ -279,310 +348,66 @@ local setup_completion = function ()
   local cmp = require "cmp"
 
   cmp.setup({
-    snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-      end,
-    },
-    window = {
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
-    },
-    mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    }),
-    sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-      { name = 'vsnip' }, -- For vsnip users.
-      -- { name = 'luasnip' }, -- For luasnip users.
-      -- { name = 'ultisnips' }, -- For ultisnips users.
-      -- { name = 'snippy' }, -- For snippy users.
-    }, {
-      { name = 'buffer' },
+      snippet = {
+        -- REQUIRED - you must specify a snippet engine
+        expand = function(args)
+          vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+          -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+          -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+          -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+        end,
+      },
+      window = {
+        -- completion = cmp.config.window.bordered(),
+        -- documentation = cmp.config.window.bordered(),
+      },
+      mapping = cmp.mapping.preset.insert({
+          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<C-e>'] = cmp.mapping.abort(),
+          ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        }),
+      sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+          { name = 'vsnip' }, -- For vsnip users.
+          -- { name = 'luasnip' }, -- For luasnip users.
+          -- { name = 'ultisnips' }, -- For ultisnips users.
+          -- { name = 'snippy' }, -- For snippy users.
+        }, {
+          { name = 'buffer' },
+        })
     })
-  })
 
   -- Set configuration for specific filetype.
   cmp.setup.filetype('gitcommit', {
-    sources = cmp.config.sources({
-      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
-    }, {
-      { name = 'buffer' },
+      sources = cmp.config.sources({
+          { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+        }, {
+          { name = 'buffer' },
+        })
     })
-  })
 
   -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
   cmp.setup.cmdline({ '/', '?' }, {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-      { name = 'buffer' }
-    }
-  })
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = {
+        { name = 'buffer' }
+      }
+    })
 
   -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
   cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources(
-    {{ name = 'path' }},
-    {{ name = 'cmdline' }}
-    )
-  })
-end
-
-local load_lazy = function()
-  local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  vim.opt.rtp:prepend(lazy_path)
-  if not vim.loop.fs_stat(lazy_path) then
-    vim.fn.system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "https://github.com/folke/lazy.nvim.git",
-      "--branch=stable", -- latest stable release
-      lazy_path,
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = cmp.config.sources(
+        {{ name = 'path' }},
+        {{ name = 'cmdline' }}
+        )
     })
-  end
-
-  require("lazy").setup({
-    "folke/which-key.nvim",
-    { "folke/neoconf.nvim", cmd = "Neoconf" },
-    "folke/neodev.nvim",
-  })
 end
 
-local setup_ui = function ()
-  vim.cmd [[colorscheme monokai-pro]]
-  require('alpha').setup(require('alpha.themes.startify').config)
-  require("bufferline").setup {}
-  require('lualine').setup {}
-
-  require("noice").setup({
-    lsp = {
-      -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-      override = {
-        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-        ["vim.lsp.util.stylize_markdown"] = true,
-        ["cmp.entry.get_documentation"] = true,
-      },
-    },
-    -- you can enable a preset for easier configuration
-    presets = {
-      bottom_search = true, -- use a classic bottom cmdline for search
-      command_palette = true, -- position the cmdline and popupmenu together
-      long_message_to_split = true, -- long messages will be sent to a split
-      inc_rename = false, -- enables an input dialog for inc-rename.nvim
-      lsp_doc_border = false, -- add a border to hover docs and signature help
-    },
-  })
-
-  require("neo-tree").setup({
-    close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
-    popup_border_style = "rounded",
-    enable_git_status = true,
-    enable_diagnostics = true,
-    sort_case_insensitive = false, -- used when sorting files and directories in the tree
-    sort_function = nil , -- use a custom function for sorting files and directories in the tree 
-    default_component_configs = {
-      container = {
-        enable_character_fade = true
-      },
-      indent = {
-        indent_size = 2,
-        padding = 1, -- extra padding on left hand side
-        -- indent guides
-        with_markers = true,
-        indent_marker = "│",
-        last_indent_marker = "└",
-        highlight = "NeoTreeIndentMarker",
-        -- expander config, needed for nesting files
-        with_expanders = nil, -- if nil and file nesting is enabled, will enable expanders
-        expander_collapsed = "",
-        expander_expanded = "",
-        expander_highlight = "NeoTreeExpander",
-      },
-      icon = {
-        folder_closed = "",
-        folder_open = "",
-        folder_empty = "ﰊ",
-        -- The next two settings are only a fallback, if you use nvim-web-devicons and configure default icons there
-        -- then these will never be used.
-        default = "*",
-        highlight = "NeoTreeFileIcon"
-      },
-      modified = {
-        symbol = "[+]",
-        highlight = "NeoTreeModified",
-      },
-      name = {
-        trailing_slash = false,
-        use_git_status_colors = true,
-        highlight = "NeoTreeFileName",
-      },
-      git_status = {
-        symbols = {
-          -- Change type
-          added     = "", -- or "✚", but this is redundant info if you use git_status_colors on the name
-          modified  = "", -- or "", but this is redundant info if you use git_status_colors on the name
-          deleted   = "✖",-- this can only be used in the git_status source
-          renamed   = "",-- this can only be used in the git_status source
-          -- Status type
-          untracked = "",
-          ignored   = "",
-          unstaged  = "",
-          staged    = "",
-          conflict  = "",
-        }
-      },
-    },
-    window = {
-      position = "left",
-      width = 40,
-      mapping_options = {
-        noremap = true,
-        nowait = true,
-      },
-      mappings = {
-        ["<space>"] = {
-            "toggle_node",
-            nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use 
-        },
-        ["<2-LeftMouse>"] = "open",
-        ["<cr>"] = "open",
-        ["<esc>"] = "revert_preview",
-        ["P"] = { "toggle_preview", config = { use_float = true } },
-        ["l"] = "focus_preview",
-        ["S"] = "open_split",
-        ["s"] = "open_vsplit",
-        -- ["S"] = "split_with_window_picker",
-        -- ["s"] = "vsplit_with_window_picker",
-        ["t"] = "open_tabnew",
-        -- ["<cr>"] = "open_drop",
-        -- ["t"] = "open_tab_drop",
-        ["w"] = "open_with_window_picker",
-        --["P"] = "toggle_preview", -- enter preview mode, which shows the current node without focusing
-        ["C"] = "close_node",
-        ["z"] = "close_all_nodes",
-        --["Z"] = "expand_all_nodes",
-        ["a"] = {
-          "add",
-          -- this command supports BASH style brace expansion ("x{a,b,c}" -> xa,xb,xc). see `:h neo-tree-file-actions` for details
-          -- some commands may take optional config options, see `:h neo-tree-mappings` for details
-          config = {
-            show_path = "none" -- "none", "relative", "absolute"
-          }
-        },
-        ["A"] = "add_directory", -- also accepts the optional config.show_path option like "add". this also supports BASH style brace expansion.
-        ["d"] = "delete",
-        ["r"] = "rename",
-        ["y"] = "copy_to_clipboard",
-        ["x"] = "cut_to_clipboard",
-        ["p"] = "paste_from_clipboard",
-        ["c"] = "copy", -- takes text input for destination, also accepts the optional config.show_path option like "add":
-        -- ["c"] = {
-        --  "copy",
-        --  config = {
-        --    show_path = "none" -- "none", "relative", "absolute"
-        --  }
-        --}
-        ["m"] = "move", -- takes text input for destination, also accepts the optional config.show_path option like "add".
-        ["q"] = "close_window",
-        ["R"] = "refresh",
-        ["?"] = "show_help",
-        ["<"] = "prev_source",
-        [">"] = "next_source",
-      }
-    },
-    nesting_rules = {},
-    filesystem = {
-      filtered_items = {
-        visible = false, -- when true, they will just be displayed differently than normal items
-        hide_dotfiles = true,
-        hide_gitignored = true,
-        hide_hidden = true, -- only works on Windows for hidden files/directories
-        hide_by_name = {
-          --"node_modules"
-        },
-        hide_by_pattern = { -- uses glob style patterns
-          --"*.meta",
-          --"*/src/*/tsconfig.json",
-        },
-        always_show = { -- remains visible even if other settings would normally hide it
-          --".gitignored",
-        },
-        never_show = { -- remains hidden even if visible is toggled to true, this overrides always_show
-          --".DS_Store",
-          --"thumbs.db"
-        },
-        never_show_by_pattern = { -- uses glob style patterns
-          --".null-ls_*",
-        },
-      },
-      follow_current_file = false, -- This will find and focus the file in the active buffer every
-                                   -- time the current file is changed while the tree is open.
-      group_empty_dirs = false, -- when true, empty folders will be grouped together
-      hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
-                                              -- in whatever position is specified in window.position
-                            -- "open_current",  -- netrw disabled, opening a directory opens within the
-                                              -- window like netrw would, regardless of window.position
-                            -- "disabled",    -- netrw left alone, neo-tree does not handle opening dirs
-      use_libuv_file_watcher = false, -- This will use the OS level file watchers to detect changes
-                                      -- instead of relying on nvim autocmd events.
-      window = {
-        mappings = {
-          ["<bs>"] = "navigate_up",
-          ["."] = "set_root",
-          ["H"] = "toggle_hidden",
-          ["/"] = "fuzzy_finder",
-          ["D"] = "fuzzy_finder_directory",
-          ["f"] = "filter_on_submit",
-          ["<c-x>"] = "clear_filter",
-          ["[g"] = "prev_git_modified",
-          ["]g"] = "next_git_modified",
-        }
-      }
-    },
-    buffers = {
-      follow_current_file = true, -- This will find and focus the file in the active buffer every
-                                   -- time the current file is changed while the tree is open.
-      group_empty_dirs = true, -- when true, empty folders will be grouped together
-      show_unloaded = true,
-      window = {
-        mappings = {
-          ["bd"] = "buffer_delete",
-          ["<bs>"] = "navigate_up",
-          ["."] = "set_root",
-        }
-      },
-    },
-    git_status = {
-      window = {
-        position = "float",
-        mappings = {
-          ["A"]  = "git_add_all",
-          ["gu"] = "git_unstage_file",
-          ["ga"] = "git_add_file",
-          ["gr"] = "git_revert_file",
-          ["gc"] = "git_commit",
-          ["gp"] = "git_push",
-          ["gg"] = "git_commit_and_push",
-        }
-      }
-    }
-  })
-end
-
-init_packer()
-setup_editor()
 setup_lsp()
 setup_completion()
-setup_ui()
+setup_editor()
 load_options()
 load_keymaps()
