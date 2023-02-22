@@ -46,6 +46,18 @@ local packer_plugins = function(use)
         requires = { 'nvim-tree/nvim-web-devicons' },
     }
 
+    use({
+      "folke/noice.nvim",
+      requires = {
+        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+        "MunifTanjim/nui.nvim",
+        -- OPTIONAL:
+        --   `nvim-notify` is only needed, if you want to use the notification view.
+        --   If not available, we use `mini` as the fallback
+        "rcarriga/nvim-notify",
+        }
+    })
+
     use 'mfussenegger/nvim-dap'
     use {'easymotion/vim-easymotion', opt = true}
     use 'nvim-treesitter/nvim-treesitter'
@@ -99,9 +111,7 @@ local init_packer = function()
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e222a" })
     print "Cloning packer .."
     fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", packer_path }
-
     vim.cmd "packadd packer.nvim"
-
     local present, packer = pcall(require, "packer")
     if present then
       packer.startup { packer_plugins }
@@ -109,12 +119,7 @@ local init_packer = function()
 
     vim.cmd "PackerSync"
   else
-    vim.cmd "packadd packer.nvim"
-
-    local present, packer = pcall(require, "packer")
-    if present then
-      packer.startup(packer_plugins)
-    end
+    require('packer').startup(packer_plugins)
   end
 end
 
@@ -325,11 +330,10 @@ local setup_completion = function ()
   -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
   cmp.setup.cmdline(':', {
     mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-      { name = 'path' }
-    }, {
-      { name = 'cmdline' }
-    })
+    sources = cmp.config.sources(
+    {{ name = 'path' }},
+    {{ name = 'cmdline' }}
+    )
   })
 end
 
@@ -356,8 +360,28 @@ end
 
 local setup_ui = function ()
   vim.cmd [[colorscheme monokai-pro]]
+  require('alpha').setup(require('alpha.themes.startify').config)
   require("bufferline").setup {}
   require('lualine').setup {}
+
+  require("noice").setup({
+    lsp = {
+      -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+      override = {
+        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+        ["vim.lsp.util.stylize_markdown"] = true,
+        ["cmp.entry.get_documentation"] = true,
+      },
+    },
+    -- you can enable a preset for easier configuration
+    presets = {
+      bottom_search = true, -- use a classic bottom cmdline for search
+      command_palette = true, -- position the cmdline and popupmenu together
+      long_message_to_split = true, -- long messages will be sent to a split
+      inc_rename = false, -- enables an input dialog for inc-rename.nvim
+      lsp_doc_border = false, -- add a border to hover docs and signature help
+    },
+  })
 
   require("neo-tree").setup({
     close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
@@ -553,8 +577,6 @@ local setup_ui = function ()
       }
     }
   })
-
-  require('alpha').setup(require('alpha.themes.startify').config)
 end
 
 init_packer()
