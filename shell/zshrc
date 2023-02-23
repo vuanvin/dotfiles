@@ -66,6 +66,5 @@ export NVM_DIR="$HOME/.nvm"
 
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/gruvbox.omp.json)"
 
-# bindkey '\e' vi-cmd-mode
 bindkey '^u' backward-kill-line
 bindkey '\ef' emacs-forward-word
