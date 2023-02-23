@@ -1,86 +1,117 @@
 {
-  "latex-workshop.latex.recipes": [
-      {
-          "name": "xelatex 🔃",
-          "tools": ["xelatex"]
-      },
-      {
-          "name": "latexmk 🔃",
-          "tools": ["latexmk"]
-      },
-      {
-          "name": "latexmk (lualatex)",
-          "tools": ["lualatexmk"]
-      },
-      {
-          "name": "xelatex ➞ bibtex ➞ xelatex × 2",
-          "tools": ["xelatex","bibtex","xelatex","xelatex"]
-      },
-      {
-          "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-          "tools": ["pdflatex","bibtex","pdflatex","pdflatex"]
-      }
-  ],
-  "latex-workshop.latex.tools": [
-      {
-          "name": "xelatex",
-          "command": "xelatex",
-          "args": [
-              "-synctex=1",
-              "-interaction=nonstopmode",
-              "-file-line-error",
-              "-pdf",
-              "%DOCFILE%"
-          ]
-      },
-      {
-          "name": "latexmk",
-          "command": "latexmk",
-          "args": [
-              "-synctex=1",
-              "-interaction=nonstopmode",
-              "-file-line-error",
-              "-pdf",
-              "-outdir=%OUTDIR%",
-              "%DOCFILE%"
-          ],
-          "env": {}
-      },
-      {
-          "name": "lualatexmk",
-          "command": "latexmk",
-          "args": [
-              "-synctex=1",
-              "-interaction=nonstopmode",
-              "-file-line-error",
-              "-lualatex",
-              "-outdir=%OUTDIR%",
-              "%DOCFILE%"
-          ],
-          "env": {}
-      },
-      {
-          "name": "pdflatex",
-          "command": "pdflatex",
-          "args": [
-              "-synctex=1",
-              "-interaction=nonstopmode",
-              "-file-line-error",
-              "%DOCFILE%"
-          ],
-          "env": {}
-      },
-      {
-          "name": "bibtex",
-          "command": "bibtex",
-          "args": ["%DOCFILE%"],
-          "env": {}
-      }
-  ],
-  "latex-workshop.view.pdf.viewer": "external",
-  "latex-workshop.view.pdf.external.viewer.args": ["%PDF%"],
   "latex-workshop.latex.recipe.default": "lastUsed",
-
+  "latex-workshop.view.pdf.viewer": "external",
+  "latex-workshop.view.pdf.external.viewer.command": "zathura",
+  "latex-workshop.view.pdf.external.viewer.args": [
+      "--synctex-editor-command",
+      "code --no-sandbox -r -g \"%{input}:%{line}\"",
+      "%PDF%"
+  ],
+  "latex-workshop.view.pdf.external.synctex.command": "zathura",
+  "latex-workshop.view.pdf.external.synctex.args": [
+      "--synctex-forward=%LINE%:0:%TEX%",
+      "%PDF%"
+  ],
+  "latex-workshop.showContextMenu": true,
+  "latex-workshop.intellisense.package.enabled": true,
+  // "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex",
+      "command": "xelatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "%DOCFILE%"
+      ]
+    },
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "-outdir=%OUTDIR%",
+        "%DOCFILE%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "lualatexmk",
+      "command": "latexmk",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-lualatex",
+        "-outdir=%OUTDIR%",
+        "%DOCFILE%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOCFILE%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": [
+        "%DOCFILE%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "xelatex",
+      "tools": [
+        "xelatex"
+      ]
+    },
+    {
+      "name": "latexmk",
+      "tools": [
+        "latexmk"
+      ]
+    },
+    {
+      "name": "latexmk (lualatex)",
+      "tools": [
+        "lualatexmk"
+      ]
+    },
+    {
+      "name": "xelatex➞bibtex➞xelatex × 2",
+      "tools": [
+        "xelatex",
+        "bibtex",
+        "xelatex",
+        "xelatex"
+      ]
+    },
+    {
+      "name": "pdflatex➞bibtex➞pdflatex × 2",
+      "tools": [
+        "pdflatex",
+        "bibtex",
+        "pdflatex",
+        "pdflatex"
+      ]
+    }
+  ],
+  "editor.minimap.enabled": false,
   "editor.fontFamily": "FiraCode Nerd Font,Hack Nerd Font",
   "editor.wordWrap": "on",
   "editor.lineNumbers": "on",
@@ -94,7 +125,6 @@
   "editor.scrollbar.horizontal": "hidden",
   "editor.scrollbar.horizontalScrollbarSize": 0,
   "editor.minimap.showSlider": "always",
-
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
   "java.semanticHighlighting.enabled": true,
   "files.watcherExclude": {
@@ -111,7 +141,6 @@
     "cloud": "linux",
     "nsccgz": "linux"
   },
-
   "extensions.autoUpdate": false,
   "extensions.experimental.affinity": {
     "asvetliakov.vscode-neovim": 1,
@@ -129,17 +158,14 @@
     "ZainChen.json": 5,
     "ryu1kn.partial-diff": 5
   },
-
   "workbench.colorTheme": "Monokai Pro (Filter Machine)",
-  "workbench.iconTheme": "material-icon-theme",
+  "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
   "workbench.editorAssociations": {
-    "*.ipynb": "jupyter-notebook"
+    "*.ipynb": "jupyter-notebook",
+    "*.pdf": "latex-workshop-pdf-hook"
   },
-  "workbench.activityBar.visible": false,
-
   "terminal.integrated.inheritEnv": false,
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
-
+  "terminal.integrated.defaultProfile.windows": "Nushell",
   "cmake.configureOnOpen": true,
   "python.linting.enabled": true,
   "python.terminal.activateEnvironment": false,
@@ -225,19 +251,16 @@
     "markdown": false,
     "cpp": true
   },
-  "window.commandCenter": true,
   "redhat.telemetry.enabled": true,
   "explorer.autoReveal": false,
   "hexeditor.columnWidth": 16,
   "hexeditor.showDecodedText": true,
   "hexeditor.defaultEndianness": "little",
   "hexeditor.inspectorType": "aside",
-
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer",
     "editor.formatOnSave": true
   },
-
   "clangd.arguments": [
     "-log=verbose",
     "-pretty",
@@ -249,10 +272,8 @@
   "clangd.fallbackFlags": [
     "-std=c++17"
   ],
-
   "vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\yuanyin\\AppData\\Local\\nvim.bak\\init.vim",
   "vscode-neovim.useWSL": true,
-
   "vim.autoSwitchInputMethod.defaultIM": "\"1033\"",
   "vim.autoSwitchInputMethod.obtainIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe",
   "vim.autoSwitchInputMethod.switchIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe {im}",
@@ -263,21 +284,74 @@
   "vim.easymotion": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": [","],
-      "after": ["<leader>", "<leader>", "<leader>", "b", "d", "w"]
+        "before": [
+            "u"
+        ],
+        "commands": [
+            {
+                "command": "undo"
+            }
+        ]
     },
     {
-      "before": ["<leader>","f"],
-      "after": ["<leader>","<leader>","2","s"]
+        "before": [
+            "<C-r>"
+        ],
+        "commands": [
+            {
+                "command": "redo"
+            }
+        ]
+    },    
+    {
+      "before": [
+        ","
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "<leader>",
+        "b",
+        "d",
+        "w"
+      ]
     },
     {
       "before": [
         "<leader>",
+        ",",
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "<leader>",
+        "b",
+        "d",
+        "w"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "m",
         "s"
       ],
       "after": [
         "<leader>",
         "<leader>",
+        "s"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "m",
+        "f"
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "2",
         "s"
       ]
     },
@@ -307,45 +381,359 @@
   "vim.visualModeKeyBindingsNonRecursive": [],
   "vim.normalModeKeyBindings": [
     {
-      "before": ["<leader>","t"],
-      "commands": ["workbench.action.toggleSidebarVisibility"],
+      "before": [
+        "<leader>",
+        "t",
+        "s"
+      ],
+      "commands": [
+        "workbench.action.toggleSidebarVisibility"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "h"
+      ],
+      "commands": [
+        "workbench.action.toggleSidebarVisibility"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "l"
+      ],
+      "commands": [
+        "workbench.action.toggleAuxiliaryBar"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "j"
+      ],
+      "commands": [
+        "workbench.action.togglePanel"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "t",
+        "t"
+      ],
+      "commands": [
+      "workbench.action.terminal.toggleTerminal"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "o",
+        "t"
+      ],
+      "commands": [
+      "terminal.focus"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "o",
+        "p"
+      ],
+      "commands": [
+        "workbench.view.explorer"
+      ],
       "silent": true
     },
     {
-      "before": ["<leader>","s","r"],
-      "commands": ["workbench.action.replaceInFiles"],
-      "silent": true
+      "before": [
+        "<leader>",
+        "f",
+        "s"
+      ],
+      "commands": [
+        "workbench.action.gotoSymbol"
+      ]
     },
     {
-      "before": ["<leader>","p","p"],
-      "commands": ["projectManager.listProjects"]
+      "before": [
+        "<leader>",
+        "f",
+        "S"
+      ],
+      "commands": [
+        "workbench.action.showAllSymbols"
+      ]
     },
     {
-      "before": ["<leader>","p","e"],
-      "commands": ["projectManager.editProjects"]
+      "before": [
+        "<leader>",
+        "f",
+        "f"
+      ],
+      "commands": [
+        "workbench.action.quickOpen"
+      ]
     },
     {
-      "before": ["<leader>", "d", "b"],
-      "commands": ["editor.debug.action.toggleBreakpoint"]
+      "before": [
+        "<leader>",
+        "f",
+        "F"
+      ],
+      "commands": [
+        "find-it-faster.findFiles"
+      ]
     },
     {
-      "before": ["<leader>", "s", "p"],
-      "commands": ["find-it-faster.findWithinFiles"]
+      "before": [
+        "<leader>",
+        "f",
+        "p"
+      ],
+      "commands": [
+        "find-it-faster.findWithinFiles"
+      ]
     },
     {
-      "before": ["<C-w>", "<C-l>"],
-      "commands": ["workbench.action.moveEditorToRightGroup"]
+      "before": [
+        "<leader>",
+        "f",
+        "P"
+      ],
+      "commands": [
+        "find-it-faster.findWithinFiles"
+      ]
     },
     {
-      "before": ["<C-w>","<C-h>"],
-      "commands": ["workbench.action.moveEditorToLeftGroup"]
+      "before": [
+        "<leader>",
+        "s",
+        "r"
+      ],
+      "commands": [
+        "workbench.action.replaceInFiles"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "."
+      ],
+      "commands": [
+        "workbench.action.files.openFile"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "/"
+      ],
+      "commands": [
+        "find-it-faster.findWithinFiles"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "p"
+      ],
+      "commands": [
+        "workbench.action.previousEditor"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "n"
+      ],
+      "commands": [
+        "workbench.action.nextEditor"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "h"
+      ],
+      "commands": [
+        "workbench.action.moveEditorLeftInGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "l"
+      ],
+      "commands": [
+        "workbench.action.moveEditorRightInGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "p",
+        "p"
+      ],
+      "commands": [
+        "projectManager.listProjects"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "p",
+        "P"
+      ],
+      "commands": [
+        "projectManager.listProjectsNewWindow"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "p",
+        "e"
+      ],
+      "commands": [
+        "projectManager.editProjects"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "p",
+        "f"
+      ],
+      "commands": [
+        "workbench.action.quickOpen"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "d",
+        "b"
+      ],
+      "commands": [
+        "editor.debug.action.toggleBreakpoint"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "H"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToLeftGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "b",
+        "L"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToRightGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "h"
+      ],
+      "commands": [
+        "workbench.action.focusLeftGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "l"
+      ],
+      "commands": [
+        "workbench.action.focusRightGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "j"
+      ],
+      "commands": [
+        "workbench.action.focusBelowGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "k"
+      ],
+      "commands": [
+        "workbench.action.focusAboveGroup"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "H"
+      ],
+      "commands": [
+        "workbench.action.moveActiveEditorGroupLeft"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "L"
+      ],
+      "commands": [
+        "workbench.action.moveActiveEditorGroupRight"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "J"
+      ],
+      "commands": [
+        "workbench.action.moveActiveEditorGroupDown"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "w",
+        "K"
+      ],
+      "commands": [
+        "workbench.action.moveActiveEditorGroupUp"
+      ]
     }
   ],
   "vim.enableNeovim": true,
   "vim.neovimPath": "nvim",
   "vim.camelCaseMotion.enable": true,
   "vim.autoSwitchInputMethod.enable": true,
-
   "leetcode.endpoint": "leetcode-cn",
   "leetcode.defaultLanguage": "cpp",
   "leetcode.useWsl": true,
@@ -358,12 +746,13 @@
   "workbench.editor.revealIfOpen": true,
   "cmake.copyCompileCommands": "build/",
   "C_Cpp.errorSquiggles": "enabled",
-  "editor.minimap.enabled": false,
-  "editor.fontSize": 12,
   "search.quickOpen.includeSymbols": true,
   "search.exclude": {
     "**/.git": true,
     "**/build": true,
     "**/target": true
   },
+  "workbench.layoutControl.enabled": false,
+  "editor.fontSize": 12,
+  "breadcrumbs.enabled": false,
 }
