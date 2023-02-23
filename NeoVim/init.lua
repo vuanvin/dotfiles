@@ -159,7 +159,23 @@ require("lazy").setup({
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
 
-  'voldikss/vim-floaterm',
+  {
+    "numToStr/FTerm.nvim",
+    config = function()
+      require'FTerm'.setup({
+        border = 'double',
+        dimensions  = {
+          height = 0.9,
+          width = 0.9,
+        },
+        blend = 25,
+      })
+
+      vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>')
+      vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
+      vim.api.nvim_create_user_command('FTermToggle', require('FTerm').toggle, { bang = true })
+    end
+  },
   {
     'phaazon/hop.nvim',
     branch = 'v2',
@@ -343,11 +359,6 @@ local load_options = function()
   opt.foldmethod = "expr"
   opt.foldexpr = "nvim_treesitter#foldexpr()"
 
-  -- Floaterm
-  vim.g.floaterm_keymap_new    = '<F7>'
-  vim.g.floaterm_keymap_prev   = '<F8>'
-  vim.g.floaterm_keymap_next   = '<F9>'
-  vim.g.floaterm_keymap_toggle = '<F12>'
 end
 
 local load_keymaps = function ()
