@@ -45,11 +45,34 @@ init_lazy()
 require("lazy").setup({
   {
     "folke/which-key.nvim",
-    config = function()
-      vim.opt.timeout = true
-      vim.opt.timeoutlen = 300
-      require('which-key').setup({
-      })
+    event = "VeryLazy",
+    opts = {
+
+    },
+    config = function(_, opts)
+      local wk = require('which-key')
+      wk.setup(opts)
+
+      local keymaps = {
+        mode = { "n", "v" },
+        ["g"] = { name = "+goto" },
+        ["gz"] = { name = "+surround" },
+        ["]"] = { name = "+next" },
+        ["["] = { name = "+prev" },
+        ["<leader><tab>"] = { name = "+tabs" },
+        ["<leader>b"] = { name = "+buffer" },
+        ["<leader>c"] = { name = "+code" },
+        ["<leader>f"] = { name = "+file/find" },
+        ["<leader>g"] = { name = "+git" },
+        ["<leader>gh"] = { name = "+hunks" },
+        ["<leader>q"] = { name = "+quit/session" },
+        ["<leader>s"] = { name = "+search" },
+        ["<leader>u"] = { name = "+ui" },
+        ["<leader>w"] = { name = "+windows" },
+        ["<leader>x"] = { name = "+diagnostics/quickfix" },
+      }
+
+      wk.register(keymaps)
     end,
   },
   {
@@ -63,6 +86,32 @@ require("lazy").setup({
     cmd = "Neoconf"
   },
   "folke/neodev.nvim",
+
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    config = function ()
+      vim.opt.listchars:append "space:⋅"
+
+      require("indent_blankline").setup {
+        show_current_context = true,
+        show_current_context_start = true,
+        space_char_blankline = " ",
+      }
+    end,
+  },
+
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } },
+    -- stylua: ignore
+    keys = {
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+    },
+  },
+
   {
     "loctvl842/monokai-pro.nvim",
     lazy = false,
@@ -163,10 +212,10 @@ require("lazy").setup({
     "numToStr/FTerm.nvim",
     config = function()
       require'FTerm'.setup({
-        border = 'double',
+        border = 'none',
         dimensions  = {
-          height = 0.9,
-          width = 0.9,
+          height = 0.8,
+          width = 0.8,
         },
         blend = 25,
       })
@@ -215,15 +264,8 @@ require("lazy").setup({
 
         highlight = {
           enable = true,
-
-          -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-          -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
-          -- the name of the parser)
-          -- list of language that will be disabled
-          disable = { "c", "rust" },
-          -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
           disable = function(lang, buf)
-            local max_filesize = 100 * 1024 -- 100 KB
+            local max_filesize = 1024 * 1024 -- 1 MB
             local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
@@ -236,7 +278,7 @@ require("lazy").setup({
           -- Instead of true it can also be a list of languages
           additional_vim_regex_highlighting = false,
         },
-      } 
+      }
     end
   },
   {
@@ -337,6 +379,10 @@ end
 local load_options = function()
   local opt = vim.opt
 
+  opt.timeout = true
+  opt.timeoutlen = 300
+
+  opt.list = true
   opt.cursorline = true
   opt.ignorecase = true
   opt.smartcase = true
@@ -358,7 +404,6 @@ local load_options = function()
   -- Treesitter
   opt.foldmethod = "expr"
   opt.foldexpr = "nvim_treesitter#foldexpr()"
-
 end
 
 local load_keymaps = function ()
@@ -367,6 +412,12 @@ local load_keymaps = function ()
   keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
   keymap.set("n", "<M-j>", "<C-W>j", {noremap=true})
   keymap.set("n", "<M-k>", "<C-W>k", {noremap=true})
+
+  keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", {noremap=true})
+  keymap.set("t", "<M-l>", "<C-\\><C-N><C-W>l", {noremap=true})
+  keymap.set("t", "<M-j>", "<C-\\><C-N><C-W>j", {noremap=true})
+  keymap.set("t", "<M-k>", "<C-\\><C-N><C-W>k", {noremap=true})
+  keymap.set("t", "<Esc>", "<C-\\><C-N>", {noremap=true})
   -- Cmdline
   keymap.set("c", "<C-A>", "<Home>", {noremap=true})
   keymap.set("c", "<C-F>", "<Right>", {noremap=true})
@@ -377,7 +428,7 @@ local load_keymaps = function ()
   keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", {noremap=true})
   keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", {noremap=true})
   keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", {noremap=true})
-  keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", {noremap=true})
+  keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", {noremap=true, desc = "Buffer jump"})
   -- Hop motion
   keymap.set("n", ",", ":HopWord<CR>", {noremap=true})
   keymap.set("n", "<leader>j", ":HopLineAC<CR>", {noremap=true})
@@ -385,10 +436,11 @@ local load_keymaps = function ()
   keymap.set("n", "<leader>s", ":HopChar2<CR>", {noremap=true})
   -- Telescope
   local builtin = require('telescope.builtin')
-  keymap.set('n', '<leader>ff', builtin.find_files, {})
-  keymap.set('n', '<leader>fg', builtin.live_grep, {})
-  keymap.set('n', '<leader>fb', builtin.buffers, {})
-  keymap.set('n', '<leader>fh', builtin.help_tags, {})
+  keymap.set('n', '<leader>T', ":Telescope<CR>", {desc = "Launch telescope"})
+  keymap.set('n', '<leader>ff', builtin.find_files, {desc = "Find file"})
+  keymap.set('n', '<leader>fg', builtin.live_grep, {desc = "Find regrex"})
+  keymap.set('n', '<leader>fb', builtin.buffers, {desc = "Find buffer"})
+  keymap.set('n', '<leader>fh', builtin.help_tags, {desc = "Find help"})
   -- NeoTree
   keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
   -- barbecue
@@ -416,10 +468,10 @@ local setup_lsp = function ()
     local opts = { noremap=true, silent=true }
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',  {noremap=true, silent=true, desc = "Goto declaration"})
+    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true, silent=true, desc = "Goto definition"})
     buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', {noremap=true, silent=true, desc = "Goto implementation"})
     buf_set_keymap('n', '<leader>,', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
     buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
@@ -427,7 +479,7 @@ local setup_lsp = function ()
     buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
     buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', {noremap=true, silent=true, desc = "Goto references"})
     buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
@@ -461,6 +513,7 @@ local setup_lsp = function ()
         workspace = {
           -- Make the server aware of Neovim runtime files
           library = vim.api.nvim_get_runtime_file("", true),
+          checkThirdParty = false,
         },
         -- Do not send telemetry data containing a randomized but unique identifier
         telemetry = {
