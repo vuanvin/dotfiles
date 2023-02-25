@@ -205,7 +205,20 @@ require("lazy").setup({
   {
     'nvim-telescope/telescope.nvim',
     version = '0.1.1',
-    dependencies = { 'nvim-lua/plenary.nvim' }
+    config = function()
+      local builtin = require('telescope.builtin')
+      vim.keymap.set('n', '<leader>.', builtin.find_files, {desc = "Find file"})
+      vim.keymap.set('n', '<leader>,', builtin.buffers, {desc = "Find buffer"})
+      vim.keymap.set('n', '<leader>/', builtin.live_grep, {desc = "Find pattern"})
+      vim.keymap.set('n', '<leader>:', builtin.command_history, {desc = "Command history"})
+
+      vim.keymap.set('n', '<leader>T', ":Telescope<CR>", {desc = "Launch telescope"})
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, {desc = "Find file"})
+      vim.keymap.set('n', '<leader>fp', builtin.live_grep, {desc = "Find pattern"})
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, {desc = "Find buffer"})
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, {desc = "Find help"})
+    end,
+    dependencies = { 'nvim-lua/plenary.nvim' },
   },
 
   {
@@ -229,6 +242,11 @@ require("lazy").setup({
     'phaazon/hop.nvim',
     branch = 'v2',
     config = function()
+      vim.keymap.set("n", ",", ":HopWord<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>j", ":HopLineAC<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>k", ":HopLineBC<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>s", ":HopChar2<CR>", {noremap=true})
+
       require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
     end
   },
@@ -245,6 +263,9 @@ require("lazy").setup({
   {
     'nvim-treesitter/nvim-treesitter',
     config = function ()
+      vim.opt.foldmethod = "expr"
+      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
       require'nvim-treesitter.configs'.setup {
         -- A list of parser names, or "all" (the four listed parsers should always be installed)
         ensure_installed = { "c", "lua", "vim", "help" },
@@ -329,6 +350,10 @@ require("lazy").setup({
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
+    cmd = "Neotree",
+    keys = {
+      {"\\", ":NeoTreeShowToggle<CR>", desc = "NeoTree"},
+    },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
@@ -340,6 +365,12 @@ require("lazy").setup({
     version = "v3.*",
     dependencies = {'nvim-tree/nvim-web-devicons'},
     config = function()
+      vim.keymap.set("n", "<leader>bp", ":BufferLineCyclePrev<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", {noremap=true, desc = "Buffer jump"})
+
       vim.opt.termguicolors = true
       require("bufferline").setup{}
     end
@@ -401,9 +432,6 @@ local load_options = function()
   opt.numberwidth = 2
   opt.ruler = false
 
-  -- Treesitter
-  opt.foldmethod = "expr"
-  opt.foldexpr = "nvim_treesitter#foldexpr()"
 end
 
 local load_keymaps = function ()
@@ -423,26 +451,6 @@ local load_keymaps = function ()
   keymap.set("c", "<C-F>", "<Right>", {noremap=true})
   keymap.set("c", "<C-B>", "<Left>", {noremap=true})
 
-  -- Bufferline
-  keymap.set("n", "<leader>bp", ":BufferLineCyclePrev<CR>", {noremap=true})
-  keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", {noremap=true})
-  keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", {noremap=true})
-  keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", {noremap=true})
-  keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", {noremap=true, desc = "Buffer jump"})
-  -- Hop motion
-  keymap.set("n", ",", ":HopWord<CR>", {noremap=true})
-  keymap.set("n", "<leader>j", ":HopLineAC<CR>", {noremap=true})
-  keymap.set("n", "<leader>k", ":HopLineBC<CR>", {noremap=true})
-  keymap.set("n", "<leader>s", ":HopChar2<CR>", {noremap=true})
-  -- Telescope
-  local builtin = require('telescope.builtin')
-  keymap.set('n', '<leader>T', ":Telescope<CR>", {desc = "Launch telescope"})
-  keymap.set('n', '<leader>ff', builtin.find_files, {desc = "Find file"})
-  keymap.set('n', '<leader>fg', builtin.live_grep, {desc = "Find regrex"})
-  keymap.set('n', '<leader>fb', builtin.buffers, {desc = "Find buffer"})
-  keymap.set('n', '<leader>fh', builtin.help_tags, {desc = "Find help"})
-  -- NeoTree
-  keymap.set("n", [[\]], ":NeoTreeShowToggle<cr>", {noremap=true})
   -- barbecue
   local barbecue_ui = require('barbecue.ui')
   keymap.set('n', '<leader>tb', barbecue_ui.toggle, {})
@@ -468,18 +476,18 @@ local setup_lsp = function ()
     local opts = { noremap=true, silent=true }
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
+    buf_set_keymap('n', 'gh', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
     buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',  {noremap=true, silent=true, desc = "Goto declaration"})
     buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true, silent=true, desc = "Goto definition"})
-    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', {noremap=true, silent=true, desc = "Goto implementation"})
-    buf_set_keymap('n', '<leader>,', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    buf_set_keymap('n', 'gI', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', {noremap=true, silent=true, desc = "Goto references"})
+    buf_set_keymap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
     buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
     buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', {noremap=true, silent=true, desc = "Goto references"})
     buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
