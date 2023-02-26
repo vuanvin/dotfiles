@@ -1,10 +1,12 @@
 local global = {}
 function global:load_variables()
   local os_name = vim.loop.os_uname().sysname
+
   self.is_mac = os_name == "Darwin"
   self.is_linux = os_name == "Linux"
   self.is_windows = os_name == "Windows_NT"
   self.is_wsl = vim.fn.has("wsl") == 1
+
   self.vim_path = vim.fn.stdpath("config")
   local path_sep = self.is_windows and "\\" or "/"
   local home = self.is_windows and os.getenv("USERPROFILE") or os.getenv("HOME")
@@ -43,6 +45,16 @@ init_leader()
 init_lazy()
 
 require("lazy").setup({
+  {
+    'glacambre/firenvim',
+    -- Lazy load firenvim
+    -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
+    cond = not not vim.g.started_by_firenvim,
+    build = function()
+        require("lazy").load({ plugins = "firenvim", wait = true })
+        vim.fn["firenvim#install"](0)
+    end
+  },
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -410,6 +422,12 @@ end
 local load_options = function()
   local opt = vim.opt
 
+  if global.is_windows then
+    opt.shell = "pwsh --nologo"
+  else
+    opt.clipboard = "unnamedplus" -- avoid win32yank
+  end
+
   opt.timeout = true
   opt.timeoutlen = 300
 
@@ -418,7 +436,6 @@ local load_options = function()
   opt.ignorecase = true
   opt.smartcase = true
   opt.mouse = "a"
-  opt.clipboard = "unnamedplus"
 
   -- Indenting
   opt.expandtab = true
