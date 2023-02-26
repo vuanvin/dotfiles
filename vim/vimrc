@@ -16,24 +16,22 @@ let &t_ti ..= "\e[1 q"
 let &t_te ..= "\e[0 q"
 
 set number ruler
+filetype plugin indent on
+syntax enable on
 set autoindent smartindent cindent
 set tabstop=4
 set list listchars=tab:>-,trail:-
 set linebreak whichwrap=b,s,<,>,[,]       " cursor auto come to the next line.
-
 set cursorline
-" syntax enable on
 set foldmethod=syntax
 set nofoldenable
-
 set mouse=a
 set selectmode=mouse,key
-" set paste                               " conflict with coc.nvim
 set wildmenu
-
 set hlsearch incsearch
 set showmatch ignorecase smartcase
 set splitbelow splitright
+" set paste                               " conflict with coc.nvim
 
 " press <C-h> <A-h>
 nnoremap h <C-W>h
@@ -42,12 +40,18 @@ nnoremap j <C-W>j
 nnoremap k <C-W>k
 nnoremap <leader>bp :bp<CR>
 nnoremap <leader>bn :bn<CR>
+cnoremap <C-A> <Home>
+cnoremap <C-F> <Right>
+cnoremap <C-B> <Left>
+cnoremap b <S-Left>
+cnoremap f <S-Right>
 
 if empty(expand(glob("~/.vim/autoload/plug.vim")))
   call system("curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
 endif
 call plug#begin('~/.vim/plugged')
+Plug 'mhinz/vim-startify'               " show the last files when open directory
 Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
 Plug 'vim-airline/vim-airline'          " status-line format
@@ -57,6 +61,9 @@ Plug 'sainnhe/sonokai'
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
 Plug 'francoiscabrol/ranger.vim'      " shortcut <leader>f
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
+Plug 'junegunn/vim-easy-align'        " align
 
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
@@ -64,17 +71,9 @@ Plug 'tpope/vim-surround'
 Plug 'ludovicchabant/vim-gutentags' " auto-generate tags, require universal ctags and global
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
-Plug 'puremourning/vimspector'
 Plug 'jiangmiao/auto-pairs'
 Plug 'fidian/hexmode'                   " hex mode for binary file
-
-Plug 'mhinz/vim-startify'               " A simple plugin show the last file user has open
-Plug 'junegunn/vim-easy-align'          " align
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 call plug#end()
-
-let g:vimspector_enable_mappings = 'VSCode'
 
 " - LeaderF ------------------------------------------
 let g:Lf_HideHelp = 1
@@ -90,6 +89,10 @@ let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 
 let g:Lf_ShortcutB = "<C-L>"
 let g:Lf_ShortcutF = "<leader>ff"
+
+noremap q: :LeaderfHistoryCmd<cr>
+noremap q/ :LeaderfHistoryCmd<cr>
+cnoremap <C-R> :LeaderfHistoryCmd<cr>
 
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
@@ -125,12 +128,11 @@ command! -nargs=0 TransparentToggle        :call ToggleTransparent()
 
 nnoremap <leader>tt :call ToggleTransparent()<CR>
 
-let g:sonokai_transparent_background = 1
+let g:sonokai_transparent_background = 0
 let g:sonokai_better_performance = 1
 let g:sonokai_style = 'shusia'
 colorscheme sonokai
 
->>>>>>> main
 "- coc-nvim -----------------------------------------------
 set nobackup
 set nowritebackup
@@ -143,8 +145,6 @@ inoremap <silent><expr> <TAB>
       \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-<<<<<<< HEAD
-=======
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
@@ -173,7 +173,6 @@ endfunction
 xmap <leader>F  <Plug>(coc-format-selected)
 nmap <leader>F <Plug>(coc-format-selected)
 
->>>>>>> main
 "- easymotion ---------------------------------------------
 nmap <leader> <Plug>(easymotion-prefix)
 let g:EasyMotion_do_mapping = 0                 " Disable default mappings
@@ -214,3 +213,15 @@ let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
 " highlight Normal guibg=NONE ctermbg=NONE
 " highlight EndOfBuffer guibg=NONE ctermbg=NONE
 
+"- gui vim -------------------------------------------------
+set guifont=FiraCode\ Nerd\ Font\ Mono\ 10
+set guioptions-=m       " remove menu bar
+set guioptions-=T       " remove toolbar
+set guioptions-=r       " remove right-hand scroll bar
+set guioptions-=L       " remove left-hand scroll bar
+set visualbell t_vb=
+autocmd GUIEnter * set t_vb=
+
+if !has('nvim')
+  set viminfofile=~/.vim/viminfo
+endif
