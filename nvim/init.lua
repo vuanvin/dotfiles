@@ -46,6 +46,16 @@ init_lazy()
 
 require("lazy").setup({
   {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end
+  },
+  {
     'glacambre/firenvim',
     -- Lazy load firenvim
     -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
@@ -118,9 +128,10 @@ require("lazy").setup({
     opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } },
     -- stylua: ignore
     keys = {
-      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
-      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+      { "<leader>pp", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>ps", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>pl", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>pd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
 
@@ -616,3 +627,5 @@ setup_completion()
 setup_editor()
 load_options()
 load_keymaps()
+
+require('telescope').load_extension('projects')
