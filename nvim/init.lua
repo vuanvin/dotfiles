@@ -15,6 +15,7 @@ function global:load_variables()
   self.home = home
   self.data_dir = string.format("%s/site/", vim.fn.stdpath("data"))
 end
+
 global:load_variables()
 
 local keymap = vim.keymap
@@ -46,6 +47,68 @@ init_lazy()
 
 require("lazy").setup({
   {
+    'akinsho/toggleterm.nvim',
+    version = "*",
+    opts = {
+      float_opts = {
+        border = 'shadow',
+        winblend = 20,
+      },
+    },
+    config = function(_, opts)
+      require("toggleterm").setup(opts)
+      vim.keymap.set('n', '<A-=>', '<CMD>ToggleTerm direction=horizontal<CR>')
+      vim.keymap.set('t', '<A-=>', '<C-\\><C-n><CMD>ToggleTerm direction=horizontal<CR>')
+      vim.keymap.set('n', '<A-->', '<CMD>ToggleTerm direction=float<CR>')
+      vim.keymap.set('t', '<A-->', '<C-\\><C-n><CMD>ToggleTerm direction=float<CR>')
+    end,
+  },
+  {
+    'lewis6991/gitsigns.nvim',
+    config = function()
+      require('gitsigns').setup {
+        on_attach = function(bufnr)
+          local gs = package.loaded.gitsigns
+
+          local function map(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+          end
+
+          -- Navigation
+          map('n', ']c', function()
+            if vim.wo.diff then return ']c' end
+            vim.schedule(function() gs.next_hunk() end)
+            return '<Ignore>'
+          end, { expr = true })
+
+          map('n', '[c', function()
+            if vim.wo.diff then return '[c' end
+            vim.schedule(function() gs.prev_hunk() end)
+            return '<Ignore>'
+          end, { expr = true })
+
+          -- Actions
+          map({ 'n', 'v' }, '<leader>gs', ':Gitsigns stage_hunk<CR>')
+          map({ 'n', 'v' }, '<leader>gr', ':Gitsigns reset_hunk<CR>')
+          map('n', '<leader>gS', gs.stage_buffer)
+          map('n', '<leader>gu', gs.undo_stage_hunk)
+          map('n', '<leader>gR', gs.reset_buffer)
+          map('n', '<leader>gp', gs.preview_hunk)
+          map('n', '<leader>gb', function() gs.blame_line { full = true } end)
+          map('n', '<leader>tb', gs.toggle_current_line_blame)
+          map('n', '<leader>gd', gs.diffthis)
+          map('n', '<leader>gD', function() gs.diffthis('~') end)
+          map('n', '<leader>td', gs.toggle_deleted)
+
+          -- Text object
+          map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+        end
+      }
+    end
+  },
+  {
     "ahmedkhalf/project.nvim",
     config = function()
       require("project_nvim").setup {
@@ -61,8 +124,8 @@ require("lazy").setup({
     -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
     cond = not not vim.g.started_by_firenvim,
     build = function()
-        require("lazy").load({ plugins = "firenvim", wait = true })
-        vim.fn["firenvim#install"](0)
+      require("lazy").load({ plugins = "firenvim", wait = true })
+      vim.fn["firenvim#install"](0)
     end
   },
   {
@@ -86,6 +149,7 @@ require("lazy").setup({
         ["<leader>c"] = { name = "+code" },
         ["<leader>f"] = { name = "+file/find" },
         ["<leader>g"] = { name = "+git" },
+        ["<leader>j"] = { name = "+jump" },
         ["<leader>gh"] = { name = "+hunks" },
         ["<leader>q"] = { name = "+quit/session" },
         ["<leader>s"] = { name = "+search" },
@@ -111,7 +175,7 @@ require("lazy").setup({
 
   {
     "lukas-reineke/indent-blankline.nvim",
-    config = function ()
+    config = function()
       vim.opt.listchars:append "space:⋅"
 
       require("indent_blankline").setup {
@@ -128,10 +192,10 @@ require("lazy").setup({
     opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } },
     -- stylua: ignore
     keys = {
-      { "<leader>pp", function() require("persistence").load() end, desc = "Restore Session" },
-      { "<leader>ps", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>pp", function() require("persistence").load() end,                desc = "Restore Session" },
+      { "<leader>ps", function() require("persistence").load() end,                desc = "Restore Session" },
       { "<leader>pl", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>pd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+      { "<leader>pd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
     },
   },
 
@@ -149,7 +213,7 @@ require("lazy").setup({
     name = "barbecue",
     version = "*",
     keys = {
-      {"<leader>tb", "<cmd>Barbecue<CR>", desc = "Barbecue"},
+      { "<leader>tb", "<cmd>Barbecue<CR>", desc = "Barbecue" },
     },
     dependencies = {
       "SmiteshP/nvim-navic",
@@ -179,12 +243,15 @@ require("lazy").setup({
         "TextChanged",
         "TextChangedI",
       },
-      {
-        group = vim.api.nvim_create_augroup("barbecue.updater", {}),
-        callback = function()
-          require("barbecue.ui").update()
-        end,
-      })
+        {
+          group = vim.api.nvim_create_augroup("barbecue.updater", {}),
+          callback = function()
+            require("barbecue.ui").update()
+          end,
+        })
+
+      local barbecue_ui = require('barbecue.ui')
+      vim.keymap.set('n', '<leader>tb', barbecue_ui.toggle, {})
     end
   },
   {
@@ -230,47 +297,32 @@ require("lazy").setup({
     version = '0.1.1',
     config = function()
       local builtin = require('telescope.builtin')
-      vim.keymap.set('n', '<leader>.', builtin.find_files, {desc = "Find file"})
-      vim.keymap.set('n', '<leader>,', builtin.buffers, {desc = "Find buffer"})
-      vim.keymap.set('n', '<leader>/', builtin.live_grep, {desc = "Find pattern"})
-      vim.keymap.set('n', '<leader>:', builtin.command_history, {desc = "Command history"})
+      vim.keymap.set('n', '<leader>.', builtin.find_files, { desc = "Find file" })
+      vim.keymap.set('n', '<leader>,', builtin.buffers, { desc = "Find buffer" })
+      vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = "Find pattern" })
+      vim.keymap.set('n', '<leader>:', builtin.command_history, { desc = "Command history" })
 
-      vim.keymap.set('n', '<leader>T', ":Telescope<CR>", {desc = "Launch telescope"})
-      vim.keymap.set('n', '<leader>ff', builtin.find_files, {desc = "Find file"})
-      vim.keymap.set('n', '<leader>fp', builtin.live_grep, {desc = "Find pattern"})
-      vim.keymap.set('n', '<leader>fb', builtin.buffers, {desc = "Find buffer"})
-      vim.keymap.set('n', '<leader>fh', builtin.help_tags, {desc = "Find help"})
+      vim.keymap.set('n', '<leader>T', ":Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Find file" })
+      vim.keymap.set('n', '<leader>fp', builtin.live_grep, { desc = "Find pattern" })
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Find buffer" })
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Find help" })
     end,
     dependencies = { 'nvim-lua/plenary.nvim' },
-  },
-
-  {
-    "numToStr/FTerm.nvim",
-    config = function()
-      require'FTerm'.setup({
-        border = 'none',
-        dimensions  = {
-          height = 0.8,
-          width = 0.8,
-        },
-        blend = 25,
-      })
-
-      vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>')
-      vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
-      vim.api.nvim_create_user_command('FTermToggle', require('FTerm').toggle, { bang = true })
-    end
   },
   {
     'phaazon/hop.nvim',
     branch = 'v2',
     config = function()
-      vim.keymap.set("n", ",", ":HopWord<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>j", ":HopLineAC<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>k", ":HopLineBC<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>s", ":HopChar2<CR>", {noremap=true})
+      vim.keymap.set("n", "<leader>jw", "<cmd>HopWord<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jf", "<cmd>HopWordCurrentLine<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jj", "<cmd>HopWordAC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jk", "<cmd>HopWordBC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jn", "<cmd>HopLineAC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jp", "<cmd>HopLineBC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>js", "<cmd>HopChar2<CR>", { noremap = true })
 
-      require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+      require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
     end
   },
 
@@ -285,11 +337,11 @@ require("lazy").setup({
 
   {
     'nvim-treesitter/nvim-treesitter',
-    config = function ()
+    config = function()
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 
-      require'nvim-treesitter.configs'.setup {
+      require 'nvim-treesitter.configs'.setup {
         -- A list of parser names, or "all" (the four listed parsers should always be installed)
         ensure_installed = { "c", "lua", "vim", "help" },
 
@@ -327,7 +379,7 @@ require("lazy").setup({
   },
   {
     'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons'},
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('lualine').setup {
         options = {
@@ -375,7 +427,7 @@ require("lazy").setup({
     branch = "v2.x",
     cmd = "Neotree",
     keys = {
-      {"\\", ":NeoTreeShowToggle<CR>", desc = "NeoTree"},
+      { "\\", ":NeoTreeShowToggle<CR>", desc = "NeoTree" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -386,27 +438,27 @@ require("lazy").setup({
   {
     'akinsho/bufferline.nvim',
     version = "v3.*",
-    dependencies = {'nvim-tree/nvim-web-devicons'},
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      vim.keymap.set("n", "<leader>bp", ":BufferLineCyclePrev<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", {noremap=true})
-      vim.keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", {noremap=true, desc = "Buffer jump"})
+      vim.keymap.set("n", "<leader>bp", ":BufferLineCyclePrev<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
 
       vim.opt.termguicolors = true
-      require("bufferline").setup{}
+      require("bufferline").setup {}
     end
   },
 })
 
-local setup_editor = function ()
+local setup_editor = function()
   local clipboard_config = function()
     if global.is_mac then
       vim.g.clipboard = {
         name = "macOS-clipboard",
-        copy = { ["+"] = "pbcopy", ["*"] = "pbcopy" },
-        paste = { ["+"] = "pbpaste", ["*"] = "pbpaste" },
+        copy = { ["+"] = "pbcopy",["*"] = "pbcopy" },
+        paste = { ["+"] = "pbpaste",["*"] = "pbpaste" },
         cache_enabled = 0,
       }
     elseif global.is_wsl then
@@ -426,8 +478,8 @@ local setup_editor = function ()
   end
 
   clipboard_config() -- maybe need scoop install win32yank
-  autocmd({"BufWinEnter"}, { pattern = {"*?"}, command = "silent! loadview",})
-  autocmd({"BufWinLeave"}, { pattern = {"*?"}, command = "silent! mkview",})
+  autocmd({ "BufWinEnter" }, { pattern = { "*?" }, command = "silent! loadview", })
+  autocmd({ "BufWinLeave" }, { pattern = { "*?" }, command = "silent! mkview", })
 end
 
 local load_options = function()
@@ -459,32 +511,37 @@ local load_options = function()
   opt.number = true
   opt.numberwidth = 2
   opt.ruler = false
-
 end
 
-local load_keymaps = function ()
+local load_keymaps = function()
   -- Window
-  keymap.set("n", "<M-h>", "<C-W>h", {noremap=true})
-  keymap.set("n", "<M-l>", "<C-W>l", {noremap=true})
-  keymap.set("n", "<M-j>", "<C-W>j", {noremap=true})
-  keymap.set("n", "<M-k>", "<C-W>k", {noremap=true})
+  keymap.set("n", "<M-h>", "<C-W>h", { noremap = true })
+  keymap.set("n", "<M-l>", "<C-W>l", { noremap = true })
+  keymap.set("n", "<M-j>", "<C-W>j", { noremap = true })
+  keymap.set("n", "<M-k>", "<C-W>k", { noremap = true })
 
-  keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", {noremap=true})
-  keymap.set("t", "<M-l>", "<C-\\><C-N><C-W>l", {noremap=true})
-  keymap.set("t", "<M-j>", "<C-\\><C-N><C-W>j", {noremap=true})
-  keymap.set("t", "<M-k>", "<C-\\><C-N><C-W>k", {noremap=true})
-  keymap.set("t", "<Esc>", "<C-\\><C-N>", {noremap=true})
+  -- Terminal
+  keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", { noremap = true })
+  keymap.set("t", "<M-l>", "<C-\\><C-N><C-W>l", { noremap = true })
+  keymap.set("t", "<M-j>", "<C-\\><C-N><C-W>j", { noremap = true })
+  keymap.set("t", "<M-k>", "<C-\\><C-N><C-W>k", { noremap = true })
+  keymap.set("t", "<Esc>", "<C-\\><C-N>", { noremap = true })
+
   -- Cmdline
-  keymap.set("c", "<C-A>", "<Home>", {noremap=true})
-  keymap.set("c", "<C-F>", "<Right>", {noremap=true})
-  keymap.set("c", "<C-B>", "<Left>", {noremap=true})
+  keymap.set("c", "<C-A>", "<Home>", { noremap = true })
+  keymap.set("c", "<C-F>", "<Right>", { noremap = true })
+  keymap.set("c", "<C-B>", "<Left>", { noremap = true })
 
-  -- barbecue
-  local barbecue_ui = require('barbecue.ui')
-  keymap.set('n', '<leader>tb', barbecue_ui.toggle, {})
+  -- Insert
+  keymap.set("i", "<C-A>", "<Home>", { noremap = true })
+  keymap.set("i", "<C-E>", "<End>", { noremap = true })
+  keymap.set("i", "<C-H>", "<Left>", { noremap = true })
+  keymap.set("i", "<C-J>", "<Down>", { noremap = true })
+  keymap.set("i", "<C-K>", "<Up>", { noremap = true })
+  keymap.set("i", "<C-L>", "<Right>", { noremap = true })
 end
 
-local setup_lsp = function ()
+local setup_lsp = function()
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
@@ -501,15 +558,19 @@ local setup_lsp = function ()
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings.
-    local opts = { noremap=true, silent=true }
+    local opts = { noremap = true, silent = true }
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     buf_set_keymap('n', 'gh', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',  {noremap=true, silent=true, desc = "Goto declaration"})
-    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true, silent=true, desc = "Goto definition"})
-    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', {noremap=true, silent=true, desc = "Goto implementation"})
+    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
+      { noremap = true, silent = true, desc = "Goto declaration" })
+    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>',
+      { noremap = true, silent = true, desc = "Goto definition" })
+    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>',
+      { noremap = true, silent = true, desc = "Goto implementation" })
     buf_set_keymap('n', 'gI', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', {noremap=true, silent=true, desc = "Goto references"})
+    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>',
+      { noremap = true, silent = true, desc = "Goto references" })
     buf_set_keymap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
     buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
@@ -519,8 +580,8 @@ local setup_lsp = function ()
     buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-    buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+    buf_set_keymap('n', '<leader>Q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+    buf_set_keymap('n', '<leader>F', '<cmd>lua vim.lsp.buf.format { async = true }<CR>', opts)
   end
 
   local lspconfig = require('lspconfig')
@@ -544,7 +605,7 @@ local setup_lsp = function ()
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = {'vim'},
+          globals = { 'vim' },
         },
         workspace = {
           -- Make the server aware of Neovim runtime files
@@ -560,7 +621,7 @@ local setup_lsp = function ()
   }
 end
 
-local setup_completion = function ()
+local setup_completion = function()
   local cmp = require "cmp"
 
   cmp.setup({
@@ -578,7 +639,7 @@ local setup_completion = function ()
       -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-b>'] = cmp.mapping.scroll_docs( -4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
@@ -616,8 +677,8 @@ local setup_completion = function ()
   cmp.setup.cmdline(':', {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources(
-    {{ name = 'path' }},
-    {{ name = 'cmdline' }}
+      { { name = 'path' } },
+      { { name = 'cmdline' } }
     )
   })
 end
