@@ -150,7 +150,7 @@ require("lazy").setup({
         ["<leader>f"] = { name = "+file/find" },
         ["<leader>g"] = { name = "+git" },
         ["<leader>j"] = { name = "+jump" },
-        ["<leader>gh"] = { name = "+hunks" },
+        ["<leader>l"] = { name = "+language" },
         ["<leader>q"] = { name = "+quit/session" },
         ["<leader>s"] = { name = "+search" },
         ["<leader>u"] = { name = "+ui" },
@@ -303,10 +303,12 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>:', builtin.command_history, { desc = "Command history" })
 
       vim.keymap.set('n', '<leader>T', ":Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = "Find diagnostic" })
       vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Find file" })
       vim.keymap.set('n', '<leader>fp', builtin.live_grep, { desc = "Find pattern" })
       vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Find buffer" })
       vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Find help" })
+      vim.keymap.set('n', '<leader>fm', builtin.marks, { desc = "Find mark" })
     end,
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
@@ -340,6 +342,7 @@ require("lazy").setup({
     config = function()
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+      vim.opt.foldenable = false
 
       require 'nvim-treesitter.configs'.setup {
         -- A list of parser names, or "all" (the four listed parsers should always be installed)
@@ -542,6 +545,12 @@ local load_keymaps = function()
 end
 
 local setup_lsp = function()
+  local opts = { noremap=true, silent=true }
+  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+  vim.keymap.set('n', '<leader>xs', vim.diagnostic.setloclist, opts)
+  vim.keymap.set('n', '<leader>xo', vim.diagnostic.open_float, opts)
+
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
@@ -550,38 +559,35 @@ local setup_lsp = function()
       vim.api.nvim_buf_set_keymap(bufnr, ...)
     end
 
-    local function buf_set_option(...)
-      vim.api.nvim_buf_set_option(bufnr, ...)
-    end
-
     -- Enable completion triggered by <c-x><c-o>
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    -- Mappings.
-    local opts = { noremap = true, silent = true }
+   -- Mappings.
+    local opts = { noremap = true, silent = true}
+    local bufopts = { noremap = true, silent = true, buffer=bufnr }
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', 'gh', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
-      { noremap = true, silent = true, desc = "Goto declaration" })
+    vim.keymap.set('n', 'gh', vim.lsp.buf.hover, bufopts) -- override gh
+    vim.keymap.set('n', 'gH', vim.lsp.buf.signature_help, bufopts) -- override gH
     buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>',
       { noremap = true, silent = true, desc = "Goto definition" })
-    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>',
+    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
+      { noremap = true, silent = true, desc = "Goto declaration" })
+    buf_set_keymap('n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<CR>',
       { noremap = true, silent = true, desc = "Goto implementation" })
-    buf_set_keymap('n', 'gI', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>',
+    buf_set_keymap('n', '<leader>lt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    buf_set_keymap('n', '<leader>lr', '<cmd>lua vim.lsp.buf.references()<CR>',
       { noremap = true, silent = true, desc = "Goto references" })
-    buf_set_keymap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-    buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-    buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<leader>Q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-    buf_set_keymap('n', '<leader>F', '<cmd>lua vim.lsp.buf.format { async = true }<CR>', opts)
+
+    vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+    vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set('n', '<leader>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, bufopts)
+
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format { async = true } end, bufopts)
   end
 
   local lspconfig = require('lspconfig')
