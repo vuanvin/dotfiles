@@ -1,32 +1,31 @@
 {
-  "latex-workshop.latex.recipe.default": "lastUsed",
-  "latex-workshop.view.pdf.viewer": "external",
-  "latex-workshop.view.pdf.external.viewer.command": "zathura",
+  // Windows Settings
+  "latex-workshop.view.pdf.external.viewer.command": "sumatrapdf.exe",
   "latex-workshop.view.pdf.external.viewer.args": [
-      "--synctex-editor-command",
-      "code --no-sandbox -r -g \"%{input}:%{line}\"",
-      "%PDF%"
+    "-forward-search",
+    "%TEX%",
+    "%LINE%",
+    "-reuse-instance",
+    "-inverse-search",
+    "\"C:\\Program Files\\Microsoft VS Code\\Code.exe\" \"C:\\Program Files\\Microsoft VS Code\\resources\\app\\out\\cli.js\" --ms-enable-electron-run-as-node -r -g \"%f:%l\"",
+    "%PDF%"
   ],
-  "latex-workshop.view.pdf.external.synctex.command": "zathura",
+  "latex-workshop.view.pdf.external.synctex.command": "sumatrapdf.exe",
   "latex-workshop.view.pdf.external.synctex.args": [
-      "--synctex-forward=%LINE%:0:%TEX%",
-      "%PDF%"
+    "-forward-search",
+    "%TEX%",
+    "%LINE%",
+    "-reuse-instance",
+    "-inverse-search",
+    "\"C:\\Program Files\\Microsoft VS Code\\Code.exe\" \"C:\\Program Files\\Microsoft VS Code\\resources\\app\\out\\cli.js\" --ms-enable-electron-run-as-node -r -g \"%f:%l\"",
+    "%PDF%"
   ],
+  "latex-workshop.view.pdf.viewer": "external",
+  "latex-workshop.latex.recipe.default": "lastUsed",
   "latex-workshop.showContextMenu": true,
   "latex-workshop.intellisense.package.enabled": true,
   // "latex-workshop.latex.autoBuild.run": "never",
   "latex-workshop.latex.tools": [
-    {
-      "name": "xelatex",
-      "command": "xelatex",
-      "args": [
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-pdf",
-        "%DOCFILE%"
-      ]
-    },
     {
       "name": "latexmk",
       "command": "latexmk",
@@ -39,6 +38,17 @@
         "%DOCFILE%"
       ],
       "env": {}
+    },
+    {
+      "name": "xelatex",
+      "command": "xelatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "%DOCFILE%"
+      ]
     },
     {
       "name": "lualatexmk",
@@ -75,12 +85,6 @@
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "xelatex",
-      "tools": [
-        "xelatex"
-      ]
-    },
-    {
       "name": "latexmk",
       "tools": [
         "latexmk"
@@ -102,6 +106,12 @@
       ]
     },
     {
+      "name": "xelatex",
+      "tools": [
+        "xelatex"
+      ]
+    },
+    {
       "name": "pdflatex➞bibtex➞pdflatex × 2",
       "tools": [
         "pdflatex",
@@ -111,8 +121,8 @@
       ]
     }
   ],
-  "editor.minimap.enabled": false,
-  "editor.fontFamily": "FiraCode Nerd Font,Hack Nerd Font",
+  "editor.fontSize": 12,
+  "editor.fontFamily": "JetBrainsMono NF,FiraCode Nerd Font Mono,Hack Nerd Font",
   "editor.wordWrap": "on",
   "editor.lineNumbers": "on",
   "editor.renderControlCharacters": true,
@@ -141,9 +151,9 @@
     "cloud": "linux",
     "nsccgz": "linux"
   },
-  "extensions.autoUpdate": false,
   "extensions.experimental.affinity": {
     "asvetliakov.vscode-neovim": 1,
+    "vscodevim.vim": 1,
     "vscode.git-base": 2,
     "vscode.github": 2,
     "vscode.merge-conflict": 2,
@@ -158,70 +168,19 @@
     "ZainChen.json": 5,
     "ryu1kn.partial-diff": 5
   },
-  "workbench.colorTheme": "Monokai Pro (Filter Machine)",
-  "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
+  "workbench.iconTheme": "Monokai Pro Icons",
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook",
     "*.pdf": "latex-workshop-pdf-hook"
   },
+  "scm.inputFontSize": 12,
+  "debug.console.fontSize": 12,
+  "terminal.integrated.fontSize": 12,
   "terminal.integrated.inheritEnv": false,
   "terminal.integrated.defaultProfile.windows": "Nushell",
   "cmake.configureOnOpen": true,
   "python.linting.enabled": true,
   "python.terminal.activateEnvironment": false,
-  "code-runner.executorMap": {
-    "javascript": "node",
-    "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
-    "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "php": "php",
-    "python": "python -u",
-    "perl": "perl",
-    "perl6": "perl6",
-    "ruby": "ruby",
-    "go": "go run",
-    "lua": "lua",
-    "groovy": "groovy",
-    "powershell": "powershell -ExecutionPolicy ByPass -File",
-    "bat": "cmd /c",
-    "shellscript": "bash",
-    "fsharp": "fsi",
-    "csharp": "scriptcs",
-    "vbscript": "cscript //Nologo",
-    "typescript": "ts-node",
-    "coffeescript": "coffee",
-    "scala": "scala",
-    "swift": "swift",
-    "julia": "julia",
-    "crystal": "crystal",
-    "ocaml": "ocaml",
-    "r": "Rscript",
-    "applescript": "osascript",
-    "clojure": "lein exec",
-    "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
-    "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
-    "racket": "racket",
-    "scheme": "csi -script",
-    "ahk": "autohotkey",
-    "autoit": "autoit3",
-    "dart": "dart",
-    "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
-    "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
-    "haskell": "runhaskell",
-    "nim": "nim compile --verbosity:0 --hints:off --run",
-    "lisp": "sbcl --script",
-    "kit": "kitc --run",
-    "v": "v run",
-    "sass": "sass --style expanded",
-    "scss": "scss --style expanded",
-    "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css",
-    "FortranFreeForm": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran-modern": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran_fixed-form": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt"
-  },
-  "code-runner.runInTerminal": true,
   "picgo.picBed.github.repo": "vuanvin/cdn",
   "picgo.picBed.github.token": "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",
   "picgo.picBed.github.branch": "main",
@@ -244,6 +203,7 @@
   "picgo.customOutputFormat": "<img src=\"${url}\" alt=\"${uploadedName}\" height=\"80%\" width=\"80%\">",
   "go.toolsManagement.autoUpdate": true,
   "git.ignoreLegacyWarning": true,
+  "git.autorefresh": false,
   "github.copilot.enable": {
     "*": true,
     "yaml": false,
@@ -262,18 +222,25 @@
     "editor.formatOnSave": true
   },
   "clangd.arguments": [
-    "-log=verbose",
-    "-pretty",
     "--background-index",
-    "--header-insertion=never"
-    //"--query-driver=/bin/arm-buildroot-linux-gnueabihf-g++", //for cross compile usage
-    // "--compile-commands-dir=/path/to/your/compile_commands_dir/"
+    "-j=8",
+    "--header-insertion=iwyu",
+    "--all-scopes-completion",
+    "--completion-style=detailed",
+    "--cross-file-rename",
+    "--enable-config",
+    "-pretty",
+    "--clang-tidy",
+    // "--compile-commands-dir=build"
+    // "--query-driver=clang++",
+    "--pch-storage=memory"
   ],
   "clangd.fallbackFlags": [
     "-std=c++17"
   ],
-  "vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\yuanyin\\AppData\\Local\\nvim.bak\\init.vim",
-  "vscode-neovim.useWSL": true,
+  "vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\yuanyin\\AppData\\Local\\nvim\\init.lua",
+  "vscode-neovim.useWSL": false,
+  "vim.useCtrlKeys": true,
   "vim.autoSwitchInputMethod.defaultIM": "\"1033\"",
   "vim.autoSwitchInputMethod.obtainIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe",
   "vim.autoSwitchInputMethod.switchIMCmd": "C:\\Users\\yuanyin\\scoop\\shims\\im-select.exe {im}",
@@ -282,27 +249,49 @@
   "vim.leader": "<space>",
   "vim.useSystemClipboard": true,
   "vim.easymotion": true,
-  "vim.normalModeKeyBindingsNonRecursive": [
+  "vim.insertModeKeyBindingsNonRecursive": [
     {
-        "before": [
-            "u"
-        ],
-        "commands": [
-            {
-                "command": "undo"
-            }
-        ]
+      "before": [
+        "<C-a>"
+      ],
+      "commands": [
+        {
+          "command": "cursorHomeSelect"
+        }
+      ]
     },
     {
-        "before": [
-            "<C-r>"
-        ],
-        "commands": [
-            {
-                "command": "redo"
-            }
-        ]
-    },    
+      "before": [
+        "<C-e>"
+      ],
+      "commands": [
+        {
+          "command": "cursorEndSelect"
+        }
+      ]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": [
+        "u"
+      ],
+      "commands": [
+        {
+          "command": "undo"
+        }
+      ]
+    },
+    {
+      "before": [
+        "<C-r>"
+      ],
+      "commands": [
+        {
+          "command": "redo"
+        }
+      ]
+    },
     {
       "before": [
         ","
@@ -427,7 +416,7 @@
         "t"
       ],
       "commands": [
-      "workbench.action.terminal.toggleTerminal"
+        "workbench.action.terminal.toggleTerminal"
       ]
     },
     {
@@ -437,7 +426,7 @@
         "t"
       ],
       "commands": [
-      "terminal.focus"
+        "terminal.focus"
       ]
     },
     {
@@ -583,7 +572,7 @@
       "before": [
         "<leader>",
         "p",
-        "p"
+        "o"
       ],
       "commands": [
         "projectManager.listProjects"
@@ -593,7 +582,7 @@
       "before": [
         "<leader>",
         "p",
-        "P"
+        "p"
       ],
       "commands": [
         "projectManager.listProjectsNewWindow"
@@ -744,15 +733,33 @@
   "clipboard-manager.preview": false,
   "clipboard-manager.snippet.enabled": false,
   "workbench.editor.revealIfOpen": true,
-  "cmake.copyCompileCommands": "build/",
   "C_Cpp.errorSquiggles": "enabled",
-  "search.quickOpen.includeSymbols": true,
+  // "search.quickOpen.includeSymbols": true,
   "search.exclude": {
     "**/.git": true,
     "**/build": true,
     "**/target": true
   },
-  "workbench.layoutControl.enabled": false,
-  "editor.fontSize": 12,
-  "breadcrumbs.enabled": false,
+  "codesnap.shutterAction": "copy",
+  "codesnap.containerPadding": "2em",
+  "window.menuBarVisibility": "compact",
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "C_Cpp.clang_format_fallbackStyle": "Google",
+  "workbench.colorTheme": "Monokai Pro",
+  "editor.quickSuggestionsDelay": 0,
+  "C_Cpp.intelliSenseUpdateDelay": 500,
+  "C_Cpp.codeAnalysis.updateDelay": 500,
+  "C_Cpp.autocompleteAddParentheses": true,
+  "python.analysis.completeFunctionParens": true,
+  "window.openFilesInNewWindow": "default",
+  "editor.minimap.enabled": false,
+  "vscode-neovim.mouseSelectionStartVisualMode": true,
+  "git.openRepositoryInParentFolders": "never",
+  "editor.showFoldingControls": "never",
+  "[python]": {
+    "editor.formatOnType": true
+  },
+  "files.autoSave": "afterDelay"
 }
