@@ -87,6 +87,8 @@ require("lazy").setup({
       vim.keymap.set('t', '<A-=>', '<C-\\><C-n><CMD>ToggleTerm direction=horizontal<CR>')
       vim.keymap.set('n', '<A-->', '<CMD>ToggleTerm direction=float<CR>')
       vim.keymap.set('t', '<A-->', '<C-\\><C-n><CMD>ToggleTerm direction=float<CR>')
+      vim.keymap.set('n', '<A-`>', '<CMD>ToggleTerm<CR>')
+      vim.keymap.set('t', '<A-`>', '<C-\\><C-n><CMD>ToggleTerm<CR>')
     end,
   },
   {
@@ -174,6 +176,7 @@ require("lazy").setup({
         ["<leader>c"] = { name = "+code" },
         ["<leader>f"] = { name = "+file/find" },
         ["<leader>g"] = { name = "+git" },
+        ["<leader>h"] = { name = "+help" },
         ["<leader>j"] = { name = "+jump" },
         ["<leader>l"] = { name = "+language" },
         ["<leader>n"] = { name = "+notice" },
@@ -185,6 +188,9 @@ require("lazy").setup({
       }
 
       wk.register(keymaps)
+
+      vim.keymap.set('n', '<leader>hk', "<cmd>WhichKey<CR>", { desc = "Keymaps" })
+      vim.keymap.set('n', '<leader>k', "<cmd>WhichKey<CR>", { desc = "Keymaps" })
     end,
   },
   {
@@ -343,6 +349,7 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Find buffer" })
       vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Find help" })
       vim.keymap.set('n', '<leader>fm', builtin.marks, { desc = "Find mark" })
+      vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = "Find keymaps" })
     end,
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
@@ -483,7 +490,7 @@ require("lazy").setup({
     branch = "v2.x",
     cmd = "Neotree",
     keys = {
-      { "\\", ":NeoTreeShowToggle<CR>", desc = "NeoTree" },
+      { "\\", "<cmd>NeoTreeShowToggle<CR>", desc = "NeoTree" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -595,6 +602,8 @@ local load_keymaps = function()
   keymap.set("i", "<C-J>", "<Down>", { noremap = true })
   keymap.set("i", "<C-K>", "<Up>", { noremap = true })
   keymap.set("i", "<C-L>", "<Right>", { noremap = true })
+
+  keymap.set({ "n", "v" }, "<leader>hh", ":help ", { noremap = true, desc = "Help" })
 end
 
 local setup_lsp = function()
