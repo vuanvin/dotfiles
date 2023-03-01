@@ -46,6 +46,7 @@ init_leader()
 init_lazy()
 
 require("lazy").setup({
+  'equalsraf/neovim-gui-shim', -- fixed neovim-qt bug
   {
     "folke/trouble.nvim",
     requires = "nvim-tree/nvim-web-devicons",
@@ -64,12 +65,12 @@ require("lazy").setup({
       -- set_keymap('n', '<leader>xl', vim.diagnostic.setloclist, { desc = "List diagnostic" })
       set_keymap('n', '<leader>xo', vim.diagnostic.open_float, { desc = "Float diagnostic" })
 
-      set_keymap("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { desc = "Toggle trouble" })
-      set_keymap("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { desc = "Workspace diagnostics" })
-      set_keymap("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { desc = "Document diagnostics" })
-      set_keymap("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { desc = "List diagnostics" })
-      set_keymap("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { desc = "Quickfix" })
-      set_keymap("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", { desc = "" })
+      set_keymap("n", "<leader>xx", "<CMD>TroubleToggle<cr>", { desc = "Toggle trouble" })
+      set_keymap("n", "<leader>xw", "<CMD>TroubleToggle workspace_diagnostics<cr>", { desc = "Workspace diagnostics" })
+      set_keymap("n", "<leader>xd", "<CMD>TroubleToggle document_diagnostics<cr>", { desc = "Document diagnostics" })
+      set_keymap("n", "<leader>xl", "<CMD>TroubleToggle loclist<cr>", { desc = "List diagnostics" })
+      set_keymap("n", "<leader>xq", "<CMD>TroubleToggle quickfix<cr>", { desc = "Quickfix" })
+      set_keymap("n", "<leader>xr", "<CMD>TroubleToggle lsp_references<cr>", { desc = "" })
     end,
   },
   {
@@ -189,8 +190,8 @@ require("lazy").setup({
 
       wk.register(keymaps)
 
-      vim.keymap.set('n', '<leader>hk', "<cmd>WhichKey<CR>", { desc = "Show keymaps" })
-      vim.keymap.set('n', '<leader>k', "<cmd>WhichKey<CR>", { desc = "Show keymaps" })
+      vim.keymap.set('n', '<leader>hk', "<CMD>WhichKey<CR>", { desc = "Show keymaps" })
+      vim.keymap.set('n', '<leader>k', "<CMD>WhichKey<CR>", { desc = "Show keymaps" })
     end,
   },
   {
@@ -245,7 +246,7 @@ require("lazy").setup({
     name = "barbecue",
     version = "*",
     keys = {
-      { "<leader>tb", "<cmd>Barbecue<CR>", desc = "Barbecue" },
+      { "<leader>tb", "<CMD>Barbecue<CR>", desc = "Barbecue" },
     },
     dependencies = {
       "SmiteshP/nvim-navic",
@@ -341,8 +342,8 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = "Find pattern" })
       vim.keymap.set('n', '<leader>:', builtin.command_history, { desc = "Command history" })
 
-      vim.keymap.set('n', '<leader>T', "<cmd>Telescope<CR>", { desc = "Launch telescope" })
-      vim.keymap.set('n', '<C-S-F>', "<cmd>Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<leader>T', "<CMD>Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<C-S-F>', "<CMD>Telescope<CR>", { desc = "Launch telescope" })
       vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = "Find diagnostic" })
       vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Find file" })
       vim.keymap.set('n', '<leader>fp', builtin.live_grep, { desc = "Find pattern" })
@@ -357,13 +358,13 @@ require("lazy").setup({
     'phaazon/hop.nvim',
     branch = 'v2',
     config = function()
-      vim.keymap.set("n", "<leader>jw", "<cmd>HopWord<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>jf", "<cmd>HopWordCurrentLine<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>jj", "<cmd>HopWordAC<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>jk", "<cmd>HopWordBC<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>jn", "<cmd>HopLineAC<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>jp", "<cmd>HopLineBC<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>js", "<cmd>HopChar2<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jw", "<CMD>HopWord<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jf", "<CMD>HopWordCurrentLine<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jj", "<CMD>HopWordAC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jk", "<CMD>HopWordBC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jn", "<CMD>HopLineAC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>jp", "<CMD>HopLineBC<CR>", { noremap = true })
+      vim.keymap.set("n", "<leader>js", "<CMD>HopChar2<CR>", { noremap = true })
 
       require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
     end
@@ -490,7 +491,7 @@ require("lazy").setup({
     branch = "v2.x",
     cmd = "Neotree",
     keys = {
-      { "\\", "<cmd>NeoTreeShowToggle<CR>", desc = "NeoTree" },
+      { "\\", "<CMD>NeoTreeShowToggle<CR>", desc = "NeoTree" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -503,11 +504,11 @@ require("lazy").setup({
     version = "v3.*",
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      vim.keymap.set("n", "<leader>bp", "<cmd>BufferLineCyclePrev<CR>", { noremap = true, desc = "Goto prev buffer" })
-      vim.keymap.set("n", "<leader>bn", "<cmd>BufferLineCycleNext<CR>", { noremap = true, desc = "Goto next buffer" })
-      vim.keymap.set("n", "<leader>bh", "<cmd>BufferLineMovePrev<CR>", { noremap = true, desc = "Move prev buffer" })
-      vim.keymap.set("n", "<leader>bl", "<cmd>BufferLineMoveNext<CR>", { noremap = true, desc = "Move next buffer" })
-      vim.keymap.set("n", "<leader>bb", "<cmd>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
+      vim.keymap.set("n", "<leader>bp", "<CMD>BufferLineCyclePrev<CR>", { noremap = true, desc = "Goto prev buffer" })
+      vim.keymap.set("n", "<leader>bn", "<CMD>BufferLineCycleNext<CR>", { noremap = true, desc = "Goto next buffer" })
+      vim.keymap.set("n", "<leader>bh", "<CMD>BufferLineMovePrev<CR>", { noremap = true, desc = "Move prev buffer" })
+      vim.keymap.set("n", "<leader>bl", "<CMD>BufferLineMoveNext<CR>", { noremap = true, desc = "Move next buffer" })
+      vim.keymap.set("n", "<leader>bb", "<CMD>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
 
       vim.opt.termguicolors = true
       require("bufferline").setup {}
