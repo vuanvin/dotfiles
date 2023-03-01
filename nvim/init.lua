@@ -141,7 +141,6 @@ require("lazy").setup({
       local keymaps = {
         mode = { "n", "v" },
         ["g"] = { name = "+goto" },
-        ["gz"] = { name = "+surround" },
         ["]"] = { name = "+next" },
         ["["] = { name = "+prev" },
         ["<leader><tab>"] = { name = "+tabs" },
@@ -302,7 +301,8 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = "Find pattern" })
       vim.keymap.set('n', '<leader>:', builtin.command_history, { desc = "Command history" })
 
-      vim.keymap.set('n', '<leader>T', ":Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<leader>T', "<cmd>Telescope<CR>", { desc = "Launch telescope" })
+      vim.keymap.set('n', '<C-S-F>', "<cmd>Telescope<CR>", { desc = "Launch telescope" })
       vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = "Find diagnostic" })
       vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Find file" })
       vim.keymap.set('n', '<leader>fp', builtin.live_grep, { desc = "Find pattern" })
@@ -335,7 +335,11 @@ require("lazy").setup({
     end,
   },
 
-  'tpope/vim-surround',
+  {
+    'tpope/vim-surround',
+    config = function()
+    end
+  },
 
   {
     'nvim-treesitter/nvim-treesitter',
@@ -408,7 +412,22 @@ require("lazy").setup({
     end,
   },
 
-  'neovim/nvim-lspconfig',
+  {
+    'neovim/nvim-lspconfig',
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      -- options for vim.diagnostic.config()
+      diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = { spacing = 4, prefix = "●" },
+        severity_sort = true,
+      },
+    },
+    config = function(plugin, opts)
+      vim.diagnostic.config(opts.diagnostics)
+    end,
+  },
 
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-path',
@@ -443,11 +462,11 @@ require("lazy").setup({
     version = "v3.*",
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      vim.keymap.set("n", "<leader>bp", ":BufferLineCyclePrev<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>bn", ":BufferLineCycleNext<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>bh", ":BufferLineMovePrev<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>bl", ":BufferLineMoveNext<CR>", { noremap = true })
-      vim.keymap.set("n", "<leader>b<leader>", ":BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
+      vim.keymap.set("n", "<leader>bp", "<cmd>BufferLineCyclePrev<CR>", { noremap = true, desc = "Goto prev buffer" })
+      vim.keymap.set("n", "<leader>bn", "<cmd>BufferLineCycleNext<CR>", { noremap = true, desc = "Goto next buffer" })
+      vim.keymap.set("n", "<leader>bh", "<cmd>BufferLineMovePrev<CR>", { noremap = true, desc = "Move prev buffer" })
+      vim.keymap.set("n", "<leader>bl", "<cmd>BufferLineMoveNext<CR>", { noremap = true, desc = "Move next buffer" })
+      vim.keymap.set("n", "<leader>bb", "<cmd>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
 
       vim.opt.termguicolors = true
       require("bufferline").setup {}
@@ -518,10 +537,10 @@ end
 
 local load_keymaps = function()
   -- Window
-  keymap.set("n", "<M-h>", "<C-W>h", { noremap = true })
-  keymap.set("n", "<M-l>", "<C-W>l", { noremap = true })
-  keymap.set("n", "<M-j>", "<C-W>j", { noremap = true })
-  keymap.set("n", "<M-k>", "<C-W>k", { noremap = true })
+  keymap.set("n", "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
+  keymap.set("n", "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
+  keymap.set("n", "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
+  keymap.set("n", "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
 
   -- Terminal
   keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", { noremap = true })
@@ -545,49 +564,51 @@ local load_keymaps = function()
 end
 
 local setup_lsp = function()
-  local opts = { noremap=true, silent=true }
-  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-  vim.keymap.set('n', '<leader>xs', vim.diagnostic.setloclist, opts)
-  vim.keymap.set('n', '<leader>xo', vim.diagnostic.open_float, opts)
+  local function set_keymap(mode, l, r, opts)
+    opts = opts or {}
+    opts.noremap = true
+    opts.silent = true
+    vim.keymap.set(mode, l, r, opts)
+  end
+
+  set_keymap('n', '[d', vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic"} )
+  set_keymap('n', ']d', vim.diagnostic.goto_next, { desc = "Goto next diagnostic"} )
+  set_keymap('n', '<leader>xl', vim.diagnostic.setloclist, { desc = "List diagnostic"} )
+  set_keymap('n', '<leader>xo', vim.diagnostic.open_float, { desc = "Float diagnostic"} )
 
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
 
-    local function buf_set_keymap(...)
-      vim.api.nvim_buf_set_keymap(bufnr, ...)
+    local function buf_set_keymap(mode, l, r, bufopts)
+      bufopts = bufopts or {}
+      bufopts.noremap = true
+      bufopts.silent = true
+      bufopts.buffer = bufnr
+      vim.keymap.set(mode, l, r, bufopts)
     end
 
     -- Enable completion triggered by <c-x><c-o>
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-   -- Mappings.
-    local opts = { noremap = true, silent = true}
-    local bufopts = { noremap = true, silent = true, buffer=bufnr }
-
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    vim.keymap.set('n', 'gh', vim.lsp.buf.hover, bufopts) -- override gh
-    vim.keymap.set('n', 'gH', vim.lsp.buf.signature_help, bufopts) -- override gH
-    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>',
-      { noremap = true, silent = true, desc = "Goto definition" })
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>',
-      { noremap = true, silent = true, desc = "Goto declaration" })
-    buf_set_keymap('n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<CR>',
-      { noremap = true, silent = true, desc = "Goto implementation" })
-    buf_set_keymap('n', '<leader>lt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', '<leader>lr', '<cmd>lua vim.lsp.buf.references()<CR>',
-      { noremap = true, silent = true, desc = "Goto references" })
+    buf_set_keymap('n', 'gh', vim.lsp.buf.hover, { desc = "Hover" }) -- override gh
+    buf_set_keymap('n', 'gH', vim.lsp.buf.signature_help, { desc = "Signature help" }) -- override gH
+    buf_set_keymap('n', 'gd', vim.lsp.buf.definition, { desc = "Goto definition" })
+    buf_set_keymap('n', 'gD', vim.lsp.buf.declaration, { desc = "Goto declaration" })
+    buf_set_keymap('n', '<leader>li', vim.lsp.buf.implementation, { desc = "Goto implementation" })
+    buf_set_keymap('n', '<leader>lt', vim.lsp.buf.type_definition, { desc = "Type definition" })
+    buf_set_keymap('n', '<leader>lr', vim.lsp.buf.references, { desc = "Goto references" })
 
-    vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    vim.keymap.set('n', '<leader>wl', function()
+    buf_set_keymap('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { desc = "Add workspace folder" })
+    buf_set_keymap('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { desc = "Remove workspace folder" })
+    buf_set_keymap('n', '<leader>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, bufopts)
+    end, { desc = "List workspace folders" })
 
-    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format { async = true } end, bufopts)
+    buf_set_keymap('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Rename buffer" })
+    buf_set_keymap('n', '<leader>ca', vim.lsp.buf.code_action, { desc = "Code action" })
+    buf_set_keymap('n', '<leader>F', function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
   end
 
   local lspconfig = require('lspconfig')
