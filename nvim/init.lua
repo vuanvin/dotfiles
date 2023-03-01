@@ -289,6 +289,7 @@ require("lazy").setup({
   },
   {
     "folke/noice.nvim",
+    cond = not vim.g.neovide,
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
@@ -568,9 +569,8 @@ local load_options = function()
 
   if global.is_windows then
     opt.shell = "pwsh --nologo"
-  else
-    opt.clipboard = "unnamedplus" -- avoid win32yank
   end
+  opt.clipboard = {"unnamed", "unnamedplus"}
 
   opt.timeout = true
   opt.timeoutlen = 300
