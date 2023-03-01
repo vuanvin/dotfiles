@@ -47,6 +47,32 @@ init_lazy()
 
 require("lazy").setup({
   {
+    "folke/trouble.nvim",
+    requires = "nvim-tree/nvim-web-devicons",
+    config = function()
+      require("trouble").setup {}
+
+      local function set_keymap(mode, l, r, opts)
+        opts = opts or {}
+        opts.noremap = true
+        opts.silent = true
+        vim.keymap.set(mode, l, r, opts)
+      end
+
+      set_keymap('n', '[d', vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
+      set_keymap('n', ']d', vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
+      -- set_keymap('n', '<leader>xl', vim.diagnostic.setloclist, { desc = "List diagnostic" })
+      set_keymap('n', '<leader>xo', vim.diagnostic.open_float, { desc = "Float diagnostic" })
+
+      set_keymap("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { desc = "Toggle trouble" })
+      set_keymap("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { desc = "Workspace diagnostics" })
+      set_keymap("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { desc = "Document diagnostics" })
+      set_keymap("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { desc = "List diagnostics" })
+      set_keymap("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { desc = "Quickfix" })
+      set_keymap("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", { desc = "" })
+    end,
+  },
+  {
     'akinsho/toggleterm.nvim',
     version = "*",
     opts = {
@@ -150,6 +176,7 @@ require("lazy").setup({
         ["<leader>g"] = { name = "+git" },
         ["<leader>j"] = { name = "+jump" },
         ["<leader>l"] = { name = "+language" },
+        ["<leader>n"] = { name = "+notice" },
         ["<leader>q"] = { name = "+quit/session" },
         ["<leader>s"] = { name = "+search" },
         ["<leader>u"] = { name = "+ui" },
@@ -282,7 +309,14 @@ require("lazy").setup({
           lsp_doc_border = false, -- add a border to hover docs and signature help
         },
       })
-    end
+
+      local noice = require("noice")
+      vim.keymap.set('n', '<leader>nl', function() noice.cmd("last") end, { desc = "Notice last" })
+      vim.keymap.set('n', '<leader>nh', function() noice.cmd("history") end, { desc = "Notice history" })
+      vim.keymap.set('n', '<leader>nn', function() noice.cmd("telescope") end, { desc = "All notice" })
+      vim.keymap.set("c", "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end,
+        { desc = "Redirect Cmdline" })
+    end,
   },
   {
     'goolord/alpha-nvim',
@@ -564,18 +598,6 @@ local load_keymaps = function()
 end
 
 local setup_lsp = function()
-  local function set_keymap(mode, l, r, opts)
-    opts = opts or {}
-    opts.noremap = true
-    opts.silent = true
-    vim.keymap.set(mode, l, r, opts)
-  end
-
-  set_keymap('n', '[d', vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic"} )
-  set_keymap('n', ']d', vim.diagnostic.goto_next, { desc = "Goto next diagnostic"} )
-  set_keymap('n', '<leader>xl', vim.diagnostic.setloclist, { desc = "List diagnostic"} )
-  set_keymap('n', '<leader>xo', vim.diagnostic.open_float, { desc = "Float diagnostic"} )
-
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
@@ -599,16 +621,15 @@ local setup_lsp = function()
     buf_set_keymap('n', '<leader>li', vim.lsp.buf.implementation, { desc = "Goto implementation" })
     buf_set_keymap('n', '<leader>lt', vim.lsp.buf.type_definition, { desc = "Type definition" })
     buf_set_keymap('n', '<leader>lr', vim.lsp.buf.references, { desc = "Goto references" })
-
-    buf_set_keymap('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { desc = "Add workspace folder" })
-    buf_set_keymap('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { desc = "Remove workspace folder" })
-    buf_set_keymap('n', '<leader>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, { desc = "List workspace folders" })
+    buf_set_keymap('n', '<leader>la', vim.lsp.buf.add_workspace_folder, { desc = "Add workspace folder" })
+    buf_set_keymap('n', '<leader>ld', vim.lsp.buf.remove_workspace_folder, { desc = "Remove workspace folder" })
+    buf_set_keymap('n', '<leader>ll', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
+      { desc = "List workspace folders" })
 
     buf_set_keymap('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Rename buffer" })
+    buf_set_keymap('n', '<F2>', vim.lsp.buf.rename, { desc = "Rename buffer" })
     buf_set_keymap('n', '<leader>ca', vim.lsp.buf.code_action, { desc = "Code action" })
-    buf_set_keymap('n', '<leader>F', function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
+    buf_set_keymap('n', '<leader>F', function() vim.lsp.buf.format { async = true } end, { desc = "Format file" })
   end
 
   local lspconfig = require('lspconfig')
