@@ -298,6 +298,10 @@ require("lazy").setup({
       "rcarriga/nvim-notify",
     },
     config = function()
+      require("notify").setup {
+        background_color = "#000000",
+      }
+
       require("noice").setup({
         lsp = {
           -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -526,15 +530,28 @@ local setup_editor = function()
         cache_enabled = 0,
       }
     elseif global.is_wsl then
+      -- vim.g.clipboard = {
+      --   name = "win32yank-wsl",
+      --   copy = {
+      --     ["+"] = "win32yank.exe -i --crlf",
+      --     ["*"] = "win32yank.exe -i --crlf",
+      --   },
+      --   paste = {
+      --     ["+"] = "win32yank.exe -o --lf",
+      --     ["*"] = "win32yank.exe -o --lf",
+      --   },
+      --   cache_enabled = 0,
+      -- }
+
       vim.g.clipboard = {
-        name = "win32yank-wsl",
+        name = "WslClipboard",
         copy = {
-          ["+"] = "win32yank.exe -i --crlf",
-          ["*"] = "win32yank.exe -i --crlf",
+          ["+"] = "clip.exe",
+          ["*"] = "clip.exe",
         },
         paste = {
-          ["+"] = "win32yank.exe -o --lf",
-          ["*"] = "win32yank.exe -o --lf",
+          ["+"] = [[powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))]],
+          ["*"] = [[powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))]],
         },
         cache_enabled = 0,
       }
@@ -752,3 +769,22 @@ load_options()
 load_keymaps()
 
 require('telescope').load_extension('projects')
+
+-- See link https://neovide.dev/configuration.html
+if vim.g.neovide then
+  if global.is_windows then
+    vim.opt.guifont = "JetBrainsMono NF:h8"
+  end
+  -- Helper function for transparency formatting
+  local alpha = function()
+    return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+  end
+
+  -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
+  vim.g.neovide_transparency = 0.6
+  vim.g.transparency = 0.8
+  vim.g.neovide_background_color = "#0f1117" .. alpha()
+  vim.g.neovide_cursor_vfx_mode = ""
+  vim.g.neovide_cursor_vfx_particle_speed = 10.0
+end
+
