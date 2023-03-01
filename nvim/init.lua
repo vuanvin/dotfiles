@@ -531,19 +531,6 @@ local setup_editor = function()
         cache_enabled = 0,
       }
     elseif global.is_wsl then
-      -- vim.g.clipboard = {
-      --   name = "win32yank-wsl",
-      --   copy = {
-      --     ["+"] = "win32yank.exe -i --crlf",
-      --     ["*"] = "win32yank.exe -i --crlf",
-      --   },
-      --   paste = {
-      --     ["+"] = "win32yank.exe -o --lf",
-      --     ["*"] = "win32yank.exe -o --lf",
-      --   },
-      --   cache_enabled = 0,
-      -- }
-
       vim.g.clipboard = {
         name = "WslClipboard",
         copy = {
@@ -774,10 +761,12 @@ require('telescope').load_extension('projects')
 if vim.g.neovide then
   if global.is_windows then
     vim.opt.guifont = "JetBrainsMono NF:h8"
+  elseif global.is_linux then
+    vim.opt.guifont = "JetBrainsMono Nerd Font:h8"
   end
   -- Helper function for transparency formatting
   local alpha = function()
-    return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+    return string.format("%x", math.floor(255 * (vim.g.transparency or 0.8)))
   end
 
   -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
