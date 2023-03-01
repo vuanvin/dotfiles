@@ -11,7 +11,12 @@ wezterm.on('update-right-status', function(window, pane)
 end)
 
 
-local config = {
+local configs = {
+  show_tab_index_in_tab_bar = true,
+  tab_and_split_indices_are_zero_based = false,
+  window_decorations = "RESIZE",
+  window_background_opacity = 0.6,
+  window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
   check_for_updates = false,
   color_scheme = "MonokaiPro (Gogh)",
   font = wezterm.font_with_fallback({
@@ -30,7 +35,7 @@ local config = {
   },
   default_prog = { 'pwsh', '--nologo' },
   launch_menu = {},
-  leader = { key = 't', mods = 'ALT', timeout_milliseconds = 5000 },
+  leader = { key = 'i', mods = 'ALT', timeout_milliseconds = 5000 },
   disable_default_key_bindings = true,
   mouse_bindings = {
     {
@@ -41,10 +46,12 @@ local config = {
     {
       event = { Up = { streak = 1, button = 'Right' } },
       mods = 'NONE',
-      action = act.CopyTo 'ClipboardAndPrimarySelection' ,
+      action = act.CopyTo 'ClipboardAndPrimarySelection',
     },
   },
   keys = {
+    { key = 'q',          mods = 'CMD',          action = act.QuitApplication },
+    { key = 'q',          mods = 'LEADER',       action = act.QuitApplication },
     { key = 'C',          mods = 'CTRL|SHIFT',   action = act.CopyTo 'ClipboardAndPrimarySelection' },
     { key = 'v',          mods = 'SHIFT|CTRL',   action = act.Paste },
     { key = 'c',          mods = 'LEADER',       action = act.SpawnTab 'CurrentPaneDomain', },
@@ -117,56 +124,16 @@ local config = {
     },
   },
   set_environment_variables = {},
-  -- Tab bar appearance
-  colors = {
-    tab_bar = {
-      -- The color of the strip that goes along the top of the window
-      background = "#282828",
-      -- The active tab is the one that has focus in the window
-      active_tab = {
-        -- The color of the background area for the tab
-        bg_color = "#18131e",
-        -- The color of the text for the tab
-        fg_color = "#ff65fd",
-
-        intensity = "Normal",
-        underline = "None",
-        italic = false,
-        strikethrough = false,
-      },
-      -- Inactive tabs are the tabs that do not have focus
-      inactive_tab = {
-        bg_color = "#282828",
-        fg_color = "#d19afc",
-      },
-      inactive_tab_hover = {
-        bg_color = "#202020",
-        fg_color = "#ff65fd",
-      },
-      new_tab = {
-        bg_color = "#282828",
-        fg_color = "#d19afc",
-      },
-      new_tab_hover = {
-        bg_color = "#18131e",
-        fg_color = "#ff65fd",
-      },
-    },
-  },
 }
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
-  table.insert(config.launch_menu, { label = "PowerShell 7", args = { "pwsh.exe", "-nologo" } })
-  table.insert(config.launch_menu, { label = "PowerShell 5", args = { "powershell.exe", "-nologo" } })
-  table.insert(config.launch_menu,
+  table.insert(configs.launch_menu, { label = "Nushell", args = { "nu" } })
+  table.insert(configs.launch_menu, { label = "PowerShell 7", args = { "pwsh.exe", "-nologo" } })
+  table.insert(configs.launch_menu, { label = "PowerShell 5", args = { "powershell.exe", "-nologo" } })
+  table.insert(configs.launch_menu,
     { label = "VS PowerShell 2022", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devps 17.0" } })
-  table.insert(config.launch_menu,
+  table.insert(configs.launch_menu,
     { label = "VS PowerShell 2019", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devps 16.0" } })
-  table.insert(config.launch_menu, { label = "Command Prompt", args = { "cmd.exe" } })
-  table.insert(config.launch_menu,
-    { label = "VS Command Prompt 2022", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devcmd 17.0" } })
-  table.insert(config.launch_menu,
-    { label = "VS Command Prompt 2019", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devcmd 16.0" } })
 
   -- Enumerate any WSL distributions that are installed and add those to the menu
   local success, wsl_list, wsl_err = wezterm.run_child_process({ "wsl", "-l" })
@@ -181,24 +148,18 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
       -- Remove the "(Default)" marker from the default line to arrive
       -- at the distribution name on its own
       local distro = line:gsub(" %(Default%)", "")
-
       -- Add an entry that will spawn into the distro with the default shell
-      table.insert(config.launch_menu, {
-        label = distro .. " (WSL default shell)",
-        args = { "wsl", "--distribution", distro },
-      })
-
-      -- Here's how to jump directly into some other program; in this example
-      -- its a shell that probably isn't the default, but it could also be
-      -- any other program that you want to run in that environment
-      table.insert(config.launch_menu, {
-        label = distro .. " (WSL zsh login shell)",
-        args = { "wsl", "--distribution", distro, "--exec", "/bin/zsh", "-l" },
-      })
+      table.insert(configs.launch_menu,
+        { label = distro .. " (WSL default shell)", args = { "wsl", "--distribution", distro }, })
+      table.insert(configs.launch_menu,
+        {
+          label = distro .. " (WSL zsh login shell)",
+          args = { "wsl", "--distribution", distro, "--exec", "/bin/zsh", "-l" },
+        })
     end
   end
 else
-  table.insert(config.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
+  table.insert(configs.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
 end
 
 -- Equivalent to POSIX basename(3)
@@ -216,4 +177,18 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
   }
 end)
 
-return config
+local ssh_config_file = wezterm.home_dir .. "/.ssh/config"
+local f = io.open(ssh_config_file)
+if f then
+  local line = f:read("*l")
+  while line do
+    if line:find("Host ") == 1 then
+      local host = line:gsub("Host ", "")
+      table.insert(configs.launch_menu, { label = "SSH " .. host, args = { "ssh", host } })
+    end
+    line = f:read("*l")
+  end
+  f:close()
+end
+
+return configs
