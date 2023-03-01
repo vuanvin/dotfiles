@@ -189,8 +189,8 @@ require("lazy").setup({
 
       wk.register(keymaps)
 
-      vim.keymap.set('n', '<leader>hk', "<cmd>WhichKey<CR>", { desc = "Keymaps" })
-      vim.keymap.set('n', '<leader>k', "<cmd>WhichKey<CR>", { desc = "Keymaps" })
+      vim.keymap.set('n', '<leader>hk', "<cmd>WhichKey<CR>", { desc = "Show keymaps" })
+      vim.keymap.set('n', '<leader>k', "<cmd>WhichKey<CR>", { desc = "Show keymaps" })
     end,
   },
   {
@@ -578,10 +578,14 @@ end
 
 local load_keymaps = function()
   -- Window
-  keymap.set("n", "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
-  keymap.set("n", "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
-  keymap.set("n", "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
-  keymap.set("n", "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
+  keymap.set({"n", "v"}, "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
+  keymap.set({"n", "v"}, "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
+  keymap.set({"n", "v"}, "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
+  keymap.set({"n", "v"}, "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
+  -- keymap.set("i", "<M-h>", "<Esc><C-W>hi", { noremap = true, desc = "Window move left" })
+  -- keymap.set("i", "<M-l>", "<Esc><C-W>li", { noremap = true, desc = "Window move right" })
+  -- keymap.set("i", "<M-j>", "<Esc><C-W>ji", { noremap = true, desc = "Window move down" })
+  -- keymap.set("i", "<M-k>", "<Esc><C-W>ki", { noremap = true, desc = "Window move up" })
 
   -- Terminal
   keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", { noremap = true })
