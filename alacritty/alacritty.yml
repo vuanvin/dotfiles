@@ -1,0 +1,78 @@
+live_config_reload: true
+
+key_bindings:
+  - { key: V, mods: command, action: Paste }
+  - { key: C, mods: command, action: Copy }
+  - { key: V, mods: shift|control, action: Paste }
+  - { key: C, mods: shift|control, action: Copy }
+  - { key: N, mods: shift|control, action: CreateNewWindow }
+  - { key: H, mods: shift|control, action: Hide }
+
+window:
+  opacity: 0.7
+  padding:
+    x: 0
+    y: 0
+
+colors:
+  primary:
+    background: "#1e2127"
+    foreground: "#D8DEE9"
+  normal:
+    black: "#3B4252"
+    red: "#BF616A"
+    green: "#A3BE8C"
+    yellow: "#EBCB8B"
+    blue: "#81A1C1"
+    magenta: "#B48EAD"
+    cyan: "#88C0D0"
+    white: "#abb2bf"
+  bright:
+    black: "#5c6370"
+    red: "#e06c75"
+    green: "#98c379"
+    yellow: "#d19a66"
+    blue: "#61afef"
+    magenta: "#c678dd"
+    cyan: "#56b6c2"
+    white: "#ECEFF4"
+
+font:
+  size: 9
+  normal:
+    family: "JetBrainsMono NF"
+    style: Regular
+  bold:
+    family: "JetBrainsMono NF"
+    style: Bold
+  italic:
+    family: "JetBrainsMono NF"
+    style: Italic
+  bold_italic:
+    family: "JetBrainsMono NF"
+    style: Bold Italic
+  offset:
+    x: 0
+    y: 0
+  glyph_offset:
+    x: 0
+    y: 0
+
+scrolling:
+  history: 100000
+  multiplier: 10
+
+draw_bold_text_with_bright_colors: true
+
+selection:
+  semantic_escape_chars: ',│`|:"'' ()[]{}<>'
+  save_to_clipboard: true
+
+Default:
+  - (Windows) pwsh
+
+shell:
+  program: pwsh
+  args:
+    - --nologo
+
