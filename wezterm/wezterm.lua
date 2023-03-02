@@ -1,17 +1,9 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
--- Show which key table is active in the status area
-wezterm.on('update-right-status', function(window, pane)
-  local name = window:active_key_table()
-  if name then
-    name = 'TABLE: ' .. name
-  end
-  window:set_right_status(name or '')
-end)
-
 -- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
+  enable_scroll_bar = false,
   show_tab_index_in_tab_bar = true,
   tab_and_split_indices_are_zero_based = false,
   tab_bar_at_bottom = false,
@@ -26,15 +18,13 @@ local configs = {
     "Cascadia Code",
   }),
   font_size = 9,
-  enable_scroll_bar = true,
   exit_behavior = "Close",
-  -- tab_bar_at_bottom = true,
   inactive_pane_hsb = {
     hue = 1.0,
     saturation = 1.0,
     brightness = 1.0,
   },
-  default_prog = { 'pwsh', '--nologo' },
+  default_prog = { 'pwsh', '-NoLogo' },
   launch_menu = {},
   leader = { key = '[', mods = 'ALT', timeout_milliseconds = 5000 },
   disable_default_key_bindings = true,
@@ -166,6 +156,14 @@ else
   table.insert(configs.launch_menu, { label = "bash", args = { "bash", "-l" } })
   table.insert(configs.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
 end
+
+wezterm.on('update-right-status', function(window, pane)
+  local name = window:active_key_table()
+  if name then
+    name = 'TABLE: ' .. name .. '   '
+  end
+  window:set_right_status(name or '')
+end)
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local basename = function(s)
