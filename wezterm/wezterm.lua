@@ -3,6 +3,7 @@ local act = wezterm.action
 
 -- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
+  ratelimit_output_bytes_per_second = 10000000,
   enable_scroll_bar = false,
   show_tab_index_in_tab_bar = true,
   tab_and_split_indices_are_zero_based = false,
@@ -42,7 +43,7 @@ local configs = {
       action = act.CopyTo 'ClipboardAndPrimarySelection',
     },
   },
-  command_palette_font_size = 14.0,
+  -- command_palette_font_size = 14.0,
   -- https://wezfurlong.org/wezterm/config/lua/keyassignment/index.html
   keys = {
     -- { key = 'p',          mods = 'SHIFT|CTRL',   action = act.ActivateCommandPalette },
@@ -132,6 +133,19 @@ local configs = {
     },
   },
   set_environment_variables = {},
+  ssh_domains = {
+    {
+      name = 'cloud',
+      remote_address = '121.46.19.2:20795',
+      username = 'yuanyin',
+    },
+  },
+  wsl_domains = {
+    {
+      name = 'WSL:Ubuntu',
+      distribution = 'Ubuntu',
+    },
+  },
 }
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
@@ -191,9 +205,9 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     return s:gsub(".exe" .. "$", "")
   end
 
-  local pane = tab.active_pane
-  local title = basename(pane.foreground_process_name)
-  title = wezterm.truncate_right(title, max_width - 2)
+  -- local _title = tab.active_pane.foreground_process_name
+  local _title = tab.active_pane.title
+  local title = wezterm.truncate_right(basename(_title), max_width - 2)
   return {
     { Text = " " .. (tab.tab_index + 1) .. ": " .. title .. " " },
   }
