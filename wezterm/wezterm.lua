@@ -10,12 +10,13 @@ wezterm.on('update-right-status', function(window, pane)
   window:set_right_status(name or '')
 end)
 
-
+-- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
   show_tab_index_in_tab_bar = true,
   tab_and_split_indices_are_zero_based = false,
+  tab_bar_at_bottom = false,
   window_decorations = "RESIZE",
-  window_background_opacity = 0.6,
+  window_background_opacity = 0.7,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
   check_for_updates = false,
   color_scheme = "MonokaiPro (Gogh)",
@@ -24,7 +25,7 @@ local configs = {
     "FiraCode Nerd Font",
     "Cascadia Code",
   }),
-  font_size = 10,
+  font_size = 9,
   enable_scroll_bar = true,
   exit_behavior = "Close",
   -- tab_bar_at_bottom = true,
@@ -35,7 +36,7 @@ local configs = {
   },
   default_prog = { 'pwsh', '--nologo' },
   launch_menu = {},
-  leader = { key = 'i', mods = 'ALT', timeout_milliseconds = 5000 },
+  leader = { key = '[', mods = 'ALT', timeout_milliseconds = 5000 },
   disable_default_key_bindings = true,
   mouse_bindings = {
     {
@@ -49,27 +50,21 @@ local configs = {
       action = act.CopyTo 'ClipboardAndPrimarySelection',
     },
   },
+  -- https://wezfurlong.org/wezterm/config/lua/keyassignment/index.html
   keys = {
+    { key = 'n',          mods = 'SHIFT|CTRL',   action = act.SpawnWindow },
+    { key = 'h',          mods = 'SHIFT|CTRL',   action = act.Hide },
+    { key = ':',          mods = 'ALT|SHIFT',    action = act.ShowLauncher },
+    { key = ':',          mods = 'LEADER|SHIFT', action = act.ShowLauncher },
+    { key = ']',          mods = 'LEADER',       action = act.ShowLauncher },
     { key = 'q',          mods = 'CMD',          action = act.QuitApplication },
     { key = 'q',          mods = 'LEADER',       action = act.QuitApplication },
     { key = 'C',          mods = 'CTRL|SHIFT',   action = act.CopyTo 'ClipboardAndPrimarySelection' },
     { key = 'v',          mods = 'SHIFT|CTRL',   action = act.Paste },
     { key = 'c',          mods = 'LEADER',       action = act.SpawnTab 'CurrentPaneDomain', },
-
-    { key = '|',          mods = 'LEADER|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
-    { key = '%',          mods = 'LEADER|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
-    { key = '-',          mods = 'LEADER',       action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
-    { key = '"',          mods = 'LEADER|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
-    { key = 'z',          mods = 'ALT',          action = act.ShowLauncher },
-    { key = 'z',          mods = 'LEADER',       action = act.ShowLauncher },
-    { key = 'LeftArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
-    { key = 'h',          mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
-    { key = 'RightArrow', mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
-    { key = 'l',          mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
-    { key = 'UpArrow',    mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
-    { key = 'k',          mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
-    { key = 'DownArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
-    { key = 'j',          mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
+    { key = 's',          mods = 'LEADER',       action = act.ShowTabNavigator },
+    { key = 'x',          mods = 'LEADER',       action = act.CloseCurrentPane { confirm = true }, },
+    { key = 'x',          mods = 'LEADER|SHIFT', action = act.CloseCurrentTab { confirm = true }, },
     { key = 'p',          mods = "LEADER",       action = act.ActivateTabRelative( -1) },
     { key = 'n',          mods = "LEADER",       action = act.ActivateTabRelative(1) },
     { key = '1',          mods = "LEADER",       action = act.ActivateTab(0) },
@@ -81,6 +76,18 @@ local configs = {
     { key = '7',          mods = "LEADER",       action = act.ActivateTab(6) },
     { key = '8',          mods = "LEADER",       action = act.ActivateTab(7) },
     { key = '9',          mods = "LEADER",       action = act.ActivateTab(8) },
+    { key = '|',          mods = 'LEADER|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = '%',          mods = 'LEADER|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = '-',          mods = 'LEADER',       action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
+    { key = '"',          mods = 'LEADER|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
+    { key = 'LeftArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
+    { key = 'h',          mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
+    { key = 'RightArrow', mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
+    { key = 'l',          mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
+    { key = 'UpArrow',    mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
+    { key = 'k',          mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
+    { key = 'DownArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
+    { key = 'j',          mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
 
     {
       key = 'r',
@@ -127,13 +134,8 @@ local configs = {
 }
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+  table.insert(configs.launch_menu, { label = "pwsh", args = { "pwsh.exe", "-NoLogo" } })
   table.insert(configs.launch_menu, { label = "Nushell", args = { "nu" } })
-  table.insert(configs.launch_menu, { label = "PowerShell 7", args = { "pwsh.exe", "-nologo" } })
-  table.insert(configs.launch_menu, { label = "PowerShell 5", args = { "powershell.exe", "-nologo" } })
-  table.insert(configs.launch_menu,
-    { label = "VS PowerShell 2022", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devps 17.0" } })
-  table.insert(configs.launch_menu,
-    { label = "VS PowerShell 2019", args = { "powershell", "-NoLogo", "-NoExit", "-Command", "devps 16.0" } })
 
   -- Enumerate any WSL distributions that are installed and add those to the menu
   local success, wsl_list, wsl_err = wezterm.run_child_process({ "wsl", "-l" })
@@ -158,37 +160,38 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
         })
     end
   end
+
+  table.insert(configs.launch_menu, { label = "PowerShell 5", args = { "powershell.exe", "-NoLogo" } })
 else
+  table.insert(configs.launch_menu, { label = "bash", args = { "bash", "-l" } })
   table.insert(configs.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
 end
 
--- Equivalent to POSIX basename(3)
--- Given "/foo/bar" returns "bar"
--- Given "c:\\foo\\bar" returns "bar"
-function Basename(s)
-  return string.gsub(s, "(.*[/\\])(.*)", "%2")
-end
-
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+  local basename = function(s)
+    s = string.gsub(s, "(.*[/\\])(.*)", "%2")
+    return s:gsub(".exe" .. "$", "")
+  end
+
   local pane = tab.active_pane
-  local title = Basename(pane.foreground_process_name)
+  local title = basename(pane.foreground_process_name)
+  title = wezterm.truncate_right(title, max_width - 2)
   return {
-    { Text = " " .. title .. " " },
+    { Text = " " .. (tab.tab_index + 1) .. ": " .. title .. " " },
   }
 end)
 
-local ssh_config_file = wezterm.home_dir .. "/.ssh/config"
-local f = io.open(ssh_config_file)
-if f then
-  local line = f:read("*l")
+local ssh_config = io.open(wezterm.home_dir .. "/.ssh/config")
+if ssh_config then
+  local line = ssh_config:read("*l")
   while line do
     if line:find("Host ") == 1 then
       local host = line:gsub("Host ", "")
       table.insert(configs.launch_menu, { label = "SSH " .. host, args = { "ssh", host } })
     end
-    line = f:read("*l")
+    line = ssh_config:read("*l")
   end
-  f:close()
+  ssh_config:close()
 end
 
 return configs
