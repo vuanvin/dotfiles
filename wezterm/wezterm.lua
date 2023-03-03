@@ -6,8 +6,21 @@ local RIGHT_ARROW = utf8.char(0xe0b1)
 local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
 local LEFT_ARROW = utf8.char(0xe0b3)
 
+local Grey = "#0f1419"
+local LightGrey = "#191f26"
+
+local TAB_BAR_BG = "Black"
+local ACTIVE_TAB_BG = "#ff9248"
+local ACTIVE_TAB_FG = "Black"
+local HOVER_TAB_BG = Grey
+local HOVER_TAB_FG = "White"
+local NORMAL_TAB_BG = LightGrey
+local NORMAL_TAB_FG = "White"
+
+
 -- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
+  use_fancy_tab_bar = false,
   force_reverse_video_cursor = true,
   default_cursor_style = 'BlinkingBlock',
   ratelimit_output_bytes_per_second = 10000000,
@@ -201,10 +214,8 @@ local configs = {
       { key = 'j',          action = act.ActivatePaneDirection 'Down' },
     },
   },
-
   check_for_updates = false,
   set_environment_variables = {},
-
   ssh_domains = {
     {
       name = 'cloud',
@@ -219,25 +230,17 @@ local configs = {
   },
   wsl_domains = wezterm.default_wsl_domains(),
   tab_bar_style = {
-    active_tab_left = wezterm.format {
-      { Background = { Color = '#0b0022' } },
-      { Foreground = { Color = '#2b2042' } },
-      { Text = SOLID_LEFT_ARROW },
+    new_tab = wezterm.format {
+      { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = TAB_BAR_BG } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = HOVER_TAB_FG } },
+      { Text = " + " },
+      { Background = { Color = '#333333' } }, { Foreground = { Color = HOVER_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
     },
-    active_tab_right = wezterm.format {
-      { Background = { Color = '#0b0022' } },
-      { Foreground = { Color = '#2b2042' } },
-      { Text = SOLID_RIGHT_ARROW },
-    },
-    inactive_tab_left = wezterm.format {
-      { Background = { Color = '#0b0022' } },
-      { Foreground = { Color = '#1b1032' } },
-      { Text = SOLID_LEFT_ARROW },
-    },
-    inactive_tab_right = wezterm.format {
-      { Background = { Color = '#0b0022' } },
-      { Foreground = { Color = '#1b1032' } },
-      { Text = SOLID_RIGHT_ARROW },
+    new_tab_hover = wezterm.format {
+      { Attribute = { Italic = false } },
+      { Attribute = { Intensity = "Bold" } },
+      { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = TAB_BAR_BG } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = NORMAL_TAB_FG } },
+      { Text = " + " },
+      { Background = { Color = '#333333' } }, { Foreground = { Color = NORMAL_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
     },
   },
 }
@@ -302,11 +305,13 @@ wezterm.on('update-right-status', function(window, pane)
     else
       table.insert(elements, { Foreground = { Color = text_fg } })
       table.insert(elements, { Background = { Color = text_bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
       table.insert(elements, { Text = LEFT_ARROW })
     end
 
     table.insert(elements, { Foreground = { Color = text_fg } })
     table.insert(elements, { Background = { Color = text_bg } })
+    table.insert(elements, { Attribute = { Intensity = "Normal" } })
     table.insert(elements, { Text = ' ' .. text .. ' ' })
     num_cells = num_cells + 1
   end
@@ -336,7 +341,7 @@ wezterm.on('update-right-status', function(window, pane)
       table.insert(elements, { Text = LEFT_ARROW })
     end
 
-    table.insert(elements, { Attribute = { Intensity = "Half" } })
+    table.insert(elements, { Attribute = { Intensity = "Normal" } })
     table.insert(elements, { Foreground = { Color = basic_color } })
     table.insert(elements, { Background = { Color = focus_color } })
     table.insert(elements, { Text = ' ' .. text .. ' ' })
@@ -348,7 +353,7 @@ wezterm.on('update-right-status', function(window, pane)
   table.insert(elements, { Text = SOLID_LEFT_ARROW })
   table.insert(elements, { Foreground = { Color = '#19181a' } })
   table.insert(elements, { Background = { Color = basic_color } })
-  table.insert(elements, { Attribute = { Intensity = "Half" } })
+  table.insert(elements, { Attribute = { Intensity = "Normal" } })
   table.insert(elements, { Text = ' ' .. date .. ' ' })
 
   window:set_right_status(wezterm.format(elements))
@@ -357,19 +362,66 @@ wezterm.on('update-right-status', function(window, pane)
   window:set_left_status(wezterm.format(elements))
 end)
 
-wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
   local basename = function(s)
     s = string.gsub(s, "(.*[/\\])(.*)", "%2")
-    return s:gsub(".exe[ ]" .. "$", "")
+    return s:gsub(".exe\x20*" .. "$", "") -- x20 is space
   end
 
   -- local _title = tab.active_pane.foreground_process_name
   local _title = tab.active_pane.title
   local title = wezterm.truncate_right(basename(_title), max_width - 2)
+  title = " " .. (tab.tab_index + 1) .. ": " .. title .. " "
+
+  panes = panes
+  config = config
+  max_width = max_width
+
+  local background = NORMAL_TAB_BG
+  local foreground = NORMAL_TAB_FG
+
+  local is_first = tab.tab_id == tabs[1].tab_id
+  local is_last = tab.tab_id == tabs[#tabs].tab_id
+
+  if tab.is_active then
+    background = ACTIVE_TAB_BG
+    foreground = ACTIVE_TAB_FG
+  elseif hover then
+    background = HOVER_TAB_BG
+    foreground = HOVER_TAB_FG
+  end
+
+  local leading_fg = NORMAL_TAB_FG
+  local leading_bg = background
+
+  local trailing_fg = background
+  local trailing_bg = NORMAL_TAB_BG
+
+  if is_first then
+    leading_fg = TAB_BAR_BG
+  else
+    leading_fg = NORMAL_TAB_BG
+  end
+
+  if is_last then
+    trailing_bg = TAB_BAR_BG
+  else
+    trailing_bg = NORMAL_TAB_BG
+  end
+
+
   return {
-    { Text = " " .. (tab.tab_index + 1) .. ": " .. title .. " " },
+    { Attribute = { Italic = false } },
+    { Attribute = { Intensity = hover and "Bold" or "Normal" } },
+    { Background = { Color = leading_bg } }, { Foreground = { Color = leading_fg } },
+    { Text = SOLID_RIGHT_ARROW },
+    { Background = { Color = background } }, { Foreground = { Color = foreground } },
+    { Text = " " .. title .. " " },
+    { Background = { Color = trailing_bg } }, { Foreground = { Color = trailing_fg } },
+    { Text = SOLID_RIGHT_ARROW },
   }
 end)
+
 
 local ssh_config = io.open(wezterm.home_dir .. "/.ssh/config")
 if ssh_config then
