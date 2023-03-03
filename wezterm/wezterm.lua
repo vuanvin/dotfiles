@@ -5,20 +5,14 @@ local SOLID_RIGHT_ARROW = utf8.char(0xe0b0)
 local RIGHT_ARROW = utf8.char(0xe0b1)
 local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
 local LEFT_ARROW = utf8.char(0xe0b3)
-
-local Grey = "#0f1419"
-local LightGrey = "#191f26"
-
 local TAB_BAR_BG = "Black"
+local NORMAL_TAB_BG = "#191f26"
+local NORMAL_TAB_FG = "White"
 local ACTIVE_TAB_BG = "#ff9248"
 local ACTIVE_TAB_FG = "Black"
-local HOVER_TAB_BG = Grey
+local HOVER_TAB_BG = "#0f1419"
 local HOVER_TAB_FG = "White"
-local NORMAL_TAB_BG = LightGrey
-local NORMAL_TAB_FG = "White"
 
-
--- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
   use_fancy_tab_bar = false,
   force_reverse_video_cursor = true,
