@@ -365,7 +365,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   -- local _title = tab.active_pane.foreground_process_name
   local _title = tab.active_pane.title
   local title = wezterm.truncate_right(basename(_title), max_width - 2)
-  title = " " .. (tab.tab_index + 1) .. ": " .. title .. " "
+  title = (tab.tab_index + 1) .. ": " .. title
 
   panes = panes
   config = config
