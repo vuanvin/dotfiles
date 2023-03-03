@@ -52,7 +52,6 @@ local configs = {
     { key = 'h',          mods = 'SHIFT|CTRL',   action = act.Hide },
     { key = ':',          mods = 'ALT|SHIFT',    action = act.ShowLauncher },
     { key = ':',          mods = 'LEADER|SHIFT', action = act.ShowLauncher },
-    { key = ']',          mods = 'LEADER',       action = act.ShowLauncher },
     { key = 'q',          mods = 'CMD',          action = act.QuitApplication },
     { key = 'q',          mods = 'LEADER',       action = act.QuitApplication },
     { key = 'q',          mods = 'SHIFT|CTRL',   action = act.QuitApplication },
@@ -92,24 +91,95 @@ local configs = {
     { key = 'DownArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
     { key = 'j',          mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
 
-    {
-      key = 'r',
-      mods = 'LEADER',
-      action = act.ActivateKeyTable {
-        name = 'resize_pane',
-        one_shot = false,
-      },
-    },
-    {
-      key = 'a',
-      mods = 'LEADER',
-      action = act.ActivateKeyTable {
-        name = 'activate_pane',
-        timeout_milliseconds = 1000,
-      },
-    },
+    { key = "[",          mods = "LEADER",       action = act.ActivateCopyMode },
+    { key = "]",          mods = "LEADER",       action = act.PasteFrom("PrimarySelection") },
+    { key = 'r',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false, }, },
+    { key = 'a',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'activate_pane', timeout_milliseconds = 1000, }, },
   },
   key_tables = {
+    copy_mode = {
+      { key = "c",          mods = "CTRL",  action = act.CopyMode("Close") },
+      { key = "g",          mods = "CTRL",  action = act.CopyMode("Close") },
+      { key = "q",          mods = "NONE",  action = act.CopyMode("Close") },
+      { key = "Escape",     mods = "NONE",  action = act.CopyMode("Close") },
+
+      { key = "h",          mods = "NONE",  action = act.CopyMode("MoveLeft") },
+      { key = "j",          mods = "NONE",  action = act.CopyMode("MoveDown") },
+      { key = "k",          mods = "NONE",  action = act.CopyMode("MoveUp") },
+      { key = "l",          mods = "NONE",  action = act.CopyMode("MoveRight") },
+
+      { key = "LeftArrow",  mods = "NONE",  action = act.CopyMode("MoveLeft") },
+      { key = "DownArrow",  mods = "NONE",  action = act.CopyMode("MoveDown") },
+      { key = "UpArrow",    mods = "NONE",  action = act.CopyMode("MoveUp") },
+      { key = "RightArrow", mods = "NONE",  action = act.CopyMode("MoveRight") },
+
+      { key = "RightArrow", mods = "ALT",   action = act.CopyMode("MoveForwardWord") },
+      { key = "f",          mods = "ALT",   action = act.CopyMode("MoveForwardWord") },
+      { key = "Tab",        mods = "NONE",  action = act.CopyMode("MoveForwardWord") },
+      { key = "w",          mods = "NONE",  action = act.CopyMode("MoveForwardWord") },
+
+      { key = "LeftArrow",  mods = "ALT",   action = act.CopyMode("MoveBackwardWord") },
+      { key = "b",          mods = "ALT",   action = act.CopyMode("MoveBackwardWord") },
+      { key = "Tab",        mods = "SHIFT", action = act.CopyMode("MoveBackwardWord") },
+      { key = "b",          mods = "NONE",  action = act.CopyMode("MoveBackwardWord") },
+
+      { key = "0",          mods = "NONE",  action = act.CopyMode("MoveToStartOfLine") },
+      { key = "Enter",      mods = "NONE",  action = act.CopyMode("MoveToStartOfNextLine") },
+
+      { key = "$",          mods = "NONE",  action = act.CopyMode("MoveToEndOfLineContent") },
+      { key = "$",          mods = "SHIFT", action = act.CopyMode("MoveToEndOfLineContent") },
+      { key = "^",          mods = "NONE",  action = act.CopyMode("MoveToStartOfLineContent") },
+      { key = "^",          mods = "SHIFT", action = act.CopyMode("MoveToStartOfLineContent") },
+      { key = "m",          mods = "ALT",   action = act.CopyMode("MoveToStartOfLineContent") },
+
+      { key = " ",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Cell" } },
+      { key = "v",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Cell" } },
+      { key = "V",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Line" } },
+      { key = "V",          mods = "SHIFT", action = act.CopyMode { SetSelectionMode = "Line" } },
+      { key = "v",          mods = "CTRL",  action = act.CopyMode { SetSelectionMode = "Block" } },
+
+      { key = "G",          mods = "NONE",  action = act.CopyMode("MoveToScrollbackBottom") },
+      { key = "G",          mods = "SHIFT", action = act.CopyMode("MoveToScrollbackBottom") },
+      { key = "g",          mods = "NONE",  action = act.CopyMode("MoveToScrollbackTop") },
+
+      { key = "H",          mods = "NONE",  action = act.CopyMode("MoveToViewportTop") },
+      { key = "H",          mods = "SHIFT", action = act.CopyMode("MoveToViewportTop") },
+      { key = "M",          mods = "NONE",  action = act.CopyMode("MoveToViewportMiddle") },
+      { key = "M",          mods = "SHIFT", action = act.CopyMode("MoveToViewportMiddle") },
+      { key = "L",          mods = "NONE",  action = act.CopyMode("MoveToViewportBottom") },
+      { key = "L",          mods = "SHIFT", action = act.CopyMode("MoveToViewportBottom") },
+
+      { key = "o",          mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEnd") },
+      { key = "O",          mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
+      { key = "O",          mods = "SHIFT", action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
+
+      { key = "PageUp",     mods = "NONE",  action = act.CopyMode("PageUp") },
+      { key = "PageDown",   mods = "NONE",  action = act.CopyMode("PageDown") },
+
+      { key = "b",          mods = "CTRL",  action = act.CopyMode("PageUp") },
+      { key = "f",          mods = "CTRL",  action = act.CopyMode("PageDown") },
+
+      -- Enter y to copy and quit the copy mode.
+      { key = "y",          mods = "NONE",  action = act.Multiple { act.CopyTo("ClipboardAndPrimarySelection"), act.CopyMode("Close"), } },
+      -- Enter search mode to edit the pattern.
+      -- When the search pattern is an empty string the existing pattern is preserved
+      { key = "/",          mods = "NONE",  action = act { Search = { CaseSensitiveString = "" } } },
+      { key = "?",          mods = "NONE",  action = act { Search = { CaseInSensitiveString = "" } } },
+      { key = "n",          mods = "CTRL",  action = act { CopyMode = "NextMatch" } },
+      { key = "p",          mods = "CTRL",  action = act { CopyMode = "PriorMatch" } },
+    },
+
+    search_mode = {
+      { key = "Escape", mods = "NONE", action = act { CopyMode = "Close" } },
+      -- Go back to copy mode when pressing enter, so that we can use unmodified keys like "n"
+      -- to navigate search results without conflicting with typing into the search area.
+      { key = "Enter",  mods = "NONE", action = "ActivateCopyMode" },
+      { key = "c",      mods = "CTRL", action = "ActivateCopyMode" },
+      { key = "n",      mods = "CTRL", action = act { CopyMode = "NextMatch" } },
+      { key = "p",      mods = "CTRL", action = act { CopyMode = "PriorMatch" } },
+      { key = "r",      mods = "CTRL", action = act.CopyMode("CycleMatchType") },
+      { key = "u",      mods = "CTRL", action = act.CopyMode("ClearPattern") },
+    },
     resize_pane = {
       { key = 'LeftArrow',  action = act.AdjustPaneSize { 'Left', 1 } },
       { key = 'h',          action = act.AdjustPaneSize { 'Left', 1 } },
@@ -183,12 +253,10 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   table.insert(configs.launch_menu, { label = "PowerShell 5", args = { "powershell.exe", "-NoLogo" } })
 elseif wezterm.target_triple == "x86_64-unknown-linux-gnu" then
   -- configs.default_prog = { 'zsh', '-l' }
-
   table.insert(configs.launch_menu, { label = "bash", args = { "bash", "-l" } })
   table.insert(configs.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
-else
+elseif wezterm.target_triple == "x86_64-apple-darwin" then
   -- configs.default_prog = { 'zsh', '-l' }
-  --
   table.insert(configs.launch_menu, { label = "zsh", args = { "zsh", "-l" } })
 end
 
