@@ -185,18 +185,25 @@ local configs = {
       { key = 'r',      mods = 'CTRL', action = act.CopyMode('CycleMatchType') },
       { key = 'u',      mods = 'CTRL', action = act.CopyMode('ClearPattern') },
     },
+
     resize_pane = {
       { key = 'LeftArrow',  action = act.AdjustPaneSize { 'Left', 1 } },
       { key = 'h',          action = act.AdjustPaneSize { 'Left', 1 } },
+      { key = 'H',          action = act.AdjustPaneSize { 'Left', 3 } },
       { key = 'RightArrow', action = act.AdjustPaneSize { 'Right', 1 } },
       { key = 'l',          action = act.AdjustPaneSize { 'Right', 1 } },
+      { key = 'L',          action = act.AdjustPaneSize { 'Right', 3 } },
       { key = 'UpArrow',    action = act.AdjustPaneSize { 'Up', 1 } },
       { key = 'k',          action = act.AdjustPaneSize { 'Up', 1 } },
+      { key = 'K',          action = act.AdjustPaneSize { 'Up', 3 } },
       { key = 'DownArrow',  action = act.AdjustPaneSize { 'Down', 1 } },
       { key = 'j',          action = act.AdjustPaneSize { 'Down', 1 } },
+      { key = 'J',          action = act.AdjustPaneSize { 'Down', 3 } },
       -- Cancel the mode by pressing escape
       { key = 'Escape',     action = 'PopKeyTable' },
+      { key = 'q',          action = 'PopKeyTable' },
     },
+
     activate_pane = {
       { key = 'LeftArrow',  action = act.ActivatePaneDirection 'Left' },
       { key = 'h',          action = act.ActivatePaneDirection 'Left' },

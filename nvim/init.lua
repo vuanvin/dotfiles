@@ -209,7 +209,7 @@ require("lazy").setup({
   {
     "lukas-reineke/indent-blankline.nvim",
     config = function()
-      vim.opt.listchars:append "space:⋅"
+      -- vim.opt.listchars:append "space:⋅"
 
       require("indent_blankline").setup {
         show_current_context = true,
@@ -516,6 +516,8 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>bb", "<CMD>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
 
       vim.opt.termguicolors = true
+      vim.opt.guicursor =
+      [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
       require("bufferline").setup {}
     end
   },
@@ -557,7 +559,7 @@ local load_options = function()
   if global.is_windows then
     opt.shell = "pwsh --nologo"
   end
-  opt.clipboard = {"unnamed", "unnamedplus"}
+  opt.clipboard = { "unnamed", "unnamedplus" }
 
   opt.timeout = true
   opt.timeoutlen = 300
@@ -583,10 +585,10 @@ end
 
 local load_keymaps = function()
   -- Window
-  keymap.set({"n", "v"}, "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
-  keymap.set({"n", "v"}, "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
-  keymap.set({"n", "v"}, "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
-  keymap.set({"n", "v"}, "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
+  keymap.set({ "n", "v" }, "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
+  keymap.set({ "n", "v" }, "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
+  keymap.set({ "n", "v" }, "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
+  keymap.set({ "n", "v" }, "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
   -- keymap.set("i", "<M-h>", "<Esc><C-W>hi", { noremap = true, desc = "Window move left" })
   -- keymap.set("i", "<M-l>", "<Esc><C-W>li", { noremap = true, desc = "Window move right" })
   -- keymap.set("i", "<M-j>", "<Esc><C-W>ji", { noremap = true, desc = "Window move down" })
@@ -780,4 +782,3 @@ if vim.g.neovide then
   vim.g.neovide_cursor_vfx_particle_speed = 20.0
   vim.g.neovide_cursor_trail_size = 0
 end
-
