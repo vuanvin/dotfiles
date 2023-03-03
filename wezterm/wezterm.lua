@@ -1,6 +1,11 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
+local SOLID_RIGHT_ARROW = utf8.char(0xe0b0)
+local RIGHT_ARROW = utf8.char(0xe0b1)
+local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
+local LEFT_ARROW = utf8.char(0xe0b3)
+
 -- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
   force_reverse_video_cursor = true,
@@ -15,7 +20,6 @@ local configs = {
   window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
   initial_rows = 50,
   initial_cols = 160,
-  check_for_updates = false,
   color_scheme = "MonokaiPro (Gogh)",
   font = wezterm.font_with_fallback({
     "JetBrainsMono NF",
@@ -23,33 +27,27 @@ local configs = {
     "Cascadia Code",
   }),
   font_size = 9,
-  exit_behavior = "Close",
-  inactive_pane_hsb = {
-    hue = 1.0,
-    saturation = 1.0,
-    brightness = 1.0,
-  },
+  exit_behavior = "Close", -- when shell exit
+  audible_bell = "Disabled",
   launch_menu = {},
   leader = { key = '[', mods = 'ALT', timeout_milliseconds = 5000 },
   disable_default_key_bindings = true,
+  disable_default_mouse_bindings = false,
   mouse_bindings = {
-    {
-      event = { Up = { streak = 1, button = 'Middle' } },
-      mods = 'NONE',
-      action = act.Paste,
-    },
-    {
-      event = { Up = { streak = 1, button = 'Right' } },
-      mods = 'NONE',
-      action = act.CopyTo 'ClipboardAndPrimarySelection',
-    },
+    { event = { Up = { streak = 1, button = 'Middle' } },            mods = 'NONE', action = act.Paste, },
+    { event = { Up = { streak = 1, button = 'Right' } },             mods = 'NONE', action = act.CopyTo 'ClipboardAndPrimarySelection', },
+    { event = { Down = { streak = 1, button = { WheelUp = 1 } } },   mods = 'CTRL', action = act.IncreaseFontSize, },
+    { event = { Down = { streak = 1, button = { WheelDown = 1 } } }, mods = 'CTRL', action = act.DecreaseFontSize, },
+    { event = { Up = { streak = 1, button = 'Left' } },              mods = 'CTRL', action = act.OpenLinkAtMouseCursor, },
+    { event = { Down = { streak = 1, button = 'Left' } },            mods = 'CTRL', action = act.Nop, },
   },
-  -- command_palette_font_size = 14.0,
   -- https://wezfurlong.org/wezterm/config/lua/keyassignment/index.html
+  -- command_palette_font_size = 14.0,
   keys = {
     -- { key = 'p',          mods = 'SHIFT|CTRL',   action = act.ActivateCommandPalette },
     { key = 'n',          mods = 'SHIFT|CTRL',   action = act.SpawnWindow },
     { key = 'h',          mods = 'SHIFT|CTRL',   action = act.Hide },
+    { key = 'm',          mods = 'SHIFT|CTRL',   action = act.Hide },
     { key = ':',          mods = 'ALT|SHIFT',    action = act.ShowLauncher },
     { key = ':',          mods = 'LEADER|SHIFT', action = act.ShowLauncher },
     { key = 'q',          mods = 'CMD',          action = act.QuitApplication },
@@ -62,19 +60,19 @@ local configs = {
     { key = 'c',          mods = 'LEADER',       action = act.SpawnTab 'CurrentPaneDomain', },
     { key = 's',          mods = 'LEADER',       action = act.ShowTabNavigator },
     { key = 'x',          mods = 'LEADER|SHIFT', action = act.CloseCurrentTab { confirm = true }, },
-    { key = 'p',          mods = "LEADER",       action = act.ActivateTabRelative( -1) },
-    { key = 'n',          mods = "LEADER",       action = act.ActivateTabRelative(1) },
-    { key = 'p',          mods = "ALT",          action = act.ActivateTabRelative( -1) },
-    { key = 'n',          mods = "ALT",          action = act.ActivateTabRelative(1) },
-    { key = '1',          mods = "LEADER",       action = act.ActivateTab(0) },
-    { key = '2',          mods = "LEADER",       action = act.ActivateTab(1) },
-    { key = '3',          mods = "LEADER",       action = act.ActivateTab(2) },
-    { key = '4',          mods = "LEADER",       action = act.ActivateTab(3) },
-    { key = '5',          mods = "LEADER",       action = act.ActivateTab(4) },
-    { key = '6',          mods = "LEADER",       action = act.ActivateTab(5) },
-    { key = '7',          mods = "LEADER",       action = act.ActivateTab(6) },
-    { key = '8',          mods = "LEADER",       action = act.ActivateTab(7) },
-    { key = '9',          mods = "LEADER",       action = act.ActivateTab(8) },
+    { key = 'p',          mods = 'LEADER',       action = act.ActivateTabRelative( -1) },
+    { key = 'n',          mods = 'LEADER',       action = act.ActivateTabRelative(1) },
+    { key = 'p',          mods = 'ALT',          action = act.ActivateTabRelative( -1) },
+    { key = 'n',          mods = 'ALT',          action = act.ActivateTabRelative(1) },
+    { key = '1',          mods = 'LEADER',       action = act.ActivateTab(0) },
+    { key = '2',          mods = 'LEADER',       action = act.ActivateTab(1) },
+    { key = '3',          mods = 'LEADER',       action = act.ActivateTab(2) },
+    { key = '4',          mods = 'LEADER',       action = act.ActivateTab(3) },
+    { key = '5',          mods = 'LEADER',       action = act.ActivateTab(4) },
+    { key = '6',          mods = 'LEADER',       action = act.ActivateTab(5) },
+    { key = '7',          mods = 'LEADER',       action = act.ActivateTab(6) },
+    { key = '8',          mods = 'LEADER',       action = act.ActivateTab(7) },
+    { key = '9',          mods = 'LEADER',       action = act.ActivateTab(8) },
 
     -- Pane
     { key = 'x',          mods = 'LEADER',       action = act.CloseCurrentPane { confirm = true }, },
@@ -82,103 +80,103 @@ local configs = {
     { key = '%',          mods = 'LEADER|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     { key = '-',          mods = 'LEADER',       action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
     { key = '"',          mods = 'LEADER|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
-    { key = 'LeftArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
-    { key = 'h',          mods = "LEADER",       action = act.ActivatePaneDirection 'Left' },
-    { key = 'RightArrow', mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
-    { key = 'l',          mods = "LEADER",       action = act.ActivatePaneDirection 'Right' },
-    { key = 'UpArrow',    mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
-    { key = 'k',          mods = "LEADER",       action = act.ActivatePaneDirection 'Up' },
-    { key = 'DownArrow',  mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
-    { key = 'j',          mods = "LEADER",       action = act.ActivatePaneDirection 'Down' },
+    { key = 'LeftArrow',  mods = 'LEADER',       action = act.ActivatePaneDirection 'Left' },
+    { key = 'h',          mods = 'LEADER',       action = act.ActivatePaneDirection 'Left' },
+    { key = 'RightArrow', mods = 'LEADER',       action = act.ActivatePaneDirection 'Right' },
+    { key = 'l',          mods = 'LEADER',       action = act.ActivatePaneDirection 'Right' },
+    { key = 'UpArrow',    mods = 'LEADER',       action = act.ActivatePaneDirection 'Up' },
+    { key = 'k',          mods = 'LEADER',       action = act.ActivatePaneDirection 'Up' },
+    { key = 'DownArrow',  mods = 'LEADER',       action = act.ActivatePaneDirection 'Down' },
+    { key = 'j',          mods = 'LEADER',       action = act.ActivatePaneDirection 'Down' },
 
-    { key = "[",          mods = "LEADER",       action = act.ActivateCopyMode },
-    { key = "]",          mods = "LEADER",       action = act.PasteFrom("PrimarySelection") },
+    { key = '[',          mods = 'LEADER',       action = act.ActivateCopyMode },
+    { key = ']',          mods = 'LEADER',       action = act.PasteFrom('PrimarySelection') },
     { key = 'r',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false, }, },
-    { key = 'a',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'activate_pane', timeout_milliseconds = 1000, }, },
+    { key = 'a',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'activate_pane', timeout_milliseconds = 3000, }, },
   },
   key_tables = {
     copy_mode = {
-      { key = "c",          mods = "CTRL",  action = act.CopyMode("Close") },
-      { key = "g",          mods = "CTRL",  action = act.CopyMode("Close") },
-      { key = "q",          mods = "NONE",  action = act.CopyMode("Close") },
-      { key = "Escape",     mods = "NONE",  action = act.CopyMode("Close") },
+      { key = 'c',          mods = 'CTRL',  action = act.CopyMode('Close') },
+      { key = 'g',          mods = 'CTRL',  action = act.CopyMode('Close') },
+      { key = 'q',          mods = 'NONE',  action = act.CopyMode('Close') },
+      { key = 'Escape',     mods = 'NONE',  action = act.CopyMode('Close') },
 
-      { key = "h",          mods = "NONE",  action = act.CopyMode("MoveLeft") },
-      { key = "j",          mods = "NONE",  action = act.CopyMode("MoveDown") },
-      { key = "k",          mods = "NONE",  action = act.CopyMode("MoveUp") },
-      { key = "l",          mods = "NONE",  action = act.CopyMode("MoveRight") },
+      { key = 'h',          mods = 'NONE',  action = act.CopyMode('MoveLeft') },
+      { key = 'j',          mods = 'NONE',  action = act.CopyMode('MoveDown') },
+      { key = 'k',          mods = 'NONE',  action = act.CopyMode('MoveUp') },
+      { key = 'l',          mods = 'NONE',  action = act.CopyMode('MoveRight') },
 
-      { key = "LeftArrow",  mods = "NONE",  action = act.CopyMode("MoveLeft") },
-      { key = "DownArrow",  mods = "NONE",  action = act.CopyMode("MoveDown") },
-      { key = "UpArrow",    mods = "NONE",  action = act.CopyMode("MoveUp") },
-      { key = "RightArrow", mods = "NONE",  action = act.CopyMode("MoveRight") },
+      { key = 'LeftArrow',  mods = 'NONE',  action = act.CopyMode('MoveLeft') },
+      { key = 'DownArrow',  mods = 'NONE',  action = act.CopyMode('MoveDown') },
+      { key = 'UpArrow',    mods = 'NONE',  action = act.CopyMode('MoveUp') },
+      { key = 'RightArrow', mods = 'NONE',  action = act.CopyMode('MoveRight') },
 
-      { key = "RightArrow", mods = "ALT",   action = act.CopyMode("MoveForwardWord") },
-      { key = "f",          mods = "ALT",   action = act.CopyMode("MoveForwardWord") },
-      { key = "Tab",        mods = "NONE",  action = act.CopyMode("MoveForwardWord") },
-      { key = "w",          mods = "NONE",  action = act.CopyMode("MoveForwardWord") },
+      { key = 'RightArrow', mods = 'ALT',   action = act.CopyMode('MoveForwardWord') },
+      { key = 'f',          mods = 'ALT',   action = act.CopyMode('MoveForwardWord') },
+      { key = 'Tab',        mods = 'NONE',  action = act.CopyMode('MoveForwardWord') },
+      { key = 'w',          mods = 'NONE',  action = act.CopyMode('MoveForwardWord') },
 
-      { key = "LeftArrow",  mods = "ALT",   action = act.CopyMode("MoveBackwardWord") },
-      { key = "b",          mods = "ALT",   action = act.CopyMode("MoveBackwardWord") },
-      { key = "Tab",        mods = "SHIFT", action = act.CopyMode("MoveBackwardWord") },
-      { key = "b",          mods = "NONE",  action = act.CopyMode("MoveBackwardWord") },
+      { key = 'LeftArrow',  mods = 'ALT',   action = act.CopyMode('MoveBackwardWord') },
+      { key = 'b',          mods = 'ALT',   action = act.CopyMode('MoveBackwardWord') },
+      { key = 'Tab',        mods = 'SHIFT', action = act.CopyMode('MoveBackwardWord') },
+      { key = 'b',          mods = 'NONE',  action = act.CopyMode('MoveBackwardWord') },
 
-      { key = "0",          mods = "NONE",  action = act.CopyMode("MoveToStartOfLine") },
-      { key = "Enter",      mods = "NONE",  action = act.CopyMode("MoveToStartOfNextLine") },
+      { key = '0',          mods = 'NONE',  action = act.CopyMode('MoveToStartOfLine') },
+      { key = 'Enter',      mods = 'NONE',  action = act.CopyMode('MoveToStartOfNextLine') },
 
-      { key = "$",          mods = "NONE",  action = act.CopyMode("MoveToEndOfLineContent") },
-      { key = "$",          mods = "SHIFT", action = act.CopyMode("MoveToEndOfLineContent") },
-      { key = "^",          mods = "NONE",  action = act.CopyMode("MoveToStartOfLineContent") },
-      { key = "^",          mods = "SHIFT", action = act.CopyMode("MoveToStartOfLineContent") },
-      { key = "m",          mods = "ALT",   action = act.CopyMode("MoveToStartOfLineContent") },
+      { key = '$',          mods = 'NONE',  action = act.CopyMode('MoveToEndOfLineContent') },
+      { key = '$',          mods = 'SHIFT', action = act.CopyMode('MoveToEndOfLineContent') },
+      { key = '^',          mods = 'NONE',  action = act.CopyMode('MoveToStartOfLineContent') },
+      { key = '^',          mods = 'SHIFT', action = act.CopyMode('MoveToStartOfLineContent') },
+      { key = 'm',          mods = 'ALT',   action = act.CopyMode('MoveToStartOfLineContent') },
 
-      { key = " ",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Cell" } },
-      { key = "v",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Cell" } },
-      { key = "V",          mods = "NONE",  action = act.CopyMode { SetSelectionMode = "Line" } },
-      { key = "V",          mods = "SHIFT", action = act.CopyMode { SetSelectionMode = "Line" } },
-      { key = "v",          mods = "CTRL",  action = act.CopyMode { SetSelectionMode = "Block" } },
+      { key = ' ',          mods = 'NONE',  action = act.CopyMode { SetSelectionMode = 'Cell' } },
+      { key = 'v',          mods = 'NONE',  action = act.CopyMode { SetSelectionMode = 'Cell' } },
+      { key = 'V',          mods = 'NONE',  action = act.CopyMode { SetSelectionMode = 'Line' } },
+      { key = 'V',          mods = 'SHIFT', action = act.CopyMode { SetSelectionMode = 'Line' } },
+      { key = 'v',          mods = 'CTRL',  action = act.CopyMode { SetSelectionMode = 'Block' } },
 
-      { key = "G",          mods = "NONE",  action = act.CopyMode("MoveToScrollbackBottom") },
-      { key = "G",          mods = "SHIFT", action = act.CopyMode("MoveToScrollbackBottom") },
-      { key = "g",          mods = "NONE",  action = act.CopyMode("MoveToScrollbackTop") },
+      { key = 'G',          mods = 'NONE',  action = act.CopyMode('MoveToScrollbackBottom') },
+      { key = 'G',          mods = 'SHIFT', action = act.CopyMode('MoveToScrollbackBottom') },
+      { key = 'g',          mods = 'NONE',  action = act.CopyMode('MoveToScrollbackTop') },
 
-      { key = "H",          mods = "NONE",  action = act.CopyMode("MoveToViewportTop") },
-      { key = "H",          mods = "SHIFT", action = act.CopyMode("MoveToViewportTop") },
-      { key = "M",          mods = "NONE",  action = act.CopyMode("MoveToViewportMiddle") },
-      { key = "M",          mods = "SHIFT", action = act.CopyMode("MoveToViewportMiddle") },
-      { key = "L",          mods = "NONE",  action = act.CopyMode("MoveToViewportBottom") },
-      { key = "L",          mods = "SHIFT", action = act.CopyMode("MoveToViewportBottom") },
+      { key = 'H',          mods = 'NONE',  action = act.CopyMode('MoveToViewportTop') },
+      { key = 'H',          mods = 'SHIFT', action = act.CopyMode('MoveToViewportTop') },
+      { key = 'M',          mods = 'NONE',  action = act.CopyMode('MoveToViewportMiddle') },
+      { key = 'M',          mods = 'SHIFT', action = act.CopyMode('MoveToViewportMiddle') },
+      { key = 'L',          mods = 'NONE',  action = act.CopyMode('MoveToViewportBottom') },
+      { key = 'L',          mods = 'SHIFT', action = act.CopyMode('MoveToViewportBottom') },
 
-      { key = "o",          mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEnd") },
-      { key = "O",          mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
-      { key = "O",          mods = "SHIFT", action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
+      { key = 'o',          mods = 'NONE',  action = act.CopyMode('MoveToSelectionOtherEnd') },
+      { key = 'O',          mods = 'NONE',  action = act.CopyMode('MoveToSelectionOtherEndHoriz') },
+      { key = 'O',          mods = 'SHIFT', action = act.CopyMode('MoveToSelectionOtherEndHoriz') },
 
-      { key = "PageUp",     mods = "NONE",  action = act.CopyMode("PageUp") },
-      { key = "PageDown",   mods = "NONE",  action = act.CopyMode("PageDown") },
+      { key = 'PageUp',     mods = 'NONE',  action = act.CopyMode('PageUp') },
+      { key = 'PageDown',   mods = 'NONE',  action = act.CopyMode('PageDown') },
 
-      { key = "b",          mods = "CTRL",  action = act.CopyMode("PageUp") },
-      { key = "f",          mods = "CTRL",  action = act.CopyMode("PageDown") },
+      { key = 'b',          mods = 'CTRL',  action = act.CopyMode('PageUp') },
+      { key = 'f',          mods = 'CTRL',  action = act.CopyMode('PageDown') },
 
       -- Enter y to copy and quit the copy mode.
-      { key = "y",          mods = "NONE",  action = act.Multiple { act.CopyTo("ClipboardAndPrimarySelection"), act.CopyMode("Close"), } },
+      { key = 'y',          mods = 'NONE',  action = act.Multiple { act.CopyTo('ClipboardAndPrimarySelection'), act.CopyMode('Close'), } },
       -- Enter search mode to edit the pattern.
       -- When the search pattern is an empty string the existing pattern is preserved
-      { key = "/",          mods = "NONE",  action = act { Search = { CaseSensitiveString = "" } } },
-      { key = "?",          mods = "NONE",  action = act { Search = { CaseInSensitiveString = "" } } },
-      { key = "n",          mods = "CTRL",  action = act { CopyMode = "NextMatch" } },
-      { key = "p",          mods = "CTRL",  action = act { CopyMode = "PriorMatch" } },
+      { key = '/',          mods = 'NONE',  action = act { Search = { CaseSensitiveString = '' } } },
+      { key = '?',          mods = 'NONE',  action = act { Search = { CaseInSensitiveString = '' } } },
+      { key = 'n',          mods = 'CTRL',  action = act { CopyMode = 'NextMatch' } },
+      { key = 'p',          mods = 'CTRL',  action = act { CopyMode = 'PriorMatch' } },
     },
 
     search_mode = {
-      { key = "Escape", mods = "NONE", action = act { CopyMode = "Close" } },
-      -- Go back to copy mode when pressing enter, so that we can use unmodified keys like "n"
+      { key = 'Escape', mods = 'NONE', action = act { CopyMode = 'Close' } },
+      -- Go back to copy mode when pressing enter, so that we can use unmodified keys like 'n'
       -- to navigate search results without conflicting with typing into the search area.
-      { key = "Enter",  mods = "NONE", action = "ActivateCopyMode" },
-      { key = "c",      mods = "CTRL", action = "ActivateCopyMode" },
-      { key = "n",      mods = "CTRL", action = act { CopyMode = "NextMatch" } },
-      { key = "p",      mods = "CTRL", action = act { CopyMode = "PriorMatch" } },
-      { key = "r",      mods = "CTRL", action = act.CopyMode("CycleMatchType") },
-      { key = "u",      mods = "CTRL", action = act.CopyMode("ClearPattern") },
+      { key = 'Enter',  mods = 'NONE', action = 'ActivateCopyMode' },
+      { key = 'c',      mods = 'CTRL', action = 'ActivateCopyMode' },
+      { key = 'n',      mods = 'CTRL', action = act { CopyMode = 'NextMatch' } },
+      { key = 'p',      mods = 'CTRL', action = act { CopyMode = 'PriorMatch' } },
+      { key = 'r',      mods = 'CTRL', action = act.CopyMode('CycleMatchType') },
+      { key = 'u',      mods = 'CTRL', action = act.CopyMode('ClearPattern') },
     },
     resize_pane = {
       { key = 'LeftArrow',  action = act.AdjustPaneSize { 'Left', 1 } },
@@ -203,18 +201,43 @@ local configs = {
       { key = 'j',          action = act.ActivatePaneDirection 'Down' },
     },
   },
+
+  check_for_updates = false,
   set_environment_variables = {},
+
   ssh_domains = {
     {
       name = 'cloud',
       remote_address = '121.46.19.2:20795',
       username = 'yuanyin',
     },
-  },
-  wsl_domains = {
     {
-      name = 'WSL:Ubuntu',
-      distribution = 'Ubuntu',
+      name = 'zyynote',
+      remote_address = '192.168.198.110',
+      username = 'yuanyin',
+    },
+  },
+  wsl_domains = wezterm.default_wsl_domains(),
+  tab_bar_style = {
+    active_tab_left = wezterm.format {
+      { Background = { Color = '#0b0022' } },
+      { Foreground = { Color = '#2b2042' } },
+      { Text = SOLID_LEFT_ARROW },
+    },
+    active_tab_right = wezterm.format {
+      { Background = { Color = '#0b0022' } },
+      { Foreground = { Color = '#2b2042' } },
+      { Text = SOLID_RIGHT_ARROW },
+    },
+    inactive_tab_left = wezterm.format {
+      { Background = { Color = '#0b0022' } },
+      { Foreground = { Color = '#1b1032' } },
+      { Text = SOLID_LEFT_ARROW },
+    },
+    inactive_tab_right = wezterm.format {
+      { Background = { Color = '#0b0022' } },
+      { Foreground = { Color = '#1b1032' } },
+      { Text = SOLID_RIGHT_ARROW },
     },
   },
 }
@@ -229,7 +252,6 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   local success, wsl_list, wsl_err = wezterm.run_child_process({ "wsl", "-l" })
   -- `wsl.exe -l` has a bug where it always outputs utf16:
   -- https://github.com/microsoft/WSL/issues/4607
-  -- So we get to convert it
   wsl_list = wezterm.utf16_to_utf8(wsl_list)
 
   for idx, line in ipairs(wezterm.split_by_newlines(wsl_list)) do
@@ -261,17 +283,84 @@ elseif wezterm.target_triple == "x86_64-apple-darwin" then
 end
 
 wezterm.on('update-right-status', function(window, pane)
-  local name = window:active_key_table()
-  if name then
-    name = 'TABLE: ' .. name .. '   '
+  local cells = {}
+
+  table.insert(cells, window:active_key_table())
+  table.insert(cells, window:active_workspace())
+
+  local basic_color = '#ff9248'
+  local focus_color = '#403e41'
+  local text_bg = '#2a2a2a'
+  local text_fg = '#c0c0c0'
+  local elements = {}
+  local num_cells = 0
+
+  local function push(text, is_first)
+    if is_first then
+      table.insert(elements, { Foreground = { Color = text_bg } })
+      table.insert(elements, { Text = SOLID_LEFT_ARROW })
+    else
+      table.insert(elements, { Foreground = { Color = text_fg } })
+      table.insert(elements, { Background = { Color = text_bg } })
+      table.insert(elements, { Text = LEFT_ARROW })
+    end
+
+    table.insert(elements, { Foreground = { Color = text_fg } })
+    table.insert(elements, { Background = { Color = text_bg } })
+    table.insert(elements, { Text = ' ' .. text .. ' ' })
+    num_cells = num_cells + 1
   end
-  window:set_right_status(name or '')
+
+  local is_first = true
+  while #cells > 0 do
+    local cell = table.remove(cells, 1)
+    push(cell, is_first)
+    is_first = false
+  end
+
+  local bactories = {}
+  for _, b in ipairs(wezterm.battery_info()) do
+    table.insert(bactories, string.format('%.0f%%', b.state_of_charge * 100))
+  end
+
+  is_first = true
+  while #bactories > 0 do
+    local text = table.remove(bactories, 1)
+    if is_first then
+      table.insert(elements, { Foreground = { Color = focus_color } })
+      table.insert(elements, { Text = SOLID_LEFT_ARROW })
+    else
+      table.insert(elements, { Foreground = { Color = text_fg } })
+      table.insert(elements, { Background = { Color = focus_color } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, { Text = LEFT_ARROW })
+    end
+
+    table.insert(elements, { Attribute = { Intensity = "Half" } })
+    table.insert(elements, { Foreground = { Color = basic_color } })
+    table.insert(elements, { Background = { Color = focus_color } })
+    table.insert(elements, { Text = ' ' .. text .. ' ' })
+    is_first = false
+  end
+
+  local date = wezterm.strftime '%H:%M'
+  table.insert(elements, { Foreground = { Color = basic_color } })
+  table.insert(elements, { Text = SOLID_LEFT_ARROW })
+  table.insert(elements, { Foreground = { Color = '#19181a' } })
+  table.insert(elements, { Background = { Color = basic_color } })
+  table.insert(elements, { Attribute = { Intensity = "Half" } })
+  table.insert(elements, { Text = ' ' .. date .. ' ' })
+
+  window:set_right_status(wezterm.format(elements))
+
+  elements = {}
+  window:set_left_status(wezterm.format(elements))
 end)
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local basename = function(s)
     s = string.gsub(s, "(.*[/\\])(.*)", "%2")
-    return s:gsub(".exe" .. "$", "")
+    return s:gsub(".exe[ ]" .. "$", "")
   end
 
   -- local _title = tab.active_pane.foreground_process_name
