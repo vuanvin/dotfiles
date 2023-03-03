@@ -3,6 +3,8 @@ local act = wezterm.action
 
 -- https://wezfurlong.org/wezterm/config/lua/config/index.html
 local configs = {
+  force_reverse_video_cursor = true,
+  default_cursor_style = 'BlinkingBlock',
   ratelimit_output_bytes_per_second = 10000000,
   enable_scroll_bar = false,
   show_tab_index_in_tab_bar = true,
@@ -15,7 +17,6 @@ local configs = {
   initial_cols = 160,
   check_for_updates = false,
   color_scheme = "MonokaiPro (Gogh)",
-  -- color_scheme = "Gruvbox Dark", -- "MonokaiPro (Gogh)",
   font = wezterm.font_with_fallback({
     "JetBrainsMono NF",
     "FiraCode Nerd Font",
