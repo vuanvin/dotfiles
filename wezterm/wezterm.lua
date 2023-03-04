@@ -42,6 +42,8 @@ local configs = {
   disable_default_key_bindings = true,
   disable_default_mouse_bindings = false,
   mouse_bindings = {
+    -- Button action: Up/Down/Drag
+    -- Button position: Left/Middle/Right
     { event = { Up = { streak = 1, button = 'Middle' } },            mods = 'NONE', action = act.Paste, },
     { event = { Up = { streak = 1, button = 'Right' } },             mods = 'NONE', action = act.CopyTo 'ClipboardAndPrimarySelection', },
     { event = { Down = { streak = 1, button = { WheelUp = 1 } } },   mods = 'CTRL', action = act.IncreaseFontSize, },
@@ -110,7 +112,10 @@ local configs = {
     { key = 'a',          mods = 'LEADER',       action = act.ActivateKeyTable { name = 'activate_pane', timeout_milliseconds = 3000, }, },
   },
   key_tables = {
+    -- https://wezfurlong.org/wezterm/copymode.html
     copy_mode = {
+      { key = 'a',          mods = 'NONE',  action = act.CopyMode('Close') },
+      { key = 'i',          mods = 'NONE',  action = act.CopyMode('Close') },
       { key = 'c',          mods = 'CTRL',  action = act.CopyMode('Close') },
       { key = 'g',          mods = 'CTRL',  action = act.CopyMode('Close') },
       { key = 'q',          mods = 'NONE',  action = act.CopyMode('Close') },
@@ -168,9 +173,10 @@ local configs = {
 
       { key = 'PageUp',     mods = 'NONE',  action = act.CopyMode('PageUp') },
       { key = 'PageDown',   mods = 'NONE',  action = act.CopyMode('PageDown') },
-
       { key = 'b',          mods = 'CTRL',  action = act.CopyMode('PageUp') },
       { key = 'f',          mods = 'CTRL',  action = act.CopyMode('PageDown') },
+      -- { key = 'u',          mods = 'CTRL',  action = act.CopyMode { MoveByPage = -0.5 }, },
+      -- { key = 'd',          mods = 'CTRL',  action = act.CopyMode { MoveByPage = 0.5 }, },
 
       -- Enter y to copy and quit the copy mode.
       { key = 'y',          mods = 'NONE',  action = act.Multiple { act.CopyTo('ClipboardAndPrimarySelection'), act.CopyMode('Close'), } },
@@ -183,15 +189,17 @@ local configs = {
     },
 
     search_mode = {
-      { key = 'Escape', mods = 'NONE', action = act { CopyMode = 'Close' } },
-      -- Go back to copy mode when pressing enter, so that we can use unmodified keys like 'n'
-      -- to navigate search results without conflicting with typing into the search area.
-      { key = 'Enter',  mods = 'NONE', action = 'ActivateCopyMode' },
-      { key = 'c',      mods = 'CTRL', action = 'ActivateCopyMode' },
-      { key = 'n',      mods = 'CTRL', action = act { CopyMode = 'NextMatch' } },
-      { key = 'p',      mods = 'CTRL', action = act { CopyMode = 'PriorMatch' } },
-      { key = 'r',      mods = 'CTRL', action = act.CopyMode('CycleMatchType') },
-      { key = 'u',      mods = 'CTRL', action = act.CopyMode('ClearPattern') },
+      { key = 'Escape',    mods = 'NONE', action = act { CopyMode = 'Close' } },
+      { key = 'Enter',     mods = 'NONE', action = act.ActivateCopyMode },
+      { key = 'c',         mods = 'CTRL', action = act.ActivateCopyMode },
+      { key = 'n',         mods = 'CTRL', action = act { CopyMode = 'NextMatch' } },
+      { key = 'p',         mods = 'CTRL', action = act { CopyMode = 'PriorMatch' } },
+      { key = 'r',         mods = 'CTRL', action = act.CopyMode('CycleMatchType') },
+      { key = 'u',         mods = 'CTRL', action = act.CopyMode('ClearPattern') },
+      { key = 'PageUp',    mods = 'NONE', action = act.CopyMode 'PriorMatchPage', },
+      { key = 'PageDown',  mods = 'NONE', action = act.CopyMode 'NextMatchPage', },
+      { key = 'UpArrow',   mods = 'NONE', action = act.CopyMode 'PriorMatch' },
+      { key = 'DownArrow', mods = 'NONE', action = act.CopyMode 'NextMatch' },
     },
 
     resize_pane = {
