@@ -5,19 +5,20 @@ local SOLID_RIGHT_ARROW = utf8.char(0xe0b0)
 local RIGHT_ARROW = utf8.char(0xe0b1)
 local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
 local LEFT_ARROW = utf8.char(0xe0b3)
-local TAB_BAR_BG = "Black"
+
+local TAB_BAR_COLOR = "#000000"
 local NORMAL_TAB_BG = "#191f26"
-local NORMAL_TAB_FG = "White"
+local NORMAL_TAB_FG = "#ffffff"
 local ACTIVE_TAB_BG = "#ff9248"
-local ACTIVE_TAB_FG = "Black"
+local ACTIVE_TAB_FG = "#000000"
 local HOVER_TAB_BG = "#0f1419"
-local HOVER_TAB_FG = "White"
+local HOVER_TAB_FG = "#ffffff"
 
 local configs = {
   use_fancy_tab_bar = false,
   force_reverse_video_cursor = true,
   default_cursor_style = 'BlinkingBlock',
-  ratelimit_output_bytes_per_second = 10000000,
+  ratelimit_mux_line_prefetches_per_second = 500000000,
   enable_scroll_bar = false,
   show_tab_index_in_tab_bar = true,
   tab_and_split_indices_are_zero_based = false,
@@ -236,17 +237,23 @@ local configs = {
       username = 'yuanyin',
     },
   },
+  unix_domains = {
+    {
+      name = 'unix',
+    },
+  },
   wsl_domains = wezterm.default_wsl_domains(),
+  -- default_gui_startup_args = { 'connect', 'unix' },
   tab_bar_style = {
     new_tab = wezterm.format {
-      { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = TAB_BAR_BG } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = HOVER_TAB_FG } },
+      { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = TAB_BAR_COLOR } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = HOVER_TAB_FG } },
       { Text = " + " },
       { Background = { Color = '#333333' } }, { Foreground = { Color = HOVER_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
     },
     new_tab_hover = wezterm.format {
       { Attribute = { Italic = false } },
       { Attribute = { Intensity = "Bold" } },
-      { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = TAB_BAR_BG } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = NORMAL_TAB_FG } },
+      { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = TAB_BAR_COLOR } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = NORMAL_TAB_FG } },
       { Text = " + " },
       { Background = { Color = '#333333' } }, { Foreground = { Color = NORMAL_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
     },
@@ -302,7 +309,7 @@ wezterm.on('update-right-status', function(window, pane)
   local basic_color = '#ff9248'
   local focus_color = '#403e41'
   local text_bg = '#2a2a2a'
-  local text_fg = '#c0c0c0'
+  local text_fg = '#ffffff'
   local elements = {}
   local num_cells = 0
 
@@ -331,10 +338,18 @@ wezterm.on('update-right-status', function(window, pane)
     is_first = false
   end
 
-  local BATTERY_ICON = utf8.char(0xf240)
   local batteries = {}
   for _, b in ipairs(wezterm.battery_info()) do
-    table.insert(batteries, BATTERY_ICON .. "  " .. string.format('%.0f%%', b.state_of_charge * 100))
+    local battery_icon = utf8.char(0xf240)
+    if b.state_of_charge <= 1 / 4 then
+      battery_icon = utf8.char(0xf243)
+    elseif b.state_of_charge <= 2 / 4 then
+      battery_icon = utf8.char(0xf242)
+    elseif b.state_of_charge <= 3 / 4 then
+      battery_icon = utf8.char(0xf241)
+    end
+
+    table.insert(batteries, battery_icon .. ' ' .. string.format('%.0f%%', b.state_of_charge * 100))
   end
 
   is_first = true
@@ -407,13 +422,13 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   local trailing_bg = NORMAL_TAB_BG
 
   if is_first then
-    leading_fg = TAB_BAR_BG
+    leading_fg = TAB_BAR_COLOR
   else
     leading_fg = NORMAL_TAB_BG
   end
 
   if is_last then
-    trailing_bg = TAB_BAR_BG
+    trailing_bg = TAB_BAR_COLOR
   else
     trailing_bg = NORMAL_TAB_BG
   end
