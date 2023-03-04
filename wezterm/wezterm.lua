@@ -324,14 +324,15 @@ wezterm.on('update-right-status', function(window, pane)
     is_first = false
   end
 
-  local bactories = {}
+  local BATTERY_ICON = utf8.char(0xf240)
+  local batteries = {}
   for _, b in ipairs(wezterm.battery_info()) do
-    table.insert(bactories, string.format('%.0f%%', b.state_of_charge * 100))
+    table.insert(batteries, BATTERY_ICON .. "  " .. string.format('%.0f%%', b.state_of_charge * 100))
   end
 
   is_first = true
-  while #bactories > 0 do
-    local text = table.remove(bactories, 1)
+  while #batteries > 0 do
+    local text = table.remove(batteries, 1)
     if is_first then
       table.insert(elements, { Foreground = { Color = focus_color } })
       table.insert(elements, { Text = SOLID_LEFT_ARROW })
@@ -349,7 +350,7 @@ wezterm.on('update-right-status', function(window, pane)
     is_first = false
   end
 
-  local date = wezterm.strftime '%H:%M'
+  local date = wezterm.strftime '%H:%M:%S %p'
   table.insert(elements, { Foreground = { Color = basic_color } })
   table.insert(elements, { Text = SOLID_LEFT_ARROW })
   table.insert(elements, { Foreground = { Color = '#19181a' } })
