@@ -346,6 +346,7 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>,', builtin.buffers, { desc = "Find buffer" })
       vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = "Find pattern" })
       vim.keymap.set('n', '<leader>:', builtin.command_history, { desc = "Command history" })
+      vim.keymap.set('c', '<C-R>', ':Telescope command_history<CR>', { desc = "Command history" })
 
       vim.keymap.set('n', '<leader>T', "<CMD>Telescope<CR>", { desc = "Launch telescope" })
       vim.keymap.set('n', '<C-S-F>', "<CMD>Telescope<CR>", { desc = "Launch telescope" })
@@ -516,8 +517,6 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>bb", "<CMD>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
 
       vim.opt.termguicolors = true
-      -- vim.opt.guicursor =
-      -- [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
       require("bufferline").setup {}
     end
   },
@@ -560,6 +559,8 @@ local load_options = function()
     opt.shell = "pwsh --nologo"
   end
   opt.clipboard = { "unnamed", "unnamedplus" }
+  opt.guicursor = 'a:blinkwait700-blinkoff400-blinkon250,' .. 'n-v-c:block,i-ci-ve:ver25,' .. 'r-cr:hor20,o:hor50,' ..
+      'sm:block-blinkwait175-blinkoff150-blinkon175'
 
   opt.timeout = true
   opt.timeoutlen = 300
