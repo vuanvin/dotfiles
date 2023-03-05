@@ -6,7 +6,7 @@ local RIGHT_ARROW = utf8.char(0xe0b1)
 local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
 local LEFT_ARROW = utf8.char(0xe0b3)
 
-local TAB_BAR_COLOR = "#000000"
+local TAB_BAR_COLOR = "#333333"
 local NORMAL_TAB_BG = "#191f26"
 local NORMAL_TAB_FG = "#ffffff"
 local ACTIVE_TAB_BG = "#ff9248"
@@ -254,16 +254,28 @@ local configs = {
   -- default_gui_startup_args = { 'connect', 'unix' },
   tab_bar_style = {
     new_tab = wezterm.format {
-      { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = TAB_BAR_COLOR } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = HOVER_TAB_BG } }, { Foreground = { Color = HOVER_TAB_FG } },
+      { Background = { Color = HOVER_TAB_BG } },
+      { Foreground = { Color = TAB_BAR_COLOR } },
+      { Text = SOLID_RIGHT_ARROW },
+      { Background = { Color = HOVER_TAB_BG } },
+      { Foreground = { Color = HOVER_TAB_FG } },
       { Text = " + " },
-      { Background = { Color = '#333333' } }, { Foreground = { Color = HOVER_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
+      { Background = { Color = '#333333' } },
+      { Foreground = { Color = HOVER_TAB_BG } },
+      { Text = SOLID_RIGHT_ARROW },
     },
     new_tab_hover = wezterm.format {
       { Attribute = { Italic = false } },
       { Attribute = { Intensity = "Bold" } },
-      { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = TAB_BAR_COLOR } }, { Text = SOLID_RIGHT_ARROW }, { Background = { Color = NORMAL_TAB_BG } }, { Foreground = { Color = NORMAL_TAB_FG } },
+      { Background = { Color = NORMAL_TAB_BG } },
+      { Foreground = { Color = TAB_BAR_COLOR } },
+      { Text = SOLID_RIGHT_ARROW },
+      { Background = { Color = NORMAL_TAB_BG } },
+      { Foreground = { Color = NORMAL_TAB_FG } },
       { Text = " + " },
-      { Background = { Color = '#333333' } }, { Foreground = { Color = NORMAL_TAB_BG } }, { Text = SOLID_RIGHT_ARROW },
+      { Background = { Color = '#333333' } },
+      { Foreground = { Color = NORMAL_TAB_BG } },
+      { Text = SOLID_RIGHT_ARROW },
     },
   },
 }
@@ -402,8 +414,8 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
 
   -- local _title = tab.active_pane.foreground_process_name
   local _title = tab.active_pane.title
-  local title = wezterm.truncate_right(basename(_title), max_width - 2)
-  title = (tab.tab_index + 1) .. ": " .. title
+  local title = (tab.tab_index + 1) .. ": " .. basename(_title)
+  title = wezterm.truncate_right(title, max_width - 4)
 
   panes = panes
   config = config
