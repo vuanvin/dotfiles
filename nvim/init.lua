@@ -48,22 +48,10 @@ init_lazy()
 require("lazy").setup({
   'equalsraf/neovim-gui-shim', -- fixed neovim-qt bug
   {
-    "brglng/vim-im-select",
-    dependencies = { 'tmux-plugins/vim-tmux-focus-events' },
+    'keaising/im-select.nvim',
     config = function()
-      vim.g.im_select_enable_focus_events = 0
-
-      if not global.is_linux then
-        vim.g.im_select_command = "im-select"
-
-        if global.is_windows then
-          vim.g.im_select_default = '1033'
-        elseif global.is_mac then
-          vim.g.im_select_default = 'com.apple.keylayout.ABC'
-        end
-      end
+      require('im_select').setup {}
     end,
-
   },
   {
     "folke/trouble.nvim",
@@ -604,36 +592,32 @@ end
 
 local load_keymaps = function()
   -- Window
-  keymap.set({ "n", "v" }, "<M-h>", "<C-W>h", { noremap = true, desc = "Window move left" })
-  keymap.set({ "n", "v" }, "<M-l>", "<C-W>l", { noremap = true, desc = "Window move right" })
-  keymap.set({ "n", "v" }, "<M-j>", "<C-W>j", { noremap = true, desc = "Window move down" })
-  keymap.set({ "n", "v" }, "<M-k>", "<C-W>k", { noremap = true, desc = "Window move up" })
-  -- keymap.set("i", "<M-h>", "<Esc><C-W>hi", { noremap = true, desc = "Window move left" })
-  -- keymap.set("i", "<M-l>", "<Esc><C-W>li", { noremap = true, desc = "Window move right" })
-  -- keymap.set("i", "<M-j>", "<Esc><C-W>ji", { noremap = true, desc = "Window move down" })
-  -- keymap.set("i", "<M-k>", "<Esc><C-W>ki", { noremap = true, desc = "Window move up" })
+  keymap.set({ 'n', 'v' }, '<M-h>', '<C-W>h', { noremap = true, desc = 'Window move left' })
+  keymap.set({ 'n', 'v' }, '<M-l>', '<C-W>l', { noremap = true, desc = 'Window move right' })
+  keymap.set({ 'n', 'v' }, '<M-j>', '<C-W>j', { noremap = true, desc = 'Window move down' })
+  keymap.set({ 'n', 'v' }, '<M-k>', '<C-W>k', { noremap = true, desc = 'Window move up' })
 
   -- Terminal
-  keymap.set("t", "<M-h>", "<C-\\><C-N><C-W>h", { noremap = true })
-  keymap.set("t", "<M-l>", "<C-\\><C-N><C-W>l", { noremap = true })
-  keymap.set("t", "<M-j>", "<C-\\><C-N><C-W>j", { noremap = true })
-  keymap.set("t", "<M-k>", "<C-\\><C-N><C-W>k", { noremap = true })
-  keymap.set("t", "<Esc>", "<C-\\><C-N>", { noremap = true })
+  keymap.set('t', '<M-h>', '<C-\\><C-N><C-W>h', { noremap = true })
+  keymap.set('t', '<M-l>', '<C-\\><C-N><C-W>l', { noremap = true })
+  keymap.set('t', '<M-j>', '<C-\\><C-N><C-W>j', { noremap = true })
+  keymap.set('t', '<M-k>', '<C-\\><C-N><C-W>k', { noremap = true })
+  keymap.set('t', '<Esc>', '<C-\\><C-N>', { noremap = true })
 
   -- Cmdline
-  keymap.set("c", "<C-A>", "<Home>", { noremap = true })
-  keymap.set("c", "<C-F>", "<Right>", { noremap = true })
-  keymap.set("c", "<C-B>", "<Left>", { noremap = true })
+  keymap.set('c', '<C-A>', '<Home>', { noremap = true })
+  keymap.set('c', '<C-F>', '<Right>', { noremap = true })
+  keymap.set('c', '<C-B>', '<Left>', { noremap = true })
 
   -- Insert
-  keymap.set("i", "<C-A>", "<Home>", { noremap = true })
-  keymap.set("i", "<C-E>", "<End>", { noremap = true })
-  keymap.set("i", "<C-H>", "<Left>", { noremap = true })
-  keymap.set("i", "<C-J>", "<Down>", { noremap = true })
-  keymap.set("i", "<C-K>", "<Up>", { noremap = true })
-  keymap.set("i", "<C-L>", "<Right>", { noremap = true })
+  keymap.set('i', '<C-A>', '<Home>', { noremap = true })
+  keymap.set('i', '<C-E>', '<End>', { noremap = true })
+  keymap.set('i', '<C-H>', '<Left>', { noremap = true })
+  keymap.set('i', '<C-J>', '<Down>', { noremap = true })
+  keymap.set('i', '<C-K>', '<Up>', { noremap = true })
+  keymap.set('i', '<C-L>', '<Right>', { noremap = true })
 
-  keymap.set({ "n", "v" }, "<leader>hh", ":help ", { noremap = true, desc = "Help" })
+  keymap.set({ 'n', 'v' }, '<leader>hh', ':help ', { noremap = true, desc = 'Help' })
 end
 
 local setup_lsp = function()
