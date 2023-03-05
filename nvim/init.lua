@@ -48,6 +48,15 @@ init_lazy()
 require("lazy").setup({
   'equalsraf/neovim-gui-shim', -- fixed neovim-qt bug
   {
+    "brglng/vim-im-select",
+    cond = not not global.is_windows,
+    config = function()
+      vim.g.im_select_command = "im-select"
+      vim.g.im_select_default = "1033"
+      vim.g.im_select_enable_focus_events = 0
+    end,
+  },
+  {
     "folke/trouble.nvim",
     requires = "nvim-tree/nvim-web-devicons",
     config = function()
