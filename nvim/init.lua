@@ -49,12 +49,21 @@ require("lazy").setup({
   'equalsraf/neovim-gui-shim', -- fixed neovim-qt bug
   {
     "brglng/vim-im-select",
-    cond = not not global.is_windows,
+    dependencies = { 'tmux-plugins/vim-tmux-focus-events' },
     config = function()
-      vim.g.im_select_command = "im-select"
-      vim.g.im_select_default = "1033"
       vim.g.im_select_enable_focus_events = 0
+
+      if not global.is_linux then
+        vim.g.im_select_command = "im-select"
+
+        if global.is_windows then
+          vim.g.im_select_default = '1033'
+        elseif global.is_mac then
+          vim.g.im_select_default = 'com.apple.keylayout.ABC'
+        end
+      end
     end,
+
   },
   {
     "folke/trouble.nvim",
