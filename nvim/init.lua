@@ -373,6 +373,7 @@ require("lazy").setup({
     'phaazon/hop.nvim',
     branch = 'v2',
     config = function()
+      vim.keymap.set("n", "<leader>;", "<CMD>HopWord<CR>", { noremap = true })
       vim.keymap.set("n", "<leader>jw", "<CMD>HopWord<CR>", { noremap = true })
       vim.keymap.set("n", "<leader>jf", "<CMD>HopWordCurrentLine<CR>", { noremap = true })
       vim.keymap.set("n", "<leader>jj", "<CMD>HopWordAC<CR>", { noremap = true })
