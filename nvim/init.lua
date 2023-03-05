@@ -299,16 +299,9 @@ require("lazy").setup({
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     },
     config = function()
-      require("notify").setup {
-        background_color = "#000000",
-      }
-
       require("noice").setup({
         lsp = {
           -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -335,6 +328,16 @@ require("lazy").setup({
       vim.keymap.set("c", "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end,
         { desc = "Redirect Cmdline" })
     end,
+  },
+  {
+    "rcarriga/nvim-notify",
+    config = function()
+      vim.opt.termguicolors = true -- required by notify
+
+      require("notify").setup {
+        background_color = "#000000",
+      }
+    end
   },
   {
     'goolord/alpha-nvim',
@@ -621,6 +624,8 @@ local load_keymaps = function()
 end
 
 local setup_lsp = function()
+  vim.keymap.set('n', '<leader>lq', '<CMD>LspStop<CR>', {})
+
   -- https://github.com/neovim/nvim-lspconfig
   local on_attach = function(client, bufnr)
     vim.g.completion_matching_strategy_list = "['exact', 'substring', 'fuzzy']"
@@ -670,22 +675,13 @@ local setup_lsp = function()
     capabilities = capabilities,
     settings = {
       Lua = {
-        runtime = {
-          -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-          version = 'LuaJIT',
-        },
-        diagnostics = {
-          -- Get the language server to recognize the `vim` global
-          globals = { 'vim' },
-        },
+        telemetry = { enable = false, },
+        runtime = { version = 'LuaJIT', },
+        diagnostics = { globals = { 'vim', 'utf8' }, },
         workspace = {
           -- Make the server aware of Neovim runtime files
           library = vim.api.nvim_get_runtime_file("", true),
           checkThirdParty = false,
-        },
-        -- Do not send telemetry data containing a randomized but unique identifier
-        telemetry = {
-          enable = false,
         },
       },
     },
