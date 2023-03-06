@@ -382,7 +382,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>jp", "<CMD>HopLineBC<CR>", { noremap = true })
       vim.keymap.set("n", "<leader>js", "<CMD>HopChar2<CR>", { noremap = true })
 
-      require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+      require 'hop'.setup { keys = 'hklyuiopnm,qwertzxcvbasdgjf;' }
     end
   },
 
