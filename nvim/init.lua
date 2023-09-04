@@ -616,10 +616,10 @@ local load_keymaps = function()
   -- Insert
   keymap.set('i', '<C-A>', '<Home>', { noremap = true })
   keymap.set('i', '<C-E>', '<End>', { noremap = true })
-  keymap.set('i', '<C-H>', '<Left>', { noremap = true })
+  keymap.set('i', '<C-F>', '<Right>', { noremap = true })
+  keymap.set('i', '<C-B>', '<Left>', { noremap = true })
   keymap.set('i', '<C-J>', '<Down>', { noremap = true })
   keymap.set('i', '<C-K>', '<Up>', { noremap = true })
-  keymap.set('i', '<C-L>', '<Right>', { noremap = true })
 
   keymap.set({ 'n', 'v' }, '<leader>hh', ':help ', { noremap = true, desc = 'Help' })
 end
