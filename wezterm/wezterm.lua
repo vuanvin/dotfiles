@@ -44,7 +44,7 @@ local configs = {
   mouse_bindings = {
     -- Button action: Up/Down/Drag
     -- Button position: Left/Middle/Right
-    { event = { Up = { streak = 1, button = "Middle" } },            mods = "NONE", action = act.Paste },
+    { event = { Up = { streak = 1, button = "Middle" } },            mods = "NONE", action = act.PasteFrom('PrimarySelection') },
     {
       event = { Up = { streak = 1, button = "Right" } },
       mods = "NONE",
@@ -69,7 +69,7 @@ local configs = {
     { key = "q",          mods = "LEADER",       action = act.QuitApplication },
     { key = "q",          mods = "SHIFT|CTRL",   action = act.QuitApplication },
     { key = "C",          mods = "SHIFT|CTRL",   action = act.CopyTo("ClipboardAndPrimarySelection") },
-    { key = "v",          mods = "SHIFT|CTRL",   action = act.Paste },
+    { key = "v",          mods = "SHIFT|CTRL",   action = act.PasteFrom('PrimarySelection') },
 
     -- Tab
     { key = "c",          mods = "LEADER",       action = act.SpawnTab("CurrentPaneDomain") },
