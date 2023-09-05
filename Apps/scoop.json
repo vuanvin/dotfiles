@@ -1,0 +1,253 @@
+{
+    "apps": [
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:38:37.0401846+08:00",
+            "Name": "7zip",
+            "Version": "23.01",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-09-03T16:01:20.3772906+08:00",
+            "Name": "aria2",
+            "Version": "1.36.0-1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:34:18.390867+08:00",
+            "Name": "bottom",
+            "Version": "0.9.3",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:38:43.6920308+08:00",
+            "Name": "broot",
+            "Version": "1.23.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2022-03-07T09:25:42.6757685+08:00",
+            "Name": "dark",
+            "Version": "3.11.2",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-03-02T01:00:34.6896732+08:00",
+            "Name": "fd",
+            "Version": "8.7.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:40:49.4946277+08:00",
+            "Name": "ffmpeg",
+            "Version": "6.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:27:54.7467041+08:00",
+            "Name": "fzf",
+            "Version": "0.42.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2022-03-07T09:20:19.5617488+08:00",
+            "Name": "gcc",
+            "Version": "11.2.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-08-20T03:46:18.1517239+08:00",
+            "Name": "go",
+            "Version": "1.21.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:33:02.5824484+08:00",
+            "Name": "hugo",
+            "Version": "0.115.1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:56:44.5762047+08:00",
+            "Name": "hugo-extended",
+            "Version": "0.115.1",
+            "Info": ""
+        },
+        {
+            "Source": "im-select",
+            "Updated": "2023-01-16T12:07:55.4617718+08:00",
+            "Name": "im-select",
+            "Version": "1.0.1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2022-03-07T09:25:39.834737+08:00",
+            "Name": "lessmsi",
+            "Version": "1.10.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-03-02T00:59:01.9358268+08:00",
+            "Name": "lsd",
+            "Version": "0.23.1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-02-18T22:36:28.2523981+08:00",
+            "Name": "lua",
+            "Version": "5.4.2",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:56:49.4098033+08:00",
+            "Name": "make",
+            "Version": "4.4.1",
+            "Info": ""
+        },
+        {
+            "Source": "versions",
+            "Updated": "2023-07-08T21:58:20.7416202+08:00",
+            "Name": "mingw-winlibs-llvm-ucrt",
+            "Version": "13.1.0-16.0.5-11.0.0-r5",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:26:55.5329207+08:00",
+            "Name": "neovim",
+            "Version": "0.9.1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:27:15.3004477+08:00",
+            "Name": "nginx",
+            "Version": "1.25.1",
+            "Info": ""
+        },
+        {
+            "Source": "extras",
+            "Updated": "2023-08-16T00:31:40.4808372+08:00",
+            "Name": "praat",
+            "Version": "6.3.14",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-08-24T02:54:01.0628816+08:00",
+            "Name": "redis",
+            "Version": "7.0.12",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T22:05:26.9817566+08:00",
+            "Name": "scala",
+            "Version": "3.3.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:34:41.7126628+08:00",
+            "Name": "sed",
+            "Version": "4.9",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T22:05:33.2196884+08:00",
+            "Name": "starship",
+            "Version": "1.15.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2022-05-10T13:29:24.7380246+08:00",
+            "Name": "sudo",
+            "Version": "0.2020.01.26",
+            "Info": ""
+        },
+        {
+            "Source": "extras",
+            "Updated": "2023-02-13T23:48:12.1904527+08:00",
+            "Name": "SumatraPDF",
+            "Version": "3.4.6",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-03-02T01:15:12.378909+08:00",
+            "Name": "tealdeer",
+            "Version": "1.6.1",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2022-04-22T13:42:19.8629015+08:00",
+            "Name": "telnet",
+            "Version": "msys-inetutils-1.7-1",
+            "Info": ""
+        },
+        {
+            "Source": "extras",
+            "Updated": "2023-07-08T22:17:06.81027+08:00",
+            "Name": "vcredist2022",
+            "Version": "14.36.32532.0",
+            "Info": ""
+        },
+        {
+            "Source": "main",
+            "Updated": "2023-07-08T21:27:22.3596489+08:00",
+            "Name": "zoxide",
+            "Version": "0.9.1",
+            "Info": ""
+        }
+    ],
+    "buckets": [
+        {
+            "Name": "extras",
+            "Source": "https://github.com/ScoopInstaller/Extras",
+            "Updated": "2023-09-03T12:25:30+08:00",
+            "Manifests": 1891
+        },
+        {
+            "Name": "im-select",
+            "Source": "https://github.com/daipeihust/im-select",
+            "Updated": "2023-07-10T06:57:55+08:00",
+            "Manifests": 1
+        },
+        {
+            "Name": "java",
+            "Source": "https://github.com/ScoopInstaller/Java",
+            "Updated": "2023-09-03T09:03:29+08:00",
+            "Manifests": 253
+        },
+        {
+            "Name": "main",
+            "Source": "https://github.com/ScoopInstaller/Main",
+            "Updated": "2023-09-03T10:21:20+08:00",
+            "Manifests": 1231
+        },
+        {
+            "Name": "versions",
+            "Source": "https://github.com/ScoopInstaller/Versions",
+            "Updated": "2023-09-03T12:29:44+08:00",
+            "Manifests": 430
+        }
+    ]
+}
