@@ -1,6 +1,6 @@
 {
 	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
-	"CreationDate" : "2023-09-06T03:29:54.466-00:00",
+	"CreationDate" : "2023-09-07T20:15:59.693-00:00",
 	"Sources" : 
 	[
 		{
@@ -8,9 +8,6 @@
 			[
 				{
 					"PackageIdentifier" : "agalwood.Motrix"
-				},
-				{
-					"PackageIdentifier" : "JGraph.Draw"
 				},
 				{
 					"PackageIdentifier" : "Alibaba.aDrive"
@@ -37,7 +34,13 @@
 					"PackageIdentifier" : "Docker.DockerDesktop"
 				},
 				{
+					"PackageIdentifier" : "voidtools.Everything.Alpha"
+				},
+				{
 					"PackageIdentifier" : "Tencent.Foxmail"
+				},
+				{
+					"PackageIdentifier" : "GitHub.GitHubDesktop"
 				},
 				{
 					"PackageIdentifier" : "Git.Git"
@@ -233,6 +236,9 @@
 				},
 				{
 					"PackageIdentifier" : "Musescore.Musescore"
+				},
+				{
+					"PackageIdentifier" : "Oracle.JDK.20"
 				},
 				{
 					"PackageIdentifier" : "Microsoft.WebDeploy"
