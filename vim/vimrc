@@ -2,6 +2,9 @@ set nocompatible
 set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
+
+nnoremap <Space> ""
+xnoremap <Space> ""
 let mapleader = " "
 
 autocmd InsertEnter * set timeoutlen=0
@@ -21,7 +24,7 @@ syntax enable on
 set autoindent smartindent cindent
 set tabstop=4
 set list listchars=tab:>-,trail:-
-set linebreak whichwrap=b,s,<,>,[,]       " cursor auto come to the next line.
+set linebreak whichwrap=h,l,b,s,<,>,[,]   " cursor auto come to the next line.
 set cursorline
 set foldmethod=syntax
 set nofoldenable
@@ -30,6 +33,7 @@ set selectmode=mouse,key
 set wildmenu
 set hlsearch incsearch
 set showmatch ignorecase smartcase
+set switchbuf=useopen,usetab,newtab
 set splitbelow splitright
 " set paste                               " conflict with coc.nvim
 
@@ -38,8 +42,8 @@ nnoremap h <C-W>h
 nnoremap l <C-W>l
 nnoremap j <C-W>j
 nnoremap k <C-W>k
-nnoremap <leader>bp :bp<CR>
-nnoremap <leader>bn :bn<CR>
+nnoremap <leader>bp <CMD>bp<CR>
+nnoremap <leader>bn <CMD>bn<CR>
 cnoremap <C-A> <Home>
 cnoremap <C-F> <Right>
 cnoremap <C-B> <Left>
@@ -55,8 +59,6 @@ Plug 'mhinz/vim-startify'               " show the last files when open director
 Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
 Plug 'vim-airline/vim-airline'          " status-line format
-Plug 'vim-airline/vim-airline-themes'   " status-line color scheme
-Plug 'sainnhe/sonokai'
 
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
@@ -67,6 +69,11 @@ Plug 'junegunn/vim-easy-align'        " align
 
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'kana/vim-textobj-user' | Plug 'kana/vim-textobj-entire'
+Plug 'wellle/targets.vim'
+Plug 'justinmk/vim-sneak'
+Plug 'bkad/CamelCaseMotion'
 
 Plug 'ludovicchabant/vim-gutentags' " auto-generate tags, require universal ctags and global
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -90,48 +97,21 @@ let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 let g:Lf_ShortcutB = "<C-L>"
 let g:Lf_ShortcutF = "<leader>ff"
 
-noremap q: :LeaderfHistoryCmd<cr>
-noremap q/ :LeaderfHistoryCmd<cr>
-cnoremap <C-R> :LeaderfHistoryCmd<cr>
+noremap q: <CMD>LeaderfHistoryCmd<CR>
+noremap q/ <CMD>LeaderfHistoryCmd<CR>
+cnoremap <C-R> <CMD>LeaderfHistoryCmd<CR>
 
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>fs :LeaderfSelf<cr>
-noremap <leader>fm :LeaderfMru<cr>
-noremap <leader>fF :LeaderfFunction<cr>
-noremap <leader>fB :LeaderfBufTagAll<cr>
-noremap <leader>fT :LeaderfBufTag<cr>
-noremap <leader>fL :LeaderfLine<cr>
-noremap <leader>fW :LeaderfWindow<cr>
-
-" - colorscheme ------------------------------------------
-if has("termguicolors")
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-    set termguicolors  " enable true colors
-endif
-
-function ToggleTransparent()
-  if g:sonokai_transparent_background == 0
-    let g:sonokai_transparent_background = 1
-  else
-    let g:sonokai_transparent_background = 0
-  endif
-
-  colorscheme sonokai
-endfunction
-
-command! -nargs=0 ToggleTransparent        :call ToggleTransparent()
-command! -nargs=0 TransparentToggle        :call ToggleTransparent()
-
-nnoremap <leader>tt :call ToggleTransparent()<CR>
-
-let g:sonokai_transparent_background = 0
-let g:sonokai_better_performance = 1
-let g:sonokai_style = 'shusia'
-colorscheme sonokai
+noremap <leader>fs <CMD>LeaderfSelf<CR>
+noremap <leader>fm <CMD>LeaderfMru<CR>
+noremap <leader>fF <CMD>LeaderfFunction<CR>
+noremap <leader>fB <CMD>LeaderfBufTagAll<CR>
+noremap <leader>fT <CMD>LeaderfBufTag<CR>
+noremap <leader>fL <CMD>LeaderfLine<CR>
+noremap <leader>fW <CMD>LeaderfWindow<CR>
 
 "- coc-nvim -----------------------------------------------
 set nobackup
@@ -170,23 +150,22 @@ function! ShowDocumentation()
 endfunction
 
 " Formatting selected code
-xmap <leader>F  <Plug>(coc-format-selected)
+xmap <leader>F <Plug>(coc-format-selected)
 nmap <leader>F <Plug>(coc-format-selected)
 
 "- easymotion ---------------------------------------------
 nmap <leader> <Plug>(easymotion-prefix)
 let g:EasyMotion_do_mapping = 0                 " Disable default mappings
 let g:EasyMotion_smartcase = 1                  " Turn on case-insensitive feature
-let g:EasyMotion_startofline = 0                " keep cursor column when JK motion
-nmap , <Plug>(easymotion-bd-w)
-nmap <leader>s <Plug>(easymotion-overwin-f2)
-nmap <Leader>l <Plug>(easymotion-lineforward)
-nmap <Leader>j <Plug>(easymotion-j)
-nmap <Leader>k <Plug>(easymotion-k)
-nmap <Leader>h <Plug>(easymotion-linebackward)
+let g:EasyMotion_startofline = 1                " keep cursor column when JK motion
+nmap <leader>; <Plug>(easymotion-bd-w)
+nmap <leader>jf <Plug>(easymotion-overwin-f2)
+nmap <Leader>jl <Plug>(easymotion-lineforward)
+nmap <Leader>jj <Plug>(easymotion-w)
+nmap <Leader>jk <Plug>(easymotion-b)
+nmap <Leader>jh <Plug>(easymotion-linebackward)
 
 "- vim-airline ---------------------------------------------
-let g:airline_theme='bubblegum'
 let g:airline_powerline_fonts=1
 let g:airline#extensions#branch#enabled=1
 let g:airline#extensions#tabline#enabled=1
@@ -210,11 +189,14 @@ let g:gutentags_define_advanced_commands = 1
 "- hexmode -------------------------------------------------
 let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
 
-" highlight Normal guibg=NONE ctermbg=NONE
-" highlight EndOfBuffer guibg=NONE ctermbg=NONE
+"- CamelCaseMotion --
+let g:camelcasemotion_key = '<leader>'
+map <silent> <leader>W <Plug>CamelCaseMotion_w
+map <silent> <leader>B <Plug>CamelCaseMotion_b
+map <silent> <leader>E <Plug>CamelCaseMotion_e
 
 "- gui vim -------------------------------------------------
-set guifont=FiraCode\ Nerd\ Font\ Mono\ 10
+set guifont=JetBrainsMono\ NF\ 9
 set guioptions-=m       " remove menu bar
 set guioptions-=T       " remove toolbar
 set guioptions-=r       " remove right-hand scroll bar
@@ -225,3 +207,4 @@ autocmd GUIEnter * set t_vb=
 if !has('nvim')
   set viminfofile=~/.vim/viminfo
 endif
+
