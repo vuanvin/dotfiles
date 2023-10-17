@@ -3,6 +3,10 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
 
+if !has('nvim')
+  set viminfofile=~/.vim/viminfo
+endif
+
 nnoremap <Space> ""
 xnoremap <Space> ""
 let mapleader = " "
@@ -55,8 +59,6 @@ if has("unix")
     call system("curl -fLo ~/.vim/autoload/plug.vim --create-dirs
           \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
   endif
-else
-
 endif
 
 call plug#begin()
@@ -194,22 +196,18 @@ let g:gutentags_define_advanced_commands = 1
 "- hexmode -------------------------------------------------
 let g:hexmode_patterns = '*Image,*.bin,*.exe,*.dat,*.o,*.out,*.img,*iso'
 
-"- CamelCaseMotion --
+"- CamelCaseMotion -----------------------------------------
 let g:camelcasemotion_key = '<leader>'
 map <silent> <leader>W <Plug>CamelCaseMotion_w
 map <silent> <leader>B <Plug>CamelCaseMotion_b
 map <silent> <leader>E <Plug>CamelCaseMotion_e
 
 "- gui vim -------------------------------------------------
-set guifont=JetBrainsMono\ NF\ 9
+set guifont=JetBrainsMono\ NF\ 14
 set guioptions-=m       " remove menu bar
 set guioptions-=T       " remove toolbar
 set guioptions-=r       " remove right-hand scroll bar
 set guioptions-=L       " remove left-hand scroll bar
 set visualbell t_vb=
 autocmd GUIEnter * set t_vb=
-
-if !has('nvim')
-  set viminfofile=~/.vim/viminfo
-endif
 
