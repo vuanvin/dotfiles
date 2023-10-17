@@ -14,6 +14,8 @@ if has("unix")
   if exists('$WSLENV')
   endif
 elseif has('win32')
+  set termguicolors
+  colorscheme desert
 endif
 
 nnoremap <Space> ""
@@ -68,6 +70,7 @@ call plug#begin()
 if has('unix')
   Plug 'francoiscabrol/ranger.vim'      " shortcut <leader>f
   Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+  Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
 endif
 
 Plug 'mhinz/vim-startify'               " show the last files when open directory
@@ -77,7 +80,6 @@ Plug 'vim-airline/vim-airline'          " status-line format
 
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
 Plug 'junegunn/vim-easy-align'        " align
 
 Plug 'easymotion/vim-easymotion'
@@ -210,13 +212,4 @@ let g:camelcasemotion_key = '<leader>'
 map <silent> <leader>W <Plug>CamelCaseMotion_w
 map <silent> <leader>B <Plug>CamelCaseMotion_b
 map <silent> <leader>E <Plug>CamelCaseMotion_e
-
-"- gui vim -------------------------------------------------
-set guifont=JetBrainsMono\ NF\ 14
-set guioptions-=m       " remove menu bar
-set guioptions-=T       " remove toolbar
-set guioptions-=r       " remove right-hand scroll bar
-set guioptions-=L       " remove left-hand scroll bar
-set visualbell t_vb=
-autocmd GUIEnter * set t_vb=
 
