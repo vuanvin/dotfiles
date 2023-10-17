@@ -3,8 +3,17 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
 
-if !has('nvim')
-  set viminfofile=~/.vim/viminfo
+if has("unix")
+  if !has('nvim')
+    set viminfofile=~/.vim/viminfo
+  endif
+  if empty(expand(glob("~/.vim/autoload/plug.vim")))
+    call system("curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
+  endif
+  if exists('$WSLENV')
+  endif
+elseif has('win32')
 endif
 
 nnoremap <Space> ""
@@ -54,14 +63,13 @@ cnoremap <C-B> <Left>
 cnoremap b <S-Left>
 cnoremap f <S-Right>
 
-if has("unix")
-  if empty(expand(glob("~/.vim/autoload/plug.vim")))
-    call system("curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
-  endif
+call plug#begin()
+
+if has('unix')
+  Plug 'francoiscabrol/ranger.vim'      " shortcut <leader>f
+  Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 endif
 
-call plug#begin()
 Plug 'mhinz/vim-startify'               " show the last files when open directory
 Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
@@ -69,8 +77,6 @@ Plug 'vim-airline/vim-airline'          " status-line format
 
 Plug 'tpope/vim-fugitive'             " A Git wrapper
 Plug 'zivyangll/git-blame.vim'        " light plugin for echo git commit info.
-Plug 'francoiscabrol/ranger.vim'      " shortcut <leader>f
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
 Plug 'junegunn/vim-easy-align'        " align
 
@@ -180,6 +186,9 @@ let g:airline#extensions#tabline#buffer_nr_show=1
 let g:airline#extensions#tmuxline#enabled = 1
 
 "- gutentags -----------------------------------------------
+if has('unix')
+  let g:ggutentags_enabled = 0
+endif
 let g:gutentags_project_root = ['.root', '.svn', '.git', '.project', 'Makefile']
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_modules = ['ctags', 'gtags_cscope']
