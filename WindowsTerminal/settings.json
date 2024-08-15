@@ -6,8 +6,16 @@
         {
             "command": 
             {
-                "action": "newTab",
-                "index": 7
+                "action": "scrollDown"
+            },
+            "keys": "ctrl+shift+down"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "auto",
+                "splitMode": "duplicate"
             }
         },
         {
@@ -21,30 +29,15 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "auto",
-                "splitMode": "duplicate"
+                "action": "newTab",
+                "index": 7
             }
         },
         {
             "command": 
             {
-                "action": "scrollDown"
-            },
-            "keys": "ctrl+shift+down"
-        },
-        {
-            "command": 
-            {
-                "action": "closeTab"
-            },
-            "keys": "alt+c"
-        },
-        {
-            "command": 
-            {
-                "action": "newTab",
-                "index": 0
+                "action": "moveFocus",
+                "direction": "left"
             }
         },
         {
@@ -58,9 +51,16 @@
         {
             "command": 
             {
-                "action": "moveFocus",
-                "direction": "left"
+                "action": "newTab",
+                "index": 0
             }
+        },
+        {
+            "command": 
+            {
+                "action": "closeTab"
+            },
+            "keys": "alt+c"
         },
         {
             "command": 
@@ -605,13 +605,14 @@
             "cursorShape": "filledBox",
             "font": 
             {
-                "face": "JetBrainsMono NF",
-                "size": 10.0
+                "face": "JetBrainsMono Nerd Font Mono",
+                "size": 11.0
             },
             "historySize": 999999,
             "icon": "ms-appx:///ProfileIcons/pwsh-preview.png",
             "intenseTextStyle": "all",
             "opacity": 70,
+            "hidden": false,
             "padding": "0",
             "scrollbarState": "hidden",
             "startingDirectory": null,
@@ -620,19 +621,14 @@
         "list": 
         [
             {
-                "commandline": "ubuntu.exe",
-                "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
-                "hidden": false,
+                "guid": "{51855cb2-8cce-5362-8f54-464b92b32386}",
                 "icon": "https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png",
-                "intenseTextStyle": "all",
                 "name": "Ubuntu",
-                "source": "Windows.Terminal.Wsl",
-                "startingDirectory": null
+                "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc"
             },
             {
-                "commandline": "C:/Program Files/PowerShell/7/pwsh.exe -nologo",
+                "commandline": "pwsh.exe -nologo",
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-                "hidden": false,
                 "icon": "ms-appx:///ProfileIcons/pwsh-preview.png",
                 "name": "PowerShell",
                 "snapOnInput": true,
@@ -640,9 +636,8 @@
                 "startingDirectory": "%USERPROFILE%"
             },
             {
-                "commandline": "pwsh.exe -NoExit -Command \"&{Import-Module \"\"\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll\"\"\"; Enter-VsDevShell c76bbfbb -SkipAutomaticLocation -DevCmdArguments \"\"\"-arch=x64 -host_arch=x64\"\"\"}\"",
+                "commandline": "pwsh.exe -NoExit -Command \"&{Import-Module \"\"\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll\"\"\"; Enter-VsDevShell 2ae15df0 -SkipAutomaticLocation -DevCmdArguments \"\"\"-arch=x64 -host_arch=x64\"\"\"}\"",
                 "guid": "{40feaf71-54db-4a63-a2eb-fcab17b24172}",
-                "hidden": false,
                 "name": "PowerShell - VS 2022",
                 "startingDirectory": "%USERPROFILE%"
             },
@@ -654,11 +649,28 @@
                 "startingDirectory": "%USERPROFILE%"
             },
             {
-                "commandline": "C:\\Program Files\\Git\\bin\\bash.exe",
-                "guid": "{949c2a52-b73d-48cf-accb-6fde65b9b96e}",
-                "icon": "ms-appx:///ProfileIcons/pwsh-preview.png",
-                "name": "Bash",
-                "startingDirectory": "%USERPROFILE%"
+                "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                "hidden": true,
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "name": "Windows PowerShell"
+            },
+            {
+                "commandline": "%SystemRoot%\\System32\\cmd.exe",
+                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+                "hidden": true,
+                "name": "\u547d\u4ee4\u63d0\u793a\u7b26"
+            },
+            {
+                "guid": "{6204ac8a-b73a-5676-b5c6-1519b53e1f56}",
+                "hidden": true,
+                "name": "Developer Command Prompt for VS 2022",
+                "source": "Windows.Terminal.VisualStudio"
+            },
+            {
+                "guid": "{db4ed405-ab24-5727-8716-8b6f363367c0}",
+                "hidden": true,
+                "name": "Developer PowerShell for VS 2022",
+                "source": "Windows.Terminal.VisualStudio"
             }
         ]
     },
@@ -711,29 +723,6 @@
             "yellow": "#C19C00"
         },
         {
-            "background": "#403E41",
-            "black": "#403E41",
-            "blue": "#FC9867",
-            "brightBlack": "#727072",
-            "brightBlue": "#FC9867",
-            "brightCyan": "#78DCE8",
-            "brightGreen": "#A9DC76",
-            "brightPurple": "#AB9DF2",
-            "brightRed": "#FF6188",
-            "brightWhite": "#FCFCFA",
-            "brightYellow": "#FFD866",
-            "cursorColor": "#FCFCFA",
-            "cyan": "#78DCE8",
-            "foreground": "#FCFCFA",
-            "green": "#A9DC76",
-            "name": "Monokai Pro",
-            "purple": "#AB9DF2",
-            "red": "#FF6188",
-            "selectionBackground": "#FCFCFA",
-            "white": "#FCFCFA",
-            "yellow": "#FFD866"
-        },
-        {
             "background": "#282C34",
             "black": "#282C34",
             "blue": "#61AFEF",
@@ -775,7 +764,7 @@
             "name": "One Half Light",
             "purple": "#A626A4",
             "red": "#E45649",
-            "selectionBackground": "#FFFFFF",
+            "selectionBackground": "#4F525D",
             "white": "#FAFAFA",
             "yellow": "#C18301"
         },
@@ -821,7 +810,7 @@
             "name": "Solarized Light",
             "purple": "#D33682",
             "red": "#DC322F",
-            "selectionBackground": "#FFFFFF",
+            "selectionBackground": "#073642",
             "white": "#EEE8D5",
             "yellow": "#B58900"
         },
@@ -867,7 +856,7 @@
             "name": "Tango Light",
             "purple": "#75507B",
             "red": "#CC0000",
-            "selectionBackground": "#FFFFFF",
+            "selectionBackground": "#555753",
             "white": "#D3D7CF",
             "yellow": "#C4A000"
         },
