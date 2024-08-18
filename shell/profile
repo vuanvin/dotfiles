@@ -1,39 +1,51 @@
 proxyon() {
-	export VPN_PORT=7890
-# export WIN_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
-	export WIN_IP=$(cat /etc/resolv.conf | grep nameserver | grep 172 | sed -n '1,1p' |  awk '{ print $2 }')
-	export PROXY_URL="http://${WIN_IP}:${VPN_PORT}"
+  export VPN_PORT=7890
+  # ref: https://learn.microsoft.com/en-us/windows/wsl/networking
+  export WIN_IP=$(ip route show | grep -i default | awk '{ print $3}')
+  export PROXY_URL="http://${WIN_IP}:${VPN_PORT}"
 
-	export http_proxy=${PROXY_URL}
-	export https_proxy=${PROXY_URL}
-	export no_proxy=127.0.0.1,localhost,${WIN_IP},192.168.*.*
+  export all_proxy=${PROXY_URL}
+  export http_proxy=${PROXY_URL}
+  export https_proxy=${PROXY_URL}
+  export ALL_PROXY=${PROXY_URL}
+  export HTTP_PROXY=${PROXY_URL}
+  export HTTPS_PROXY=${PROXY_URL}
+  export no_proxy=127.0.0.1,localhost,${WIN_IP},192.168.*.*
 
-	git config --global http.proxy ${PROXY_URL}
-	git config --global https.proxy ${PROXY_URL}
+  git config --global http.proxy ${PROXY_URL}
+  git config --global https.proxy ${PROXY_URL}
 }
 
 proxyoff() {
-	export http_proxy=
-	export https_proxy=
+  export all_proxy=
+  export http_proxy=
+  export https_proxy=
+  export ALL_PROXY=
+  export HTTP_PROXY=
+  export HTTPS_PROXY=
 
-	git config --global --unset http.proxy
-	git config --global --unset https.proxy
+  git config --global --unset http.proxy
+  git config --global --unset https.proxy
 }
-
+proxyoff
 proxyon
 
-alias v='nvim'
-alias e='emacs -nw'
-alias emx='emacs -nw'
-alias spacemacs='emacs --init-directory="~/.config/spacemacs"'
-alias centaur-emacs='emacs --init-directory="~/.config/centaur-emacs"'
+alias v='vim'
+alias nv='nvim'
+alias nvi='nvim'
+alias e='emacs -x'
+# alias emx='emacs -nw'
+# alias spacemacs='emacs --init-directory="~/.config/spacemacs"'
+# alias centaur-emacs='emacs --init-directory="~/.config/centaur-emacs"'
 
-alias mygrep="grep --binary-files=without-match -rn"
-
-xrdb -merge /home/yuanyin/.Xresource
+# xrdb -merge ~/.config/X11/xresources
 
 # >>> PATH Configure >>>
-export PATH=$HOME/.local/bin:${PATH}
+# CUDA
+export PATH=/usr/local/cuda/bin:$PATH
+
+#
+export PATH=$HOME/.local/bin:/snap/bin:${PATH}
 
 # set oracle jdk environment
 export JAVA_HOME=/usr/local/jdk1.8.0_311
@@ -47,7 +59,7 @@ export PATH=${HADOOP_HOME}/bin:$PATH
 export PATH=${HADOOP_HOME}/sbin:$PATH
 
 # set spark environment
-export SPARK_HOME=$HOME/.local/spark-3.3.0-bin-hadoop3
+export SPARK_HOME="${HOME}/.local/spark-3.3.0-bin-hadoop3"
 export PATH=${SPARK_HOME}/bin:$PATH
 export PATH=${SPARK_HOME}/sbin:$PATH
 
@@ -60,8 +72,8 @@ export PATH=~/.emacs.d/bin:$PATH # for doom-emacs
 
 # <<< PATH Configure <<<
 
-eval `ssh-agent -s` > /dev/null 2>&1 ; ssh-add ~/.ssh/auth_rsa > /dev/null 2>&1
-trap 'test -n "$SSH_AGENT_PID" && eval `/usr/bin/ssh-agent -k`' 0
+# eval `ssh-agent -s` > /dev/null 2>&1 ; ssh-add ~/.ssh/auth_rsa > /dev/null 2>&1
+# trap 'test -n "$SSH_AGENT_PID" && eval `/usr/bin/ssh-agent -k`' 0
 
 export GIT_EDITOR=vim
 export EDITOR=vim
@@ -75,3 +87,4 @@ ulimit -c unlimited
 # export DefaultIMModule=fcitx
 # fcitx-autostart &>/dev/null
 
+alias chrome=google-chrome
