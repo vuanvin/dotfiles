@@ -74,6 +74,17 @@ cnoremap <C-B> <Left>
 cnoremap b <S-Left>
 cnoremap f <S-Right>
 
+" Check if npm exists
+function! s:check_npm_exists()
+    let l:output = system('npm --version')
+    if v:shell_error
+        return 0
+    else
+        return 1
+    endif
+endfunction
+
+
 call plug#begin()
 
 if has('unix')
@@ -101,10 +112,16 @@ Plug 'wellle/targets.vim'
 Plug 'justinmk/vim-sneak'
 Plug 'bkad/CamelCaseMotion'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'jiangmiao/auto-pairs'
 Plug 'fidian/hexmode'                   " hex mode for binary file
+
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Configure coc.nvim if npm exists
+if s:check_npm_exists()
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
+
 call plug#end()
 
 " - LeaderF ------------------------------------------
@@ -139,44 +156,47 @@ noremap <leader>fL <CMD>LeaderfLine<CR>
 noremap <leader>fW <CMD>LeaderfWindow<CR>
 
 "- coc-nvim -----------------------------------------------
-set nobackup
-set nowritebackup
-set updatetime=300
-set signcolumn=yes
 
-inoremap <silent><expr> <TAB>
-      \ coc#pum#visible() ? coc#pum#next(1) :
-      \ CheckBackspace() ? "\<Tab>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+if s:check_npm_exists()
+  set nobackup
+  set nowritebackup
+  set updatetime=300
+  set signcolumn=yes
 
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+  inoremap <silent><expr> <TAB>
+        \ coc#pum#visible() ? coc#pum#next(1) :
+        \ CheckBackspace() ? "\<Tab>" :
+        \ coc#refresh()
+  inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+  inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                                \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-" GoTo code navigation
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+  " Use `[g` and `]g` to navigate diagnostics
+  " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+  nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-" Use K to show documentation in preview window
-nnoremap <silent> K :call ShowDocumentation()<CR>
-function! ShowDocumentation()
-  if CocAction('hasProvider', 'hover')
-    call CocActionAsync('doHover')
-  else
-    call feedkeys('K', 'in')
-  endif
-endfunction
+  " GoTo code navigation
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
 
-" Formatting selected code
-xmap <leader>F <Plug>(coc-format-selected)
-nmap <leader>F <Plug>(coc-format-selected)
+  " Use K to show documentation in preview window
+  nnoremap <silent> K :call ShowDocumentation()<CR>
+  function! ShowDocumentation()
+    if CocAction('hasProvider', 'hover')
+      call CocActionAsync('doHover')
+    else
+      call feedkeys('K', 'in')
+    endif
+  endfunction
+
+  " Formatting selected code
+  xmap <leader>F <Plug>(coc-format-selected)
+  nmap <leader>F <Plug>(coc-format-selected)
+endif
 
 "- easymotion ---------------------------------------------
 nmap <leader> <Plug>(easymotion-prefix)
