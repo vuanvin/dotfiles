@@ -15,6 +15,7 @@ set guioptions-=L       " remove left-hand scroll bar
 set visualbell t_vb=
 autocmd GUIEnter * set t_vb=
 
+colorscheme desert
 set lines=40
 set columns=120
 

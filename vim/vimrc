@@ -24,7 +24,10 @@ elseif has('win32')
           \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | ni $HOME/vimfiles/autoload/plug.vim -Force\"")
   endif
   set t_Co=256
-  highlight Normal ctermbg=NONE
+  highlight Normal ctermbg=NONE ctermfg=NONE
+  highlight NonText ctermbg=NONE ctermfg=NONE
+  highlight EndOfBuffer ctermbg=NONE ctermfg=NONE
+  highlight clear CursorLine
 endif
 
 nnoremap <Space> ""
