@@ -1,4 +1,4 @@
-local global = {}
+local global = {} -- define variables for global
 function global:load_variables()
   local os_name = vim.loop.os_uname().sysname
 
@@ -18,43 +18,129 @@ end
 
 global:load_variables()
 
-local keymap = vim.keymap
-local autocmd = vim.api.nvim_create_autocmd
-
 local init_leader = function()
   vim.g.mapleader = " "
+  vim.g.maplocalleader = "\\"
   vim.api.nvim_set_keymap("n", " ", "", { noremap = true })
   vim.api.nvim_set_keymap("x", " ", "", { noremap = true })
 end
 
 local init_lazy = function()
+  -- 2024.09.19 copy from https://lazy.folke.io/installation
   local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "https://github.com/folke/lazy.nvim.git",
-      "--branch=stable", -- latest stable release
-      lazypath,
-    })
+  if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+    local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+    if vim.v.shell_error ~= 0 then
+      vim.api.nvim_echo({
+        { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+        { out,                            "WarningMsg" },
+        { "\nPress any key to exit..." },
+      }, true, {})
+      vim.fn.getchar()
+      os.exit(1)
+    end
   end
   vim.opt.rtp:prepend(lazypath)
 end
 
-init_leader()
-init_lazy()
+init_leader() -- map leader key to space, before loading plugins
+init_lazy()   -- init lazy.nvim, before loading plugins
 
 require("lazy").setup({
-  'equalsraf/neovim-gui-shim', -- fixed neovim-qt bug
-  {
+  { -- 'loctvl842/monokai-pro.nvim'
+    'loctvl842/monokai-pro.nvim',
+    -- main colorscheme without lazy
+    lazy = false,
+    version = "v1.1.2",
+    config = function()
+      require("monokai-pro").setup()
+      vim.cmd [[colorscheme monokai-pro]]
+    end,
+  },
+  { -- 'akinsho/bufferline.nvim'
+    'akinsho/bufferline.nvim',
+    version = "v3.*",
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      vim.keymap.set("n", "<leader>bp", "<CMD>BufferLineCyclePrev<CR>", { noremap = true, desc = "Goto prev buffer" })
+      vim.keymap.set("n", "<leader>bn", "<CMD>BufferLineCycleNext<CR>", { noremap = true, desc = "Goto next buffer" })
+      vim.keymap.set("n", "<leader>bh", "<CMD>BufferLineMovePrev<CR>", { noremap = true, desc = "Move prev buffer" })
+      vim.keymap.set("n", "<leader>bl", "<CMD>BufferLineMoveNext<CR>", { noremap = true, desc = "Move next buffer" })
+      vim.keymap.set("n", "<leader>bb", "<CMD>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
+
+      vim.opt.termguicolors = true
+      require("bufferline").setup {}
+    end
+  },
+  { -- 'nvim-lualine/lualine.nvim'
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = 'monokai-pro'
+        }
+      }
+    end
+  },
+  { -- 'utilyre/barbecue.nvim'
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    keys = {
+      { "<leader>tb", "<CMD>Barbecue<CR>", desc = "Barbecue" },
+    },
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+    },
+    config = function()
+      require("barbecue.ui").toggle(false)
+      -- triggers CursorHold event faster
+      vim.opt.updatetime = 200
+
+      require("barbecue").setup({
+        theme = 'monokai-pro',
+        create_autocmd = false,
+      })
+
+      vim.api.nvim_create_autocmd({
+          "WinScrolled", -- or WinResized on NVIM-v0.9 and higher
+          "BufWinEnter",
+          "CursorHold",
+          "InsertLeave",
+
+          -- include these if you have set `show_modified` to `true`
+          "BufWritePost",
+          "TextChanged",
+          "TextChangedI",
+        },
+        {
+          group = vim.api.nvim_create_augroup("barbecue.updater", {}),
+          callback = function()
+            require("barbecue.ui").update()
+          end,
+        })
+
+      local barbecue_ui = require('barbecue.ui')
+      vim.keymap.set('n', '<leader>tb', barbecue_ui.toggle, {})
+    end
+  },
+  { -- 'equalsraf/neovim-gui-shim'
+    -- 'equalsraf/neovim-gui-shim',
+  },
+  { -- 'keaising/im-select.nvim'
     'keaising/im-select.nvim',
     config = function()
       require('im_select').setup {}
     end,
   },
-  {
-    "folke/trouble.nvim",
+  { -- 'folke/trouble.nvim'
+    'folke/trouble.nvim',
     requires = "nvim-tree/nvim-web-devicons",
     config = function()
       require("trouble").setup {}
@@ -79,7 +165,7 @@ require("lazy").setup({
       set_keymap("n", "<leader>xr", "<CMD>TroubleToggle lsp_references<cr>", { desc = "" })
     end,
   },
-  {
+  { -- 'akinsho/toggleterm.nvim',
     'akinsho/toggleterm.nvim',
     version = "*",
     opts = {
@@ -98,7 +184,7 @@ require("lazy").setup({
       vim.keymap.set('t', '<A-`>', '<C-\\><C-n><CMD>ToggleTerm<CR>')
     end,
   },
-  {
+  { -- 'lewis6991/gitsigns.nvim'
     'lewis6991/gitsigns.nvim',
     config = function()
       require('gitsigns').setup {
@@ -143,7 +229,7 @@ require("lazy").setup({
       }
     end
   },
-  {
+  { -- "ahmedkhalf/project.nvim"
     "ahmedkhalf/project.nvim",
     config = function()
       require("project_nvim").setup {
@@ -153,7 +239,7 @@ require("lazy").setup({
       }
     end
   },
-  {
+  { -- 'glacambre/firenvim'
     'glacambre/firenvim',
     -- Lazy load firenvim
     -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
@@ -163,7 +249,7 @@ require("lazy").setup({
       vim.fn["firenvim#install"](0)
     end
   },
-  {
+  { -- 'olke/which-key.nvim"
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
@@ -200,19 +286,20 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>k', "<CMD>WhichKey<CR>", { desc = "Show keymaps" })
     end,
   },
-  {
+  { -- 'numToStr/Comment.nvim'
     'numToStr/Comment.nvim',
     config = function()
       require('Comment').setup()
     end
   },
-  {
+  { -- 'folke/neoconf.nvim'
     "folke/neoconf.nvim",
     cmd = "Neoconf"
   },
-  "folke/neodev.nvim",
-
-  {
+  { -- "folke/neodev.nvim"
+    "folke/neodev.nvim",
+  },
+  { -- "folke/persistence.nvim"
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } },
@@ -224,63 +311,7 @@ require("lazy").setup({
       { "<leader>pd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
     },
   },
-
-  {
-    "loctvl842/monokai-pro.nvim",
-    lazy = false,
-    version = "v1.1.2",
-    config = function()
-      require("monokai-pro").setup()
-      vim.cmd [[colorscheme monokai-pro]]
-    end,
-  },
-  {
-    "utilyre/barbecue.nvim",
-    name = "barbecue",
-    version = "*",
-    keys = {
-      { "<leader>tb", "<CMD>Barbecue<CR>", desc = "Barbecue" },
-    },
-    dependencies = {
-      "SmiteshP/nvim-navic",
-      "nvim-tree/nvim-web-devicons", -- optional dependency
-    },
-    opts = {
-      -- configurations go here
-    },
-    config = function()
-      require("barbecue.ui").toggle(false)
-      -- triggers CursorHold event faster
-      vim.opt.updatetime = 200
-
-      require("barbecue").setup({
-        theme = 'monokai-pro',
-        create_autocmd = false,
-      })
-
-      vim.api.nvim_create_autocmd({
-        "WinScrolled", -- or WinResized on NVIM-v0.9 and higher
-        "BufWinEnter",
-        "CursorHold",
-        "InsertLeave",
-
-        -- include these if you have set `show_modified` to `true`
-        "BufWritePost",
-        "TextChanged",
-        "TextChangedI",
-      },
-        {
-          group = vim.api.nvim_create_augroup("barbecue.updater", {}),
-          callback = function()
-            require("barbecue.ui").update()
-          end,
-        })
-
-      local barbecue_ui = require('barbecue.ui')
-      vim.keymap.set('n', '<leader>tb', barbecue_ui.toggle, {})
-    end
-  },
-  {
+  { -- 'folke/noice.nvim'
     "folke/noice.nvim",
     cond = not vim.g.neovide,
     dependencies = {
@@ -300,11 +331,11 @@ require("lazy").setup({
         },
         -- you can enable a preset for easier configuration
         presets = {
-          bottom_search = true, -- use a classic bottom cmdline for search
-          command_palette = true, -- position the cmdline and popupmenu together
+          bottom_search = true,         -- use a classic bottom cmdline for search
+          command_palette = true,       -- position the cmdline and popupmenu together
           long_message_to_split = true, -- long messages will be sent to a split
-          inc_rename = false, -- enables an input dialog for inc-rename.nvim
-          lsp_doc_border = false, -- add a border to hover docs and signature help
+          inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = false,       -- add a border to hover docs and signature help
         },
       })
 
@@ -316,7 +347,7 @@ require("lazy").setup({
         { desc = "Redirect Cmdline" })
     end,
   },
-  {
+  { -- 'rcarriga/nvim-notify'
     "rcarriga/nvim-notify",
     config = function()
       vim.opt.termguicolors = true -- required by notify
@@ -326,14 +357,14 @@ require("lazy").setup({
       }
     end
   },
-  {
+  { -- 'goolord/alpha-nvim'
     'goolord/alpha-nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('alpha').setup(require('alpha.themes.startify').config)
     end
   },
-  {
+  { -- 'nvim-telescope/telescope.nvim'
     'nvim-telescope/telescope.nvim',
     version = '0.1.1',
     config = function()
@@ -356,7 +387,7 @@ require("lazy").setup({
     end,
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
-  {
+  { -- 'phaazon/hop.nvim'
     'phaazon/hop.nvim',
     branch = 'v2',
     config = function()
@@ -372,82 +403,67 @@ require("lazy").setup({
       require 'hop'.setup { keys = 'hklyuiopnm,qwertzxcvbasdgjf;' }
     end
   },
-
-  {
+  { -- 'windwp/nvim-autopairs'
     'windwp/nvim-autopairs',
     config = function()
       require("nvim-autopairs").setup {}
     end,
   },
-
-  {
+  { -- 'tpope/vim-surround'
     'tpope/vim-surround',
     config = function()
     end
   },
-
---  {
---    'nvim-treesitter/nvim-treesitter',
---    config = function()
---      vim.opt.foldmethod = "expr"
---      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
---      vim.opt.foldenable = false
---
---      require 'nvim-treesitter.configs'.setup {
---        -- A list of parser names, or "all" (the four listed parsers should always be installed)
---        ensure_installed = { "c", "lua", "vim", "help" },
---
---        -- Install parsers synchronously (only applied to `ensure_installed`)
---        sync_install = false,
---
---        -- Automatically install missing parsers when entering buffer
---        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
---        auto_install = true,
---
---        -- List of parsers to ignore installing (for "all")
---        ignore_install = { "javascript" },
---
---        ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
---        -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
---
---        highlight = {
---          enable = true,
---          disable = function(lang, buf)
---            local max_filesize = 1024 * 1024 -- 1 MB
---            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
---            if ok and stats and stats.size > max_filesize then
---              return true
---            end
---          end,
---
---          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
---          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
---          -- Using this option may slow down your editor, and you may see some duplicate highlights.
---          -- Instead of true it can also be a list of languages
---          additional_vim_regex_highlighting = false,
---        },
---      }
---    end
---  },
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+  { -- 'nvim-treesitter/nvim-treesitter'
+    'nvim-treesitter/nvim-treesitter',
     config = function()
-      require('lualine').setup {
-        options = {
-          theme = 'monokai-pro'
-        }
+      vim.opt.foldmethod = "expr"
+      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+      vim.opt.foldenable = false
+
+      require 'nvim-treesitter.configs'.setup {
+        -- A list of parser names, or "all" (the four listed parsers should always be installed)
+        ensure_installed = { "c", "lua", "vim", "help" },
+
+        -- Install parsers synchronously (only applied to `ensure_installed`)
+        sync_install = false,
+
+        -- Automatically install missing parsers when entering buffer
+        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+        auto_install = true,
+
+        -- List of parsers to ignore installing (for "all")
+        ignore_install = { "javascript" },
+
+        ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+        -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+        highlight = {
+          enable = true,
+          disable = function(lang, buf)
+            local max_filesize = 1024 * 1024 -- 1 MB
+            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            if ok and stats and stats.size > max_filesize then
+              return true
+            end
+          end,
+
+          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+          -- Using this option may slow down your editor, and you may see some duplicate highlights.
+          -- Instead of true it can also be a list of languages
+          additional_vim_regex_highlighting = false,
+        },
       }
     end
   },
-
-  {
+  { -- "williamboman/mason.nvim"
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
     end,
   },
-  {
+  { -- 'williamboman/mason-lspconfig.nvim'
     'williamboman/mason-lspconfig.nvim',
     config = function()
       -- TODO
@@ -456,8 +472,7 @@ require("lazy").setup({
       }
     end,
   },
-
-  {
+  { -- 'neovim/nvim-lspconfig'
     'neovim/nvim-lspconfig',
     event = { "BufReadPre", "BufNewFile" },
     opts = {
@@ -473,23 +488,19 @@ require("lazy").setup({
       vim.diagnostic.config(opts.diagnostics)
     end,
   },
-
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-path',
   'hrsh7th/cmp-cmdline',
   'hrsh7th/cmp-buffer',
   'hrsh7th/nvim-cmp',
-
   'hrsh7th/cmp-vsnip',
   'hrsh7th/vim-vsnip',
-
-  {
+  { -- 'nvim-telescope/telescope.nvim'
     'nvim-telescope/telescope.nvim',
     version = '0.1.1',
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
-
-  {
+  { -- "nvim-neo-tree/neo-tree.nvim"
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
     cmd = "Neotree",
@@ -502,30 +513,70 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
   },
-  {
-    'akinsho/bufferline.nvim',
-    version = "v3.*",
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-      vim.keymap.set("n", "<leader>bp", "<CMD>BufferLineCyclePrev<CR>", { noremap = true, desc = "Goto prev buffer" })
-      vim.keymap.set("n", "<leader>bn", "<CMD>BufferLineCycleNext<CR>", { noremap = true, desc = "Goto next buffer" })
-      vim.keymap.set("n", "<leader>bh", "<CMD>BufferLineMovePrev<CR>", { noremap = true, desc = "Move prev buffer" })
-      vim.keymap.set("n", "<leader>bl", "<CMD>BufferLineMoveNext<CR>", { noremap = true, desc = "Move next buffer" })
-      vim.keymap.set("n", "<leader>bb", "<CMD>BufferLinePick<CR>", { noremap = true, desc = "Buffer jump" })
-
-      vim.opt.termguicolors = true
-      require("bufferline").setup {}
-    end
-  },
 })
 
 local setup_editor = function()
-  local clipboard_config = function()
+  local setup_option = function()
+    -- Platform
+    if global.is_windows then
+      vim.opt.shell = "pwsh --nologo"
+    end
+    vim.opt.clipboard = { "unnamed", "unnamedplus" }
+    vim.opt.guicursor = 'a:blinkwait700-blinkoff400-blinkon250,' ..
+        'n-v-c:block,i-ci-ve:ver25,' .. 'r-cr:hor20,o:hor50,' .. 'sm:block-blinkwait175-blinkoff150-blinkon175'
+
+    -- Interaction
+    vim.opt.timeout = true
+    vim.opt.timeoutlen = 300
+    vim.opt.list = true
+    vim.opt.cursorline = true
+    vim.opt.ignorecase = true
+    vim.opt.smartcase = true
+    vim.opt.mouse = "a"
+    -- Indenting
+    vim.opt.expandtab = true
+    vim.opt.shiftwidth = 2
+    vim.opt.smartindent = true
+    vim.opt.tabstop = 2
+    vim.opt.softtabstop = 2
+    -- Numbers
+    vim.opt.number = true
+    vim.opt.numberwidth = 2
+    vim.opt.ruler = false
+  end
+
+  local setup_keymap = function()
+    -- Window
+    vim.keymap.set({ 'n', 'v' }, '<M-h>', '<C-W>h', { noremap = true, desc = 'Window move left' })
+    vim.keymap.set({ 'n', 'v' }, '<M-l>', '<C-W>l', { noremap = true, desc = 'Window move right' })
+    vim.keymap.set({ 'n', 'v' }, '<M-j>', '<C-W>j', { noremap = true, desc = 'Window move down' })
+    vim.keymap.set({ 'n', 'v' }, '<M-k>', '<C-W>k', { noremap = true, desc = 'Window move up' })
+    -- Terminal
+    vim.keymap.set('t', '<M-h>', '<C-\\><C-N><C-W>h', { noremap = true })
+    vim.keymap.set('t', '<M-l>', '<C-\\><C-N><C-W>l', { noremap = true })
+    vim.keymap.set('t', '<M-j>', '<C-\\><C-N><C-W>j', { noremap = true })
+    vim.keymap.set('t', '<M-k>', '<C-\\><C-N><C-W>k', { noremap = true })
+    vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { noremap = true })
+    -- Cmdline
+    vim.keymap.set('c', '<C-A>', '<Home>', { noremap = true })
+    vim.keymap.set('c', '<C-F>', '<Right>', { noremap = true })
+    vim.keymap.set('c', '<C-B>', '<Left>', { noremap = true })
+    -- Insert
+    vim.keymap.set('i', '<C-A>', '<Home>', { noremap = true })
+    vim.keymap.set('i', '<C-E>', '<End>', { noremap = true })
+    vim.keymap.set('i', '<C-F>', '<Right>', { noremap = true })
+    vim.keymap.set('i', '<C-B>', '<Left>', { noremap = true })
+    vim.keymap.set('i', '<C-J>', '<Down>', { noremap = true })
+    vim.keymap.set('i', '<C-K>', '<Up>', { noremap = true })
+    vim.keymap.set({ 'n', 'v' }, '<leader>hh', ':help ', { noremap = true, desc = 'Help' })
+  end
+
+  local setup_clipboard = function()
     if global.is_mac then
       vim.g.clipboard = {
         name = "macOS-clipboard",
-        copy = { ["+"] = "pbcopy",["*"] = "pbcopy" },
-        paste = { ["+"] = "pbpaste",["*"] = "pbpaste" },
+        copy = { ["+"] = "pbcopy", ["*"] = "pbcopy" },
+        paste = { ["+"] = "pbpaste", ["*"] = "pbpaste" },
         cache_enabled = 0,
       }
     elseif global.is_wsl then
@@ -544,71 +595,15 @@ local setup_editor = function()
     end
   end
 
-  clipboard_config() -- maybe need scoop install win32yank
-  autocmd({ "BufWinEnter" }, { pattern = { "*?" }, command = "silent! loadview", })
-  autocmd({ "BufWinLeave" }, { pattern = { "*?" }, command = "silent! mkview", })
-end
-
-local load_options = function()
-  local opt = vim.opt
-
-  if global.is_windows then
-    opt.shell = "pwsh --nologo"
+  local setup_view = function ()
+    vim.api.nvim_create_autocmd({ "BufWinEnter" }, { pattern = { "*?" }, command = "silent! loadview", })
+    vim.api.nvim_create_autocmd({ "BufWinLeave" }, { pattern = { "*?" }, command = "silent! mkview", })
   end
-  opt.clipboard = { "unnamed", "unnamedplus" }
-  opt.guicursor = 'a:blinkwait700-blinkoff400-blinkon250,' .. 'n-v-c:block,i-ci-ve:ver25,' .. 'r-cr:hor20,o:hor50,' ..
-      'sm:block-blinkwait175-blinkoff150-blinkon175'
 
-  opt.timeout = true
-  opt.timeoutlen = 300
-
-  opt.list = true
-  opt.cursorline = true
-  opt.ignorecase = true
-  opt.smartcase = true
-  opt.mouse = "a"
-
-  -- Indenting
-  opt.expandtab = true
-  opt.shiftwidth = 2
-  opt.smartindent = true
-  opt.tabstop = 2
-  opt.softtabstop = 2
-
-  -- Numbers
-  opt.number = true
-  opt.numberwidth = 2
-  opt.ruler = false
-end
-
-local load_keymaps = function()
-  -- Window
-  keymap.set({ 'n', 'v' }, '<M-h>', '<C-W>h', { noremap = true, desc = 'Window move left' })
-  keymap.set({ 'n', 'v' }, '<M-l>', '<C-W>l', { noremap = true, desc = 'Window move right' })
-  keymap.set({ 'n', 'v' }, '<M-j>', '<C-W>j', { noremap = true, desc = 'Window move down' })
-  keymap.set({ 'n', 'v' }, '<M-k>', '<C-W>k', { noremap = true, desc = 'Window move up' })
-
-  -- Terminal
-  keymap.set('t', '<M-h>', '<C-\\><C-N><C-W>h', { noremap = true })
-  keymap.set('t', '<M-l>', '<C-\\><C-N><C-W>l', { noremap = true })
-  keymap.set('t', '<M-j>', '<C-\\><C-N><C-W>j', { noremap = true })
-  keymap.set('t', '<M-k>', '<C-\\><C-N><C-W>k', { noremap = true })
-  keymap.set('t', '<Esc>', '<C-\\><C-N>', { noremap = true })
-
-  -- Cmdline
-  keymap.set('c', '<C-A>', '<Home>', { noremap = true })
-  keymap.set('c', '<C-F>', '<Right>', { noremap = true })
-  keymap.set('c', '<C-B>', '<Left>', { noremap = true })
-
-  -- Insert
-  keymap.set('i', '<C-A>', '<Home>', { noremap = true })
-  keymap.set('i', '<C-E>', '<End>', { noremap = true })
-  keymap.set('i', '<C-F>', '<Right>', { noremap = true })
-  keymap.set('i', '<C-B>', '<Left>', { noremap = true })
-  keymap.set('i', '<C-J>', '<Down>', { noremap = true })
-  keymap.set('i', '<C-K>', '<Up>', { noremap = true })
-
-  keymap.set({ 'n', 'v' }, '<leader>hh', ':help ', { noremap = true, desc = 'Help' })
+  setup_option()
+  setup_keymap()
+  setup_clipboard() -- maybe need scoop install win32yank
+  setup_view()
 end
 
 local setup_lsp = function()
@@ -630,7 +625,7 @@ local setup_lsp = function()
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', 'gh', vim.lsp.buf.hover, { desc = "Hover" }) -- override gh
+    buf_set_keymap('n', 'gh', vim.lsp.buf.hover, { desc = "Hover" })                   -- override gh
     buf_set_keymap('n', 'gH', vim.lsp.buf.signature_help, { desc = "Signature help" }) -- override gH
     buf_set_keymap('n', 'gd', vim.lsp.buf.definition, { desc = "Goto definition" })
     buf_set_keymap('n', 'gD', vim.lsp.buf.declaration, { desc = "Goto declaration" })
@@ -694,7 +689,7 @@ local setup_completion = function()
       -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs( -4),
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
@@ -741,8 +736,6 @@ end
 setup_lsp()
 setup_completion()
 setup_editor()
-load_options()
-load_keymaps()
 
 require('telescope').load_extension('projects')
 
