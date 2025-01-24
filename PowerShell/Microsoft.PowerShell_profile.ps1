@@ -1,55 +1,62 @@
-# Invoke-Expression (&starship init powershell)
-
-# Install-Module PSReadLine -Scope CurrentUser # Import once
 Set-PSReadLineOption -EditMode Emacs
-
 Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -ShowToolTips
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+Set-PSReadLineOption -HistoryNoDuplicates
+Set-PSReadLineOption -Colors @{
+  Command            = 'Magenta'
+  Number             = 'DarkYellow'
+  Member             = 'Yellow'
+  Operator           = 'DarkCyan'
+  Type               = 'DarkMagenta'
+  Variable           = 'DarkGreen'
+  Parameter          = 'Green'
+  ContinuationPrompt = 'Cyan'
+  Default            = 'DarkBlue'
+  InlinePrediction   = 'DarkGray'
+}
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 Set-PSReadlineKeyHandler -Key Ctrl+P -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key Ctrl+N -Function HistorySearchForward
 
+# Install-Module posh-git -Scope CurrentUser # Import once
 # Install-Module -Name PSFzf
-# replace 'Ctrl+t' and 'Ctrl+r' with your preferred bindings:
+
+# 'Ctrl+T' stands for search file and 'Ctrl+R' stands for search command
 Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+$commandOverride = [ScriptBlock]{ param($Location) Write-Host $Location }
+Set-PsFzfOption -AltCCommand $commandOverride
 
 # https://ohmyposh.dev/docs
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\half-life.omp.json" | Invoke-Expression
-# Install-Module posh-git -Scope CurrentUser # Import once
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json" | Invoke-Expression
 
-
-function proxyon
-{
-	$env:HTTP_PROXY="http://127.0.0.1:7890"
-	$env:HTTPS_PROXY="http://127.0.0.1:7890"
-	$env:NO_PROXY="http://127.0.0.1,localhost,ubuntu.wsl,wsl.local"
+function proxyon {
+  $internet_setting = Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings'
+  if ($internet_setting.ProxyEnable -eq 1) {
+    $ENV:HTTP_PROXY = "http://$($internet_setting.ProxyServer)"
+    $ENV:HTTPS_PROXY = "http://$($internet_setting.ProxyServer)"
+  }
+  Remove-Variable -Name internet_setting
 }
+
+function proxyoff {
+  Remove-Item Env:HTTP_PROXY
+  Remove-Item Env:HTTPS_PROXY
+}
+
 proxyon
-
-function proxyoff
-{
-	$env:HTTP_PROXY=""
-	$env:HTTPS_PROXY=""
-	$env:NO_PROXY=""
-}
 
 Set-Alias -Name v nvim
 Set-Alias -Name vi nvim
-Set-Alias -Name vim nvim
+Set-Alias -Name nc ncat.exe
+Set-Alias -Name ls lsd.exe
 
-#Set the color for Prediction (auto-suggestion)
-Set-PSReadLineOption -Colors @{
-  Command            = 'Magenta'
-  Number             = 'DarkBlue'
-  Member             = 'DarkBlue'
-  Operator           = 'DarkBlue'
-  Type               = 'DarkBlue'
-  Variable           = 'DarkGreen'
-  Parameter          = 'DarkGreen'
-  ContinuationPrompt = 'DarkBlue'
-  Default            = 'DarkBlue'
-  InlinePrediction   = 'DarkGray'
-}
+function ll { lsd.exe -l }
+
+# zoxide aka 'z' command
+Invoke-Expression (& { $hook = if ($PSVersionTable.PSVersion.Major -ge 6) { 'pwd' } else { 'prompt' } (zoxide init powershell --cmd cd --hook $hook | Out-String) })
+
+# Import-Module "gsudoModule"
+
