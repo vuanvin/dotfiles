@@ -24,10 +24,11 @@ elseif has('win32')
           \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | ni $HOME/vimfiles/autoload/plug.vim -Force\"")
   endif
   set t_Co=256
-  highlight Normal ctermbg=NONE ctermfg=NONE
-  highlight NonText ctermbg=NONE ctermfg=NONE
-  highlight EndOfBuffer ctermbg=NONE ctermfg=NONE
+  highlight Normal ctermbg=NONE guibg=NONE
+  highlight EndOfBuffer ctermbg=NONE guibg=NONE
   highlight clear CursorLine
+
+  set shell=pwsh
 endif
 
 nnoremap <Space> ""
@@ -64,18 +65,40 @@ set switchbuf=useopen,usetab,newtab
 set splitbelow splitright
 " set paste                               " conflict with coc.nvim
 
-" press <C-h> <A-h>
+" unix
 nnoremap h <C-W>h
 nnoremap l <C-W>l
 nnoremap j <C-W>j
 nnoremap k <C-W>k
-nnoremap <leader>bp <CMD>bp<CR>
-nnoremap <leader>bn <CMD>bn<CR>
+cnoremap b <S-Left>
+cnoremap f <S-Right>
+inoremap b <S-Left>
+inoremap f <S-Right>
+
+" windows
+nnoremap è <C-W>h
+nnoremap ì <C-W>l
+nnoremap ê <C-W>j
+nnoremap ë <C-W>k
+cnoremap æ <S-Right>
+cnoremap â <S-Left>
+inoremap æ <S-Right>
+inoremap â <S-Left>
+
+" common
+inoremap <C-A> <Home>
+inoremap <C-F> <Right>
+inoremap <C-B> <Left>
 cnoremap <C-A> <Home>
 cnoremap <C-F> <Right>
 cnoremap <C-B> <Left>
-cnoremap b <S-Left>
-cnoremap f <S-Right>
+
+cnoremap <M-B> <S-Left>
+cnoremap <M-F> <S-Right>
+
+nnoremap <leader>bp <CMD>bp<CR>
+nnoremap <leader>bn <CMD>bn<CR>
+
 
 " Check if npm exists
 function! s:check_npm_exists()
@@ -96,10 +119,11 @@ if has('unix')
   Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'     " enable snippets
 
   Plug 'ludovicchabant/vim-gutentags' " auto-generate tags, require universal ctags and global
+
+  Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 endif
 
 Plug 'mhinz/vim-startify'               " show the last files when open directory
-Plug 'edkolev/tmuxline.vim'             " tmux linestatus
 Plug 'bling/vim-bufferline'             " buffer info status and cmd line
 Plug 'vim-airline/vim-airline'          " status-line format
 
